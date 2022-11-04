@@ -31,7 +31,8 @@ var config		=	(() => {
 
 							return {
 								...JSON.parse(fs.readFileSync(cst+'/config.json', 'utf8')),
-								...envConfig, // This overwrites whatever is in the JSON files for those keys in envConfig
+								// Cannot do this ATM, needs review
+								//...envConfig, // This overwrites whatever is in the JSON files for those keys in envConfig
 							}
 						} else {
 							console.log('\n\nmissing '+ cst+'/config.json Copy default/config_example.json to '+cst+'/config.json') && process.exit(1)
