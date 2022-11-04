@@ -1,33 +1,50 @@
-"use strcit";
+"use strict";
 
-var copyfiles	= 	require('copyfiles'),
-	fs 			= 	require('fs-extra'),
-	rimraf		= 	require('rimraf'),
-	CleanCSS	= 	require('clean-css'),
-	{minify}	=	require('terser'),
-	{optimize}	= 	require('svgo'),
-	Promise		=	require('bluebird'),
-	cleanCSS 	= 	new CleanCSS(),
-	ins			=	process.argv[2] || 'default',
-	cst			=	'custom/'+ins,
-	dev			= 	!process.argv[3]
-	dst			=	dev ? 'dev' : "build/"+process.argv[3],
-	src			=	'tmp/src',
+require('dotenv').config()
 
-	taxonomy	= 	fs.existsSync(cst+'/js/taxonomy.js')
+var copyfiles	= 	require('copyfiles')
+var fs 			= 	require('fs-extra')
+var rimraf		= 	require('rimraf')
+var CleanCSS	= 	require('clean-css')
+var {minify}	=	require('terser')
+var {optimize}	= 	require('svgo')
+var Promise		=	require('bluebird')
+var cleanCSS 	= 	new CleanCSS()
+var ins			=	process.argv[2] || 'default'
+var cst			=	'custom/'+ins
+var dev			= 	!process.argv[3]
+var dst			=	dev ? 'dev' : "build/"+process.argv[3]
+var src			=	'tmp/src'
+
+var taxonomy	= 	fs.existsSync(cst+'/js/taxonomy.js')
 					?	require('./'+cst+'/js/taxonomy.js')
-					:	(console.log('\n\nmissing '+ cst+'/js/taxonomy.js') && process.exit(1)),
+					:	(console.log('\n\nmissing '+ cst+'/js/taxonomy.js') && process.exit(1))
 
-	config		=	fs.existsSync(cst+'/config.json')
-					?	JSON.parse(fs.readFileSync(cst+'/config.json', 'utf8'))
-					:	(console.log('\n\nmissing '+ cst+'/config.json Copy default/config_example.json to '+cst+'/config.json') && process.exit(1)),
+var config		=	(() => {
+						if (fs.existsSync(cst+'/config.json')) {
+							const envConfig = {
+								...(process.env.FRONTEND_URL 		? {frontendLocation: 	process.env.FRONTEND_URL	} : {}),
+								...(process.env.BACKEND_URL 		? {backendLocation: 	process.env.BACKEND_URL		} : {}),
+								...(process.env.STATS_API_URL 		? {statsLocation: 		process.env.STATS_API_URL	} : {}),
+								...(process.env.PUBLIC_ITEMS_URL 	? {publicItems: 		process.env.PUBLIC_ITEMS_URL} : {}),
+							}
 
-	preloadImg	=	[],
+							return {
+								...JSON.parse(fs.readFileSync(cst+'/config.json', 'utf8')),
+								...envConfig, // This overwrites whatever is in the JSON files for those keys in envConfig
+							}
+						} else {
+							console.log('\n\nmissing '+ cst+'/config.json Copy default/config_example.json to '+cst+'/config.json') && process.exit(1)
+							return undefined
+						}
+					})()
 
-	build 		= 	Date.now(),
+var preloadImg	=	[]
 
-	styles_dir	=	'styles_'+build,
-	js_dir		= 	'js_'+build
+var build 		= 	Date.now()
+
+var styles_dir	=	'styles_'+build
+var js_dir		= 	'js_'+build
 
 
 
