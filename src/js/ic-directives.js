@@ -356,6 +356,11 @@ angular.module('icDirectives', [
 					})
 				}
 
+				scope.editCopy = function(){
+					icSite.activeItem 	= icItemStorage.newItem(icSite.activeItem.id)
+					icSite.editItem		= true
+				}
+
 				scope.cancel = function(){
 					scope.$parent.$parent.$broadcast('cancel')
 				}
@@ -430,10 +435,11 @@ angular.module('icDirectives', [
 	'icMainMap',
 	'icConfig',
 	'icAutoFill',
+	'icGeo',
 	'$rootScope',
 	'$q',
 
-	function(ic, icUser, icItemEdits, icItemConfig, icSite, icLanguages, icItemStorage, icTaxonomy, icOverlays, icMainMap, icConfig, icAutoFill, $rootScope, $q){
+	function(ic, icUser, icItemEdits, icItemConfig, icSite, icLanguages, icItemStorage, icTaxonomy, icOverlays, icMainMap, icConfig, icAutoFill, icGeo, $rootScope, $q){
 
 		return {
 			restrict:		'AE',
@@ -537,6 +543,28 @@ angular.module('icDirectives', [
 
 				}
 
+				scope.guessCoordinates = function(city, street, postcode){
+
+					$q.resolve( icGeo.guess(city, street, postcode) )
+					.then( results => {
+
+							const result = results[0]
+
+							if(!result) throw new Error("no results")
+					
+							icOverlays.open('confirmationModal', ['INTERFACE.GUESS_COORDINATES_SUCCCESS', result.display_name, 'INTERFACE.GUESS_COORDINATES_APPLY'])
+							.then( () => {
+								scope.icEdit.latitude	= result.lat
+								scope.icEdit.longitude 	= result.lon
+							})
+							
+					})
+					.catch( reason => {
+						icOverlays.open('popup', 'INTERFACE.GUESS_COORDINATES_FAILED')	
+					})	
+
+				}
+
 				/* This function also appears in icItemFullHeader, which is not that elegeant =/ */
 				scope.cancel = function(){
 					var message = "INTERFACE.CONFIRM_CANCEL_EDIT"
@@ -546,8 +574,16 @@ angular.module('icDirectives', [
 
 					icOverlays.open('confirmationModal', message)
 					.then(function(){
-						if(icSite.activeItem.internal.new) icSite.activeItem = undefined
-						icSite.editItem = false
+
+						icItemEdits.clear(scope.icEdit)
+						icSite.editItem 	= false
+
+						if(icSite.activeItem.internal.new){					
+							icItemStorage.removeItem(scope.icItem)
+							icSite.activeItem 	= null
+						}
+
+						icSite.updateUrl()		
 					})
 				}
 

@@ -1409,18 +1409,29 @@ angular.module('icServices', [
 
 			icItemStorage.ready 		= 	icUser.ready
 											.then(function(){
-												return 	$q.when(icItemStorage.downloadAll( icUser.can('edit_items') || icConfig.publicItems || undefined))
+
+												const publicItems = icConfig.publicItems || icConfig.publicItems+'/items' || undefined 		
+
+												return 	$q.when(icItemStorage.downloadAll( icUser.can('edit_items') || publicItems))
 											})
 											.then(function(){
 												return icItemStorage.updateFilteredList()
 											})
 
-			icItemStorage.newItem = function(){
+			icItemStorage.newItem = function(id){
+
 				var num = 0
 
 				while(icItemStorage.data.some(function(item){ return item.id == 'new_'+num })){	num++ }
 
-				var item = icItemStorage.storeItem({
+				const new_id 			= 	'new_'+num
+				const original_item 	= 	id && icItemStorage.data.find( item => item.id == id)
+				const original_data		= 	original_item
+											?	original_item.exportData()
+											:	{}
+
+				var item = 	icItemStorage.storeItem({
+								...original_data,
 								id: 	'new_'+num,
 								state:	icUser.can('edit_items') ? 'draft' : 'suggestion'
 							})
@@ -1866,8 +1877,6 @@ angular.module('icServices', [
 
 	'$translate',
 	'$http',
-	// 'icItemStorage',
-	// 'icItemConfig',
 	'icTaxonomy',
 	'icConfig',
 
@@ -1878,11 +1887,14 @@ angular.module('icServices', [
 			async getCSV(lang, properties, tagGroups){
 				lang = lang || 'de'
 
-				const {$get, ...taxonomy} = icTaxonomy
+				const {$get, ...taxonomy} 	= icTaxonomy
+				const publicItems 			= icConfig.publicItems || icConfig.publicItems+'/items' || undefined 		
 
-				const result = await $http.post(`${icConfig.publicItems}/export/${lang}/csv`, {...icConfig.export, taxonomy } )
+				if(!publicItems) throw new Error("Missing publicApi in config")
 
-				location.href = `${icConfig.publicItems}/export/${lang}/csv`
+				const result = await $http.post(`${publicItems}/export/${lang}/csv`, {...icConfig.export, taxonomy } )
+
+				location.href = `${publicItems}/export/${lang}/csv`
 			}
 
 		}
@@ -2675,12 +2687,16 @@ angular.module('icServices', [
 			return this
 		}
 
-		icOverlays.open = function(overlay_name, message, deferred, overwrite_messages){
+		icOverlays.open = function(overlay_name, messages, deferred, overwrite_messages){
 			icOverlays.messages[overlay_name] = overwrite_messages
 												? 	[]
 												:	(icOverlays.messages[overlay_name] || [])
 
-			if(icOverlays.messages[overlay_name].indexOf(message) == -1) icOverlays.messages[overlay_name].push(message)
+			if(!Array.isArray(messages))	messages = [messages]								
+
+			messages.forEach( message => {
+				if(icOverlays.messages[overlay_name].indexOf(message) == -1) icOverlays.messages[overlay_name].push(message)
+			})	
 
 			if(icOverlays.deferred[overlay_name] && icOverlays.deferred[overlay_name] != deferred) 
 				icOverlays.deferred[overlay_name].reject()
@@ -2963,7 +2979,7 @@ angular.module('icServices', [
 
 	function($q, ic, icConfig, icConsent){
 
-		class icWebfonts {
+		class IcWebfonts {
 
 			ready
 
@@ -3088,11 +3104,50 @@ angular.module('icServices', [
 
 		}
 
-		return new icWebfonts()
+		return new IcWebfonts()
 
 	}
 
 ])
+
+
+
+.service('icGeo', [
+
+	'$q',
+	'ic',
+	'icConfig',
+	'icConsent',
+
+	function($q, ic, icConfig, icConsent){
+
+		class IcGeo {
+
+			async guess(city, street, postalcode){
+				const base		= icConfig.publicApi
+				const path		= '/geo-guess'
+				const queries	= new URLSearchParams({city, street, postalcode})
+				const url		= `${base}${path}?${queries}`
+				const response 	= await fetch(url)
+
+				if(!response.ok) throw new Error(`HTTP error! Status: ${response.status}`)
+
+				const data		= response.json()
+
+				console.log(data)
+
+				return data
+			}
+
+			async 
+
+		}
+
+		return new IcGeo()
+	}
+
+])
+
 
 
 //updating core Service
@@ -3125,9 +3180,10 @@ angular.module('icServices', [
 	'icKeyboard',	
 	'icAutoFill',
 	'icExport',
+	'icGeo',
 	'$rootScope',
 
-	function(ic, icInit, icSite, icItemStorage, icLayout, icItemConfig, icTaxonomy, icFilterConfig, icLanguages, icFavourites, icOverlays, icAdmin, icUser, icStats, icConfig, icUtils, icConsent, icTiles, icOptions, icLists, icMainMap, icWebfonts, icItemRef, icKeyboard, icAutoFill, icExport, $rootScope ){
+	function(ic, icInit, icSite, icItemStorage, icLayout, icItemConfig, icTaxonomy, icFilterConfig, icLanguages, icFavourites, icOverlays, icAdmin, icUser, icStats, icConfig, icUtils, icConsent, icTiles, icOptions, icLists, icMainMap, icWebfonts, icItemRef, icKeyboard, icAutoFill, icExport, icGeo, $rootScope ){
 
 		ic.admin		= icAdmin
 		ic.autoFill		= icAutoFill
@@ -3154,6 +3210,7 @@ angular.module('icServices', [
 		ic.utils		= icUtils
 		ic.webfonts		= icWebfonts
 		ic.export		= icExport
+		ic.geo			= icGeo
 
 		var stop 		= 	$rootScope.$watch(function(){
 								if(icInit.ready){

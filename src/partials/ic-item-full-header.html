@@ -74,6 +74,15 @@
 	>
 	</button>			
 
+	<button
+		class 		= 	"icon round large active icon-interface-edit_copy drop-shadow bg-0"
+		ng-if		=	"ic.user.can('edit_items')"
+		ng-click	=	"editCopy()"
+		title		= 	"{{'INTERFACE.EDIT_COPY' | translate}}"
+		ic-touch-me
+	>
+	</button>
+
 	<button 
 		class 		= 	"icon round large active icon-interface-edit drop-shadow bg-0"
 		ng-disabled	= 	"!!ic.site.activeItem.remoteItem"
@@ -82,7 +91,6 @@
 		ic-touch-me
 	>
 	</button>
-
 
 	<button 
 		class 		= "icon round large active switch icon-interface-left drop-shadow bg-0"

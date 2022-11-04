@@ -218,10 +218,11 @@ ic-overlays > .center.max {
 
 ic-overlays > .center .message {
 	text-align:				center;
+	margin-bottom: 			0.5rem;
 }
 
 ic-overlays > .center .message + form{
-	margin-top:				1rem;
+	margin-top:				0.5rem;
 }
 
 

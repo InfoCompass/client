@@ -163,9 +163,9 @@
 												:	''
 									},
 					decode:			function(path, ic){
-										var matches = path.match(/(^|\/)item\/([^\/]*)/)
+										var matches = path.match(/(^|\/)item\/([^\/]*)()/)
 
-										if(matches && matches[2] && matches[2] == 'new') return ic.itemStorage.newItem(matches[2])
+										if(matches && matches[2] && matches[2] == 'new') 	return ic.itemStorage.newItem(matches[2])
 
 										return	matches && matches[2]
 												?	ic.itemStorage.getItem(matches[2], true)

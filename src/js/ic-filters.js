@@ -193,6 +193,19 @@ angular.module('icFilters', [
 
 ])
 
+
+// this filter is meant to be overwritten in custom themes
+.filter('icFullTitle', [
+
+	() => {
+		return function(item){
+			return	item
+					?	item.title
+					:	''
+		}
+	}
+])
+
 .filter('osmLink', [
 	function(){
 		return function(config){

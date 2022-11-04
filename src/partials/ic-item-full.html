@@ -105,7 +105,7 @@
 			ng-if	= "ic.layout.mode.name == 'XS'"
 		>
 			<h2 class = "title" >
-				{{ item.title }} 
+				{{ item | icFullTitle }} 
 				<span 
 					ng-if 	= "ic.user.can('edit_items')"
 					class	= "screen-only"
@@ -127,7 +127,7 @@
 				ng-if	= "ic.layout.mode.name != 'XS'"
 			>
 				<h2 class = "title" >
-					{{ item.title }}
+					{{ item | icFullTitle }}
 					<span ng-if = "ic.user.can('edit_items')">[{{'ITEMS.STATE_%s' | fill: item.state | translate}}]</span>
 				</h2>
 			</div>
@@ -220,7 +220,7 @@
 
 	<ic-item-property
 		ng-if 			= 	"item.location_ref"
-		ic-content		=	"(item.location_ref | icItem).title"
+		ic-content		=	"(item.location_ref | icItem) | icFullTitle"
 		ic-content-link	=	"{activeItem: (item.location_ref | icItem) } | icLink"
 		ic-extra-lines	=	"[ (item.location_ref | icItem).brief[ic.site.currentLanguage] ]"
 	>
