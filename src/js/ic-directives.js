@@ -560,6 +560,7 @@ angular.module('icDirectives', [
 							
 					})
 					.catch( reason => {
+						console.log('coordinates failed', reason, {city, street, postcode})
 						icOverlays.open('popup', 'INTERFACE.GUESS_COORDINATES_FAILED')	
 					})	
 
