@@ -18,6 +18,7 @@ renderer.link = (href, title, text) => {
 
 marked.use({renderer})
 
+
 /* end marked */
 
 
@@ -1474,7 +1475,7 @@ angular.module('icUiDirectives', [
 	function(){
 		return function(str, noWrappingP){
 
-			const html = marked(str||'')
+			const html = marked.parse(str||'')
 
 			return 	noWrappingP
 					?	html.replace(/(^\s*<p>|<\/p>\s*$)/g, '')
