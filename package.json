@@ -16,7 +16,7 @@
     "fs-extra": "^10.1.0",
     "leaflet": "^1.9.2",
     "leaflet.markercluster": "^1.5.3",
-    "marked": "^4.2.2",
+    "marked": "^4.0.10",
     "promiscuous": "^0.7.2",
     "qrcode-generator": "^1.4.4",
     "rasa-webchat": "^1.0.1",
