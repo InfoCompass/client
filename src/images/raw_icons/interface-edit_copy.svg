@@ -1,17 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-         <g id="icon-interface-edit" fill="#000000">
-            <path d="M 8.623081,17.877824 4.2502,17.875 v -15 l 11.928593,0.07627 0.0031,3.110686 -0.98354,-0.009 V 3.947396 L 5.2502,3.876 v 12.998 l 3.372881,0.0013"></path>
-            <path d="m 18.7488,16.625 h -3.499 v 3.499 h -6.5 V 7.125999 l 9.948153,0.07141 z m 0,1.086 -2.414,2.413 h -0.085 v -2.499 h 2.499 z M 19.678393,6.20127 7.7498,6.125 v 15 h 7.5 1 0.5 l 3,-3 z"></path>
-            <g
-               transform="matrix(0.42900341,0,0,0.42900341,9.0469251,8.0396309)"
-               style="fill:none;fill-rule:evenodd;stroke:none;stroke-width:1">
-              <g
-                 style="fill:#000000">
-                <path d="m 16.9564,8.4711 -1.414,-1.414 1.414,-1.414 1.414,1.414 z m -9.024,9.024 c -18.958593,14.69283 -9.4792966,7.346415 0,0 z m 9.024,-13.267 -11.314,11.314 -1.427,4.229 4.256,-1.401 11.313,-11.313 z"></path>
-              </g>
-            </g> 
-         </g>
+<svg width="48px" height="48px" viewBox="0 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>nav-icons/duplicate</title>
+    <g id="nav-icons/duplicate" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group" transform="translate(9.100000, 6.000000)" fill="#000000">
+            <path d="M27.798,27 L20.8,27 L20.8,33.998 L7.8,33.998 L7.8,7.93373706 L27.798,7.93373706 L27.798,27 Z M27.798,29.172 L22.97,33.998 L22.8,33.998 L22.8,29 L27.798,29 L27.798,29.172 Z M29.8,6 L5.8,6 L5.8,36 L20.8,36 L22.8,36 L23.8,36 L29.8,30 L29.8,29 L29.8,27 L29.8,6 Z" id="Fill-2"></path>
+            <path d="M24,0 L24,6 L22,6 L22,2 L2,2 L2,28 L6,28 L6,30 L0,30 L0,0 L24,0 Z" id="Combined-Shape" fill-rule="nonzero"></path>
+        </g>
     </g>
 </svg>
