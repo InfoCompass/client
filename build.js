@@ -151,7 +151,7 @@ async function bundleScriptsToDst(){
 									.replace(/"use strict;"/gi, ''),
 							map:	''
 						}
-					:	await minify(files , {sourceMap: {url: "scripts.js.map"}	} )
+					:	await minify(files , {safari10: true, sourceMap: {url: "scripts.js.map"}	} )
 	 				
 
 	if(result.error) throw new Error(result.error)
