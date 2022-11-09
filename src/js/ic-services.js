@@ -3139,8 +3139,6 @@ angular.module('icServices', [
 				return data
 			}
 
-			async 
-
 		}
 
 		return new IcGeo()
