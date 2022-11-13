@@ -747,6 +747,9 @@ angular.module('icServices', [
 		})
 
 		function addFilter(list){
+
+			console.log('addFilter', list) //remove me
+
 			icItemStorage.registerFilter('list_'+list.id, function(item){
 				return icLists.itemInList(item, list.id)
 			})
@@ -1996,6 +1999,10 @@ angular.module('icServices', [
 								return result
 							},
 			options:		function(ic){
+
+								// Some option might become available during initialization.
+								// If it is not ready, do not block any option, for they will get removed from the url!
+								if(!ic.init.ready) return null
 
 								var result = []
 

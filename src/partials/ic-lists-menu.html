@@ -30,6 +30,7 @@
 	class 		= "bg-0 padding tac bg-3"
 	ng-show		= "!toggle_new"
 	ng-click	= "toggle_new = true"
+	title		= "{{'INTERFACE.CREATE_LIST' | translate}}"
 > 
 	<span class = "icon left icon-interface-lists_add white"></span>
 	{{'INTERFACE.CREATE_LIST' | translate}}
@@ -42,11 +43,13 @@
 
 <ul>
 
+		
+	<!-- ng-repeat-start	= "list in ic.lists | filter : {user: ic.user.id} as results" --> 
+
 	<li 
-		ng-repeat-start	= "list in ic.lists | filter : {user: ic.user.id} as results"
+		ng-repeat-start	= "list in ic.lists as results"
 		class			= "flex"
-		ic-touch-me
-		ng-if			= "list.user == ic.user.id"
+		ic-touch-me		
 	>
 		<input 
 			type 				= "text"
@@ -62,13 +65,16 @@
 			ng-show		= "!confirm"
 			ng-class 	= "{'active': list.public}"
 			ng-click	= "ic.lists.togglePublicState(list.id, !list.public)"
+			title		= "{{list.public ? 'INTERFACE.UN_PUBLISH_LIST' : 'INTERFACE.PUBLISH_LIST' | translate}}"
 		>
 		</span>
 
 		<span 
 			class 		= "icon icon-interface-lists_delete"
 			ng-show		= "!confirm"
-			ng-click	= "confirm = true" 
+			ng-click	= "(list.user == ic.user.id) && (confirm = true)" 
+			ng-class	= "{disabled: list.user != ic.user.id}"
+			title		= "{{'INTERFACE.DELETE_LIST' | translate}}"
 		></span>
 
 		<button

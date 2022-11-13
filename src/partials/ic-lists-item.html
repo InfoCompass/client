@@ -10,8 +10,10 @@
 <ul
 	ng-if		= "ic.site.activeItem"
 >
+	<!-- ng-repeat 	= "list in ic.lists | filter : {user: ic.user.id} as results" -->
+
 	<li 
-		ng-repeat 	= "list in ic.lists | filter : {user: ic.user.id} as results"
+		ng-repeat 	= "list in ic.lists as results"
 		ng-click	= "ic.lists.toggleItemInList(ic.site.activeItem, list.id)"
 		ng-title	= "{{ic.lists.itemInList(ic.site.activeItem, list.id) ? 'INTERFACE.REMOVE_ACTIVE_ITEM_FROM_LIST' : 'INTERFACE.ADD_ACTIVE_ITEM_TO_LIST'}}"
 		class 		= "icon left icon-interface-checkbox"

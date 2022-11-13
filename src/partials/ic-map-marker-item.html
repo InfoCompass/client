@@ -19,6 +19,6 @@
 	<div ng-if = "icTitle"	class = "title"> 	{{icTitle}}			</div>
 	<div ng-if = "icDetails"class = "details">	{{icDetails}}		</div>
 
-	<div ng-if = "icItem"	class = "title">	{{icItem.title}}	</div>
-	<div ng-if = "icItem"	class = "details">	{{icItem.brief[ic.site.currentLanguage]}}	</div>
+	<div ng-if = "icItem"	class = "title">	{{icItem | icFullTitle }}	</div>
+	<div ng-if = "icItem"	class = "details">	{{icItem.brief[ic.site.currentLanguage] | clearTranslator }}	</div>
 </a>
