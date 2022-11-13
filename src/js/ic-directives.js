@@ -2001,7 +2001,6 @@ angular.module('icDirectives', [
 			link: function(scope, element){
 				scope.ic = ic
 
-				console.log(scope)
 			}
 		}
 	}
