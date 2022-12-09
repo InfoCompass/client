@@ -404,10 +404,16 @@
 
 			if(item) return item
 
+			// preliminary item
 			item = icItemStorage.storeItem({id: id})				
 
 			if(force_download){
-				item.download()
+				icItemStorage.ready
+				.then( () 	=> 	icItemStorage.getItem(id) )				
+				.then( item	=> 	item && item.remoteItem 
+								?	Promise.resolve()
+								:	item.download()
+				)				
 				.then(
 					function(){
 						icItemStorage.runAsyncTriggers()
@@ -430,9 +436,10 @@
 		//This seems to be the only place where dpd is actually used! Also on every Item-Object!
 
 		icItemStorage.downloadAll = function(url){
+
 			return 	(
-						url
-						?	httpGet(url).then( function(result){ return result.items } )
+						typeof url == 'string'
+						?	httpGet(url).then( result =>  result.items )
 						:	Promise.reject('no publicItems url')
 					)
 					.catch( function() { return dpd(ic.itemConfig.collectionName).get() })

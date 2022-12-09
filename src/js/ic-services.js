@@ -1415,7 +1415,7 @@ angular.module('icServices', [
 
 												const publicItems = icConfig.publicItems || icConfig.publicItems+'/items' || undefined 		
 
-												return 	$q.when(icItemStorage.downloadAll( icUser.can('edit_items') || publicItems))
+												return 	$q.when(icItemStorage.downloadAll( icUser.can('edit_items') ? null : publicItems) )
 											})
 											.then(function(){
 												return icItemStorage.updateFilteredList()

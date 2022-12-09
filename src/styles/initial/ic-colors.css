@@ -147,3 +147,7 @@
 	cursor:						auto;
 }
 
+
+.ic-bg-cat-unknown {
+	background:					var(--neutral-color);
+}
