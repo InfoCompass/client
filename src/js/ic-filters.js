@@ -59,6 +59,17 @@ angular.module('icFilters', [
 	}
 ])
 
+.filter('icSubCategories', [
+
+	'icTaxonomy',
+
+	function(icTaxonomy){
+		return function(item_or_tags){
+			return item_or_tags && icTaxonomy.getSubCategories(item_or_tags.tags || item_or_tags)
+		}
+	}
+])
+
 
 .filter('icFullCategory', [
 

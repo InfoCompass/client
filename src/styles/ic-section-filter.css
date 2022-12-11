@@ -1,0 +1,7 @@
+#section-filter > * {
+	margin:				1rem;
+}
+
+#section-filter > * + * {
+	margin-top:			0;
+}

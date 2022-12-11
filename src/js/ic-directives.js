@@ -1849,10 +1849,10 @@ angular.module('icDirectives', [
 
 				$rootScope.$watch(function(){
 					scope.category 		= 		icTaxonomy.getCategory(icSite.filterByCategory) 		
-											|| 	icTaxonomy.getCategory(icSite.activeItem && icSite.activeItem.tags)
+											//|| 	icTaxonomy.getCategory(icSite.activeItem && icSite.activeItem.tags)
 
 					scope.subCategories	= 		icTaxonomy.getSubCategories(icSite.filterByCategory)	
-											|| 	icTaxonomy.getSubCategories(icSite.activeItem && icSite.activeItem.tags)
+											//|| 	icTaxonomy.getSubCategories(icSite.activeItem && icSite.activeItem.tags)
 				})
 			}
 		}

@@ -75,7 +75,6 @@ ic-taxonomy-filter section button div {
 
 ic-taxonomy-filter section li .bubble, /*alt*/
 ic-taxonomy-filter section button .bubble {
-	display:					inline-block;
 	flex:						0 0 auto;
 }
 
@@ -97,6 +96,20 @@ ic-taxonomy-filter-categories {
 }
 
 
-ic-taxonomy-filter-categories .sub-categories > button {
+ic-taxonomy-filter .sub-categories {
+	position:					relative;	
+	padding-left:				1rem;
+	z-index:					10;
+}
 
+ic-taxonomy-filter .sub-categories:before {
+	content:					'';
+	position:					absolute;
+	top:						0;
+	left:						0;
+	right:						0;
+	bottom:						0;
+	z-index:					-1;
+	background-color:			var(--primary-color);	
+	opacity:					0.25;
 }

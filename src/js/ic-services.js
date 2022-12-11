@@ -2085,25 +2085,43 @@ angular.module('icServices', [
 
 
 
-		icFilterConfig.toggleCategory = function(category_name, toggle, replace){
+		icFilterConfig.toggleCategory = function(category_name, toggle, replace, complement_categories){
 
 			var pos 	= 	icSite.filterByCategory.indexOf(category_name),
 				toggle 	= 	toggle === undefined
 							?	pos == -1
 							:	!!toggle
 
-			if(replace) icFilterConfig.clearCategory()
+			if(replace){
+				if(Array.isArray(complement_categories)){
+					complement_categories
+					.filter(	cc => cc != category_name)
+					.forEach( 	cc => icFilterConfig.toggleCategory(cc, false) )
+
+				} else {
+					icFilterConfig.clearCategory()
+				}
+			}
 
 			if(pos == -1 &&  toggle) 				return !!icSite.filterByCategory.push(category_name)
 			if(pos != -1 && !toggle && !replace) 	return !!icSite.filterByCategory.splice(pos,1)
 		}
 
-		icFilterConfig.clearCategory = function(){
-			while(icSite.filterByCategory.pop());
+		icFilterConfig.clearCategory = function(tags = undefined){
+
+			tags = [...(tags || icSite.filterByCategory)]
+
+			tags.forEach( tag => {
+				const pos = icSite.filterByCategory.indexOf(tag)
+				if(pos != -1) icSite.filterByCategory.splice(pos,1)
+			})
+
 			return icFilterConfig
 		}
 
 		icFilterConfig.categoryActive = function(category_name){
+
+			if(Array.isArray(category_name)) return category_name.some( tag => icFilterConfig.categoryActive(tag) )
 
 			const direct_match 	= icSite.filterByCategory.includes(category_name)	
 			
@@ -2276,6 +2294,7 @@ angular.module('icServices', [
 
 		$rootScope.$watch(
 			function(){
+				// Tag groups:
 				return 	[
 							icItemStorage.getSearchTag(icSite.searchTerm, x => adHocTranslation(x) ),
 							icSite.filterByType,
@@ -2288,9 +2307,10 @@ angular.module('icServices', [
 				icItemStorage.ready
 				.then( () => {
 					icItemStorage.updateFilteredList(arr, [
+						// Groups considered alternative to the above tags groups, only one tag of these groups can be active
 						null, 
 						icTaxonomy.types.map(function(type){ return type.name }), 
-						icTaxonomy.categories.map(function(category){ return category.name }), 
+						icTaxonomy.categories.map( category => [category.name, ...(category.tags||[]) ] ).flat(), 
 						null
 					])
 

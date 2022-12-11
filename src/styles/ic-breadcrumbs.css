@@ -1,0 +1,61 @@
+ic-breadcrumbs {
+	display:						block;
+	box-sizing:						border-box;
+	padding:						0 1rem;
+	white-space:					nowrap;
+	overflow:						hidden;
+}
+
+
+
+ic-breadcrumbs > * {
+	display:						inline-block;
+	position:						relative;
+	height:							1.5rem;
+	line-height:					1.5rem;
+	white-space: 					nowrap;
+	z-index:						10;
+	margin-top:						0.25rem !important;
+	margin-bottom:					0.25rem !important;
+}
+
+
+ic-breadcrumbs > button,
+ic-breadcrumbs > a  {
+	position:						relative;
+	overflow:						hidden;
+	border-radius:					10rem;
+	line-height:					1rem;
+	padding-left:					0.5rem;
+	margin-left:					0.25rem;
+	margin-right:					0.25rem;
+}
+
+ic-breadcrumbs > button:before,
+ic-breadcrumbs > a:before  {
+	display:						block;
+	content:						'';
+
+	position:						absolute;
+
+	top:							0;
+	left:							0;
+	right:							0;
+	bottom:							0;
+
+	background-color:				var(--primary-color);
+	opacity:						0.5;
+	z-index:						-1;
+}
+		
+ic-breadcrumbs > button:hover:before,
+ic-breadcrumbs > a:hover:before  {
+	opacity:						1;
+}
+
+
+.XS ic-breadcrumbs > button,
+.XS ic-breadcrumbs > a,
+.XS ic-breadcrumbs > span {
+	display:						none; /* tags will be shown in a different place*/
+}

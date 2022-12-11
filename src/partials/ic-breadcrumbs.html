@@ -1,101 +1,114 @@
-<div ng-if = "category || ic.site.filterByType.length || ic.site.searchTerm || subCategories.length || ic.site.filterByUnsortedTag.length || c.site.activeItem">
-	<span>
-		<a class = "active" href = "/">{{'INTERFACE.HOME' | translate}}</a>
-	</span>
-</div>
 
-
+<span ng-if = "category || ic.site.filterByType.length || ic.site.searchTerm || subCategories.length || ic.site.filterByUnsortedTag.length || c.site.activeItem">
+	<a class = "active" href = "/">{{'INTERFACE.HOME' | translate}}</a>
+</span>
 
 <!-- categories -->
 
-<div 
-	ng-if 		= "category"
-	class		= "flex-shrink"
->
-	<span class = "icon icon-interface-right left plain"></span>
+<span 
+	ng-if = "category || ic.site.filterByType.length || ic.site.searchTerm || subCategories.length || ic.site.filterByUnsortedTag.length || c.site.activeItem"
+	class = "icon icon-interface-right plain"	
+></span>
 
+<span ng-if 		= "category || ic.site.filterByType.length || ic.site.searchTerm || subCategories.length || ic.site.filterByUnsortedTag.length || c.site.activeItem">
 	<a class = "active" href = "/p/tags">{{'INTERFACE.CATEGORIES' | translate}}</a>
-</div>
+</span>
 
-<div 
-	ng-if 		= "category"
-	class		= "flex-shrink"
+
+<!-- main categories -->
+
+<span 
+	ng-if = "(ic.site.filterByCategory | icCategories).length > 0"
+	class = "icon icon-interface-right plain"
+></span>
+
+
+<button 
+	ng-repeat	= "category in ic.site.filterByCategory | icCategories"
+	class		= "col-2"
+	ng-click	= "ic.filterConfig.toggleCategory(category.name, false)"
+	title		= "{{'INTERFACE.REMOVE_FILTER' | translate}}: {{'CATEGORIES.%s' | fill : category.name| translate }}"
 >
-	<span class = "icon icon-interface-right left plain"></span>
-
-	<a 
-		class 	= "active" 
-		ng-href = "/list/c/{{category.name}}"
-	>
+	<span class	= "icon icon-interface-close white right">
 		{{'CATEGORIES.%s' | fill : category.name | translate}}
-	</a>
-</div>
+	</span>
+</button>
 
-<div 
-	ng-repeat 	= "category_name in subCategories"
-	class		= "flex-shrink"
+
+<!-- sub categories -->
+
+<span 
+	ng-if = "(ic.site.filterByCategory | icSubCategories).length > 0"
+	class = "icon icon-interface-right plain"
+></span>
+
+
+<button 
+	ng-repeat	= "tag in ic.site.filterByCategory | icSubCategories"
+	class		= "col-2"
+	ng-click	= "ic.filterConfig.toggleCategory(tag, false)"
+	title		= "{{'INTERFACE.REMOVE_FILTER' | translate}}: {{'CATEGORIES.%s' | fill : tag| translate }}"
 >
-	<span class = "icon icon-interface-right left plain"></span>
-	<a 	
-		class 		= "active" 
-		ng-href 	= "list/c/{{category_name}}"	
-	>
-		{{'CATEGORIES.%s' | fill : category_name | translate}}
-		<span ng-if = "!$last">, </span>
-	</a>	
-</div>
+	<span class	= "icon icon-interface-close white right">
+		{{'CATEGORIES.%s' | fill : tag | translate}}
+	</span>
+</button>
+
+
+<!-- types -->
+
+<span 
+	ng-if = "(ic.site.filterByType).length > 0"
+>|</span>
+
+
+<button 
+	ng-repeat	= "type in ic.site.filterByType"
+	class		= "col-2"
+	title		= "{{'INTERFACE.REMOVE_FILTER' | translate}}: {{'TYPES.%s' | fill : type | translate }}"
+	ng-click	= "ic.filterConfig.toggleType(type)"
+	ic-touch-me
+>
+	<span class	= "icon icon-interface-close white right">	
+		{{'TYPES.%s' | fill : type | translate }} 
+	</span>
+</button>
 
 
 
 <!-- search -->
 
-<div ng-if 		= "ic.site.searchTerm">
-	<span class = "icon icon-interface-right left plain"></span>
-	<a 
-		class 	= "active"
-		ng-href = "list/s/{{ic.site.searchTerm}}" 
-	>
-		{{'INTERFACE.SEARCH_FOR' | translate}} "{{ic.site.searchTerm}}"
-	</a>
-</div>
+<span ng-if = "ic.site.searchTerm">|</span>
 
-<!-- types -->
-
-<div 
-	ng-repeat = "type_name in ic.site.filterByType"
-	class		= "flex-shrink"
+<button
+	ng-if		= "ic.site.searchTerm"
+	class		= "col-2"
+	title		= "{{'INTERFACE.REMOVE_FILTER' | translate}}: {{'INTERFACE.SEARCH_FOR' | translate}} '{{ic.site.searchTerm}}'"
+	ng-click	= "ic.site.searchTerm = null"
+	ic-touch-me
 >
-
-	&nbsp; | &nbsp;
-
-	<a 
-		class 		= "active"
-		ng-href		= "/list/t/{{type_name}}"
-	> 
-		{{'TYPES.%s' | fill : type_name | translate}} 
-		<span ng-if = "!$last">, </span>
-
-	</a>
-</div>
+	<span class	= "icon icon-interface-close white right">
+		{{'INTERFACE.SEARCH_FOR' | translate}} "{{ic.site.searchTerm}}"
+	</span>
+</button>
 
 
 
 <!-- unsorted -->
 
-<div 
-	ng-repeat 	= "tag in ic.site.filterByUnsortedTag"
-	class		= "flex-shrink"
+<span ng-if = "ic.site.filterByUnsortedTag.length > 0">|</span>
+
+<button 
+	class		= "col-2"
+	ng-repeat	= "tag in ic.site.filterByUnsortedTag"
+	title		= "{{'INTERFACE.REMOVE_FILTER' | translate}}: {{'UNSORTED_TAGS.%s' | fill : tag | translate }}"
+	ng-click	= "ic.filterConfig.toggleUnsortedTag(tag)"
+	ic-touch-me
 >
-	
-	<a 
-		class 		= "active" 
-		ng-href		= "/list/u/{{tag_name}}"
-	> 
-		{{'UNSORTED_TAGS.%s' | fill : tag | translate}}{{$last ? '' :',&nbsp'}} 
-	</a>
-
-</div>
-
+	<span class = "icon right white icon-interface-close">	
+		{{'UNSORTED_TAGS.%s' | fill : tag | translate }} 
+	</span>
+</button>
 
 <!-- item -->
 
@@ -103,3 +116,4 @@
 <div ng-if = "ic.site.activeItem">	
 	<span class = "icon icon-interface-right left plain"> {{ic.site.activeItem.title}}</span>
 </div>
+

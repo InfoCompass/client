@@ -237,27 +237,8 @@ ic-header.ic-scroll-top .tools .left {
 	padding-right: 					0;
 }
 
-ic-header ic-breadcrumbs {
-	display:						flex;
-	box-sizing:						border-box;
-	padding:						0 1rem;
-	align-items:					center;
-}
-
-ic-header ic-breadcrumbs > * {
-	display:						inline-flex;
-	align-items:					center;
-	height:							2em;
-}
 
 ic-header .breadcrumbs {
 	position:						relative;
 	z-index:						-10;
 }
-
-ic-header ic-breadcrumbs > *{
-	flex:							0 1 auto;
-	white-space: 					nowrap;
-	margin-right: 					0.5rem;
-}
-		

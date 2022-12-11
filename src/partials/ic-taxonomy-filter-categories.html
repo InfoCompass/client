@@ -62,27 +62,35 @@
 				class = "sub-categories"
 				ng-if = "showSubCategories && ic.filterConfig.categoryActive(category.name)"
 			>
+				<button
+					class		= "icon icon-interface-radio"				
+					ic-button	= "{active:!ic.filterConfig.categoryActive(category.tags)}"					
+					ng-class	= "{'checked':active}"						
+					ng-click	= "!active && ic.filterConfig.clearCategory(category.tags)"
+				>
+					<div>{{'INTERFACE.FILTER_ANY' | translate}}</div>
+				</button>
 
 				<button	
 					ng-repeat 	= "tag in category.tags"
-					class		= "icon icon-interface-checkbox"					
-					ic-button	= "{active:ic.filterConfig.categoryActive(tag), disabled: !ic.itemStorage.currentStats.subMatches[tag]}"
+					class		= "icon icon-interface-radio"					
+					ic-button	= "{active:ic.filterConfig.categoryActive(tag), disabled: !ic.itemStorage.currentStats.altMatches[tag]}"
 					ng-class	= "{'checked':active, disabled: disabled}"
-					ng-click	= "!disabled && ic.filterConfig.toggleCategory(tag)"
+					ng-click	= "!disabled && ic.filterConfig.toggleCategory(tag, undefined, true, category.tags)"
 				>
 
 					<div>{{'CATEGORIES.%s' | fill : tag | translate}}</div>
 					<span 
 						ng-if 		= "!disabled"
-						class 		= "bubble shade-light col-1"
+						class 		= "bubble shade-dark col-2"
 					>
 						<span>
-							{{ic.itemStorage.currentStats.subMatches[tag]}}
+							{{ic.itemStorage.currentStats.altMatches[tag]}}
 						</span>
-						<span ng-if = "ic.itemStorage.currentStats.subMatches[tag] != ic.itemStorage.currentStats.totals[tag]">
+						<span ng-if = "ic.itemStorage.currentStats.altMatches[tag] != ic.itemStorage.currentStats.totals[tag]">
 							/
 						</span>
-						<span ng-if = "ic.itemStorage.currentStats.subMatches[tag] != ic.itemStorage.currentStats.totals[tag]">
+						<span ng-if = "ic.itemStorage.currentStats.altMatches[tag] != ic.itemStorage.currentStats.totals[tag]">
 							{{ic.itemStorage.currentStats.totals[tag]}}
 						</span>
 

@@ -3,6 +3,7 @@
 	padding:					1rem;
 }
 
+
 .half-padding{
 	padding: 					0.5rem;
 }
@@ -44,19 +45,23 @@
 	opacity:					0.4;
 	cursor:						auto !important;
 }
+
 .bubble {
-	display:					inline-block;
+	display:					inline-flex;
+	flex-wrap:					nowrap;
 	font-size:					0.8em;
 	box-sizing:					border-box;
 	padding:					0 0.4em;
-	line-height:				1.5em;
-	height:						1.5em;
-	margin:						-0.25em 0.5em;
-	text-align:					center;
 	border-radius:				1em;
 	min-width:					1.75em;
+	align-items:				center;
+	justify-content:			center;
+	line-height:				1.7em;
 }
 
+.bubble > * {
+	display:					block;
+}
 
 .ic-tag {
 	display:					inline-flex;
