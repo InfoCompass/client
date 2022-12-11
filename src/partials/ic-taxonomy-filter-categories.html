@@ -60,7 +60,7 @@
 
 			<div 
 				class = "sub-categories"
-				ng-if = "showSubCategories && ic.filterConfig.categoryActive(category.name)"
+				ng-if = "showSubCategories && ic.filterConfig.categoryActive(category.name) && category.tags && category.tags.length > 0"
 			>
 				<button
 					class		= "icon icon-interface-radio"				
