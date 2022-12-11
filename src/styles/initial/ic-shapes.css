@@ -48,7 +48,7 @@
 
 .bubble {
 	display:					inline-flex;
-	flex-wrap:					nowrap;
+	flex-wrap:					nowrap !important;
 	font-size:					0.8em;
 	box-sizing:					border-box;
 	padding:					0 0.4em;
