@@ -62,6 +62,7 @@
 
 .bubble > * {
 	display:					block;
+	white-space:				nowrap;	
 }
 
 .ic-tag {
