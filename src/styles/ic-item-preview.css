@@ -24,7 +24,7 @@ ic-item-preview.active-item:before {
 	right:					0;
 
 	background-color:		var(--primary-color);
-	opacity:				0.15;
+	opacity:				0.25;
 }
 
 ic-item-preview ic-item-badge {
