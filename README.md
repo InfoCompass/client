@@ -19,6 +19,21 @@ is redirected to index.html (that's an old angularJs thing):
 RewriteRule ^ /index.html
 ```
 
+```nginx
+
+  server {
+    listen 9000;
+    server_name localhost;
+    
+    root /Users/{username}/{path_to_app}/client/dev;
+        index index.html;
+        
+        location / {
+            try_files $uri$args $uri$args/ /index.html;
+        }
+  }
+```
+
 
 You can try all the other themes from https://github.com/orgs/InfoCompass/repositories 
 if you like, they're configured to use their

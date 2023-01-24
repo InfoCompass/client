@@ -615,6 +615,12 @@
 						picker.latitude 	= Number(picker.latitude)
 						picker.longitude 	= Number(picker.longitude)
 
+						if(picker.latitude && picker.longitude) {
+							picker.zoom = icMainMap.defaults.maxZoom
+						} else {
+							picker.zoom = icMainMap.defaults.minZoom
+						}
+
 						if(!icMainMap.mapObject.options.maxBounds.contains([picker.latitude, picker.longitude])){
 							picker = defaultPicker
 						}
@@ -872,7 +878,7 @@
 							pickerPane.style.display = 'block'
 							map.getPane('markerPane').style.display = 'none'							
 							pickerMarker.setLatLng([icMainMap.picker.latitude, icMainMap.picker.longitude])
-							map.setView([icMainMap.picker.latitude, icMainMap.picker.longitude])
+							map.setView([icMainMap.picker.latitude, icMainMap.picker.longitude], icMainMap.picker.zoom)
 
 						}
 					}
