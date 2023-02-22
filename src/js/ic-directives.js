@@ -529,6 +529,13 @@ angular.module('icDirectives', [
 				}
 
 
+				scope.showAllLanguages = false
+
+				scope.toggleLanguageSelect = function(){
+					scope.showAllLanguages = !scope.showAllLanguages
+				}
+
+
 				scope.pickCoordinates = function(){
 
 					icMainMap.pickCoordinates(scope.icEdit)
