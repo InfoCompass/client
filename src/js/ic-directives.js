@@ -2491,6 +2491,70 @@ angular.module('icDirectives', [
 ])
 
 
+.directive('icAutoPopupTrigger',[
+
+	'ic',
+	'icAutoPopupService',
+
+	function(ic, icAutoPopupService){
+		return {
+			restrict:	'A',
+			scope: 		{
+							icPopupId: 		"@",
+							icPopupMessage: "<?"
+						},
+
+			link: function(scope, element, attrs){
+				scope.ic = ic
+
+				if(!scope.icPopupId){
+					console.warn('icAutoPopupTrigger: missing icPopupId')
+					return null
+				}
+				
+				console.log('scope.icPopUpMessage', scope.icPopupMessage)
+
+				icAutoPopupService.open(scope.icPopupId, scope.icPopupMessage)
+			}
+		}
+	}
+])
+
+
+/**
+ * Meant to be triggered on page load. Has a checkbox to be blocked for the 
+ * future page loads.
+ */
+.directive('icAutoPopup', [
+
+	'ic',
+	'icAutoPopupService',
+
+	function(ic, icAutoPopupService){
+		return {
+			restrict:		'AE',
+			transclude:		true,
+			templateUrl:	'partials/ic-auto-popup.html',
+
+			link: function(scope){
+
+				scope.ic = ic
+				scope.block = false
+
+				scope.close = function(){
+					icAutoPopupService.close()
+				}
+
+				scope.$watch('block', block => {
+					icAutoPopupService.toggleCurrent(block)
+				})
+
+			}
+		}
+	}
+])
+
+
 
 
 .directive('icLanguageMenu', [
@@ -2695,6 +2759,8 @@ angular.module('icDirectives', [
 ])
 
 
+
+// legacy:
 .directive('icOneTimePopup',[
 
 	'ic',
@@ -2733,6 +2799,7 @@ angular.module('icDirectives', [
 		}
 	}
 ])
+
 
 
 .directive('icIconClasses', [

@@ -1,0 +1,36 @@
+<p
+	class			= "message" 
+	ng-repeat 		= "message in ic.overlays.messages.autoPopup"
+	ic-transclude	= "message"
+></p>
+
+<div class = "tac" >
+
+	<input
+		ng-hide		= "true" 
+		type 		= "checkbox" 
+		ng-model 	= "block"
+		id 			= "do-not-show-again"
+	>
+	<label 
+		for 		= "do-not-show-again"
+		class 		= "icon iblock left icon-interface-checkbox margin-auto"
+		ng-class 	= "{'checked': block}" 
+		tabindex	= "1" 
+	>
+		{{ 'INTERFACE.DO_NOT_SHOW_AGAIN' | translate }}
+	</label>
+
+</div>
+
+<div class = "buttons">
+	
+	<button 
+		class		= "bg-3 padding"
+		type 		= "button"
+		ng-click 	= "close()"
+		focus-me
+	>
+		{{ 'INTERFACE.CLOSE' | translate }}
+	</button>
+</div>

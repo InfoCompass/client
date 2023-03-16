@@ -229,6 +229,9 @@ button {
 	margin-right:			0.5rem;
 }
 
+.margin-auto {
+	margin:					auto;
+}
 
 .flex-shrink {
 	flex:					0 1 auto;

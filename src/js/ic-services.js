@@ -2765,7 +2765,70 @@ angular.module('icServices', [
  ])
 
 
+.service('icAutoPopupService',[
 
+	'icOverlays',
+
+	function(icOverlays) {
+
+		class IcAutoPopupService {
+
+			currentId 	= undefined
+			blocked		= {}
+
+			constructor(){
+				try{
+					this.blocked = JSON.parse(localStorage.getItem('blockPopups')) || {}
+				} catch(e) { console.log(e) }
+
+			}
+
+			//
+			async open(id, message){
+
+
+				if(this.blocked[id]) throw "autoPopup block: "+id
+
+				const previousPromise = icOverlays.deferred['autoPopup'] || Promise.resolve()
+
+				icOverlays.toggle('autoPopup', false)
+
+				await previousPromise.catch( () => {}) // wait for the promise to be resolved or rejected
+
+				this.currentId = id
+
+				return 	icOverlays.open('autoPopup', message)
+						.finally( () => this.currentId = undefined)
+
+			}
+
+			close(){
+				icOverlays.toggle('autoPopup', false)
+			}
+
+			toggle(id, force){
+
+				this.blocked[id] 	= 	force === undefined
+										?	!this.blocked[id]
+										:	!!force
+
+				localStorage.setItem('blockPopups', JSON.stringify(this.blocked))
+
+			}
+
+			toggleCurrent(force){
+				this.toggle(this.currentId, force)
+			}
+
+
+
+		}	
+
+		return new IcAutoPopupService()
+	}
+	
+
+])
 
 
 .service('icTiles', [
