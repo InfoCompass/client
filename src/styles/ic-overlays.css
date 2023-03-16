@@ -181,11 +181,11 @@ ic-overlays > .center .close {
 	width:					auto !important;
 }
 
-ic-overlays > .center label {
-	display:				flex;
+ic-overlays > .center  label {
+	display:				block;
 }
 
-ic-overlays > .center label + label{
+ic-overlays > .center  label + label{
 	margin-top:				1.5rem;
 }
 
