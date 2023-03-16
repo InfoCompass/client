@@ -6,18 +6,20 @@
 
 <div class = "tac" >
 
-	<input
-		ng-hide		= "true" 
-		type 		= "checkbox" 
-		ng-model 	= "block"
-		id 			= "do-not-show-again"
-	>
 	<label 
+		class		= "margin-auto"
 		for 		= "do-not-show-again"
-		class 		= "icon iblock left icon-interface-checkbox margin-auto"
-		ng-class 	= "{'checked': block}" 
-		tabindex	= "1" 
 	>
+
+		<input
+			class 		= "clear iblock icon left icon-interface-checkbox"
+			type 		= "checkbox" 
+			id 			= "do-not-show-again"
+			ng-model 	= "block"
+			ng-class 	= "{'checked': block}" 
+			class		= "clear"
+		/>
+
 		{{ 'INTERFACE.DO_NOT_SHOW_AGAIN' | translate }}
 	</label>
 

@@ -47,6 +47,25 @@ select:focus {
 	color: 				unset;
 }
 
+label {
+	display:			flex;
+	align-items: 		center;
+}
+
+label > input[type=checkbox]{
+	flex:				0 0 auto;
+	width:				auto;
+	height:				auto;
+	padding:			0;
+}
+
+label > input[type=checkbox].left{
+	margin-right:		0.5em;
+}
+
+label > input[type=checkbox].right{
+	margin-left:		0.5em;
+}
 
 
 select::-moz-focus-inner,
@@ -171,6 +190,10 @@ button {
 */
 
 
+.clear {
+	appearance: 			none;
+	background-color:		transparent;
+}
 
 
 

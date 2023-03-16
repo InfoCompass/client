@@ -182,7 +182,7 @@ ic-overlays > .center .close {
 }
 
 ic-overlays > .center label {
-	display:				block;
+	display:				flex;
 }
 
 ic-overlays > .center label + label{
