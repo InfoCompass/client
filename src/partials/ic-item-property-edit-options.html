@@ -78,8 +78,9 @@
 	</div>
 
 	<input
-		ng-if 		= "icOptionFilterKey"
-		ng-model 	= "filter.str"
+		ng-if 				= "icOptionFilterKey"
+		ng-model 			= "filter.str"
+		ng-model-options	= "{ updateOn: 'default', debounce: 200 }"
 	/>
 
 	<div 

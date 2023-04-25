@@ -62,7 +62,7 @@
 </div>
 
 <article 
-	ng-if = "(icItem|icType).name == 'location' && (ic.itemStorage.data | filter: {location_ref: icItem.id}).length"
+	ng-if = "references.length > 0"
 	class = "item-list"
 >
 	<div class = "bg-0 padding">
@@ -73,7 +73,7 @@
 	</div>
 
 	<a
-		ng-repeat 	= "linked_item in ic.itemStorage.data | filter: {location_ref: icItem.id} | sortByKey : 'state' : 'archived' : false"
+		ng-repeat 	= "linked_item in references | sortByKey : 'state' : 'archived' : false"
 		ng-href 	= "{{ {activeItem: (linked_item.id | icItem) } | icLink }}"
 		class		= "bg-0 block"
 	>		

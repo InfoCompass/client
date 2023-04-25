@@ -295,8 +295,9 @@ angular.module('icDirectives', [
 
 .directive('icItemFullFooter',[
 	'ic',
+	'icItemStorage',
 
-	function(ic){
+	function(ic, icItemStorage){
 		return {
 			restrict:		'AE',
 			templateUrl:	'partials/ic-item-full-footer.html',
@@ -306,6 +307,14 @@ angular.module('icDirectives', [
 
 			link: function(scope, element, attr){
 				scope.ic = ic
+
+				scope.references = []
+
+				scope.$watch('icItem', item => {
+
+					scope.references = ic.itemStorage.data.filter( item2 => item2.location_ref == item.id )
+
+				})
 			}
 		}
 	}
