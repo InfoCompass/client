@@ -308,11 +308,15 @@ angular.module('icDirectives', [
 			link: function(scope, element, attr){
 				scope.ic = ic
 
-				scope.references = []
+				const emptyArray = []
+
+				scope.references = emptyArray
 
 				scope.$watch('icItem', item => {
 
-					scope.references = ic.itemStorage.data.filter( item2 => item2.location_ref == item.id )
+					scope.references = 	item
+										?	ic.itemStorage.data.filter( item2 => item2.location_ref == item.id )
+										:	emptyArray
 
 				})
 			}
@@ -1124,6 +1128,8 @@ angular.module('icDirectives', [
 												str:		'',
 											}
 				
+				scope.filteredOptions	= []							
+
 				if(!scope.icProperty){
 					console.log('icItemPropertyEdit: unknown property.', scope.icKey)
 					return null
@@ -1423,9 +1429,12 @@ angular.module('icDirectives', [
 
 
 
-				scope.filteredOptions = function(){					
+				scope.filterOptions = function(){	
 
-					if(!scope.icOptionFilterKey) return scope.icOptions || []
+					if(!scope.icOptionFilterKey){
+						scope.filteredOptions = scope.icOptions || []						
+						return undefined
+					}
 
 					const regex = 	scope.filter.str
 									.replace(/[,.;?!]/g,' ')
@@ -1449,9 +1458,15 @@ angular.module('icDirectives', [
 
 					filtered_options = filtered_options.filter( (o, index) => filtered_options.indexOf(o) == index )
 
-					return filtered_options
+					scope.filteredOptions = filtered_options
+
+					return undefined
 
 				}
+
+				scope.$watchGroup(['icOptionFilterKey', 'icOptions', 'icOptionsFilterLimit', 'filter.str'], () => scope.filterOptions() )
+
+
 
 				scope.getOptionLabel = function(option){
 					return scope.icOptionLabel({option})

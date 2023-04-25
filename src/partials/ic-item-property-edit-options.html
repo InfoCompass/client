@@ -80,14 +80,14 @@
 	<input
 		ng-if 				= "icOptionFilterKey"
 		ng-model 			= "filter.str"
-		ng-model-options	= "{ updateOn: 'default', debounce: 200 }"
+		ng-model-options	= "{ debounce: 200 }"
 	/>
 
 	<div 
 		class 		= "options"
 	>		
 
-		<div ng-if = "icOptionFilterKey && filteredOptions().length == 0">
+		<div ng-if = "icOptionFilterKey && filteredOptions.length == 0">
 			{{'INTERFACE.PROPERTY_FILTER_EMPTY' | translate}}
 		</div>
 
@@ -111,7 +111,7 @@
 		</button>
 
 		<button 
-			ng-repeat 	= "option in filteredOptions() | preventLoop | orderBy : getOptionSortingPosition"
+			ng-repeat 	= "option in filteredOptions | preventLoop | orderBy : getOptionSortingPosition"
 			ng-click	= "toggleOption(option)"
 			class		= "icon left icon-interface-{{:: icAllowMultipleChoices ? 'checkbox' : 'radio'}} {{(option|in : value.edit) ? 'checked active' : ''}}"
 			ng-class	= "{'leading': option == icLeadingOption}"
