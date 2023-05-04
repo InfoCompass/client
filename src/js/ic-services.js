@@ -2280,12 +2280,14 @@ angular.module('icServices', [
 			if(!x.match(/^[0-9a-zA-Z_-]+$/))	return 	[]	
 			if(!x.match(/[a-zA-Z]/))			return 	[]
 
-			if(icTaxonomy.isUnsortedTag(x))		return	(Object.values(icLanguages.translationTable) || [])
-														.map( table => 		table 
-																		&&	table['UNSORTED_TAGS'] 
-																		&&	table['UNSORTED_TAGS'][x.toUpperCase()]
-														)
-														.filter(x => !!x)
+			const tagKind = icTaxonomy.getTagKind(x)
+
+			if(tagKind)		return	(Object.values(icLanguages.translationTable) || [])
+										.map( table => 		table 
+															&&	table[tagKind.toUpperCase()] 
+															&&	table[tagKind.toUpperCase()][x.toUpperCase()]
+										)
+										.filter(x => !!x)
 
 			return []
 

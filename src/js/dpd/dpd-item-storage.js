@@ -507,6 +507,7 @@
 
 				const matchesString = function(x, regex){
 
+
 					if(typeof x != 'string') return false
 
 					const str = accent_fold( String(x) )
