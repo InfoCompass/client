@@ -294,10 +294,14 @@ angular.module('icDirectives', [
 
 
 .directive('icItemFullFooter',[
-	'ic',
+	'icSite',
 	'icItemStorage',
+	'icItemEdits',
+	'icUser',
+	'ic',
+	'$q',
 
-	function(ic, icItemStorage){
+	function(icSite, icItemStorage, icItemEdits, icUser, ic, $q){
 		return {
 			restrict:		'AE',
 			templateUrl:	'partials/ic-item-full-footer.html',
@@ -319,6 +323,11 @@ angular.module('icDirectives', [
 										:	emptyArray
 
 				})
+
+				scope.editCopy = function(){
+					icSite.activeItem 	= icItemStorage.newItem(icSite.activeItem.id)
+					icSite.editItem		= true
+				}
 			}
 		}
 	}
@@ -367,11 +376,6 @@ angular.module('icDirectives', [
 									}
 								)
 					})
-				}
-
-				scope.editCopy = function(){
-					icSite.activeItem 	= icItemStorage.newItem(icSite.activeItem.id)
-					icSite.editItem		= true
 				}
 
 				scope.cancel = function(){
