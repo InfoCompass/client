@@ -754,7 +754,7 @@
 					pickerMarker.on('dragend ', function(event){
 						icMainMap.picker.latitude 	= event.target._latlng.lat
 						icMainMap.picker.longitude	= event.target._latlng.lng
-						//icMainMap.scope.$digest()
+						scope.$digest()
 					})
 					
 
