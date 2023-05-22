@@ -1852,6 +1852,9 @@ angular.module('icServices', [
 						.includes(tag)
 			}
 
+			icTaxonomy.isSubCategory = function(tag){
+				return icTaxonomy.getSubCategories(tag).includes(tag)
+			}
 
 			icTaxonomy.isUnsortedTag = function(tag){
 				return 	Object.values(icTaxonomy.tags)
@@ -1861,8 +1864,12 @@ angular.module('icServices', [
 
 			icTaxonomy.getTagKind = function(tag){
 				if(icTaxonomy.isType(tag)) 			return 'types'
-				if(icTaxonomy.isCategory(tag)) 		return 'categories'
-				if(icTaxonomy.isUnsortedTag(tag)) 	return 'unsorted_tags'
+				if(
+					icTaxonomy.isCategory(tag)
+					||
+					icTaxonomy.isSubCategory(tag)
+				) 									return 'categories'
+				if(icTaxonomy.isUnsortedTag(tag)) 	return 'unsorted_tags'					
 
 				return undefined	
 			}
