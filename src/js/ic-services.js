@@ -1447,6 +1447,7 @@ angular.module('icServices', [
 
 			icUser.ready.then(function(){
 
+
 				if(icUser.can('edit_items')){
 
 					icItemStorage.ready
@@ -1464,7 +1465,7 @@ angular.module('icServices', [
 					icTaxonomy.addExtraTag('state_public', 			'state')
 					icTaxonomy.addExtraTag('state_draft', 			'state')
 					icTaxonomy.addExtraTag('state_suggestion',		'state')
-					icTaxonomy.addExtraTag('state_archived', 		'state')
+					icTaxonomy.addExtraTag('state_archived', 		'state')					
 
 					if(icItemConfig.properties.map(property => property.name).includes('proposals')){
 						icTaxonomy.addExtraTag('state_has_proposals', 	'state')
@@ -1472,7 +1473,16 @@ angular.module('icServices', [
 
 				}				
 
+				icTaxonomy.addExtraTag('remote')
+
+				icItemStorage.ready
+				.then( () => {	
+					icItemStorage.registerFilter('remote', item => item.remoteItem != undefined)
+				})
+
+
 			})
+
 
 
 			$rootScope.$watch(
