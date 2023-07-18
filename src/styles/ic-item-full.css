@@ -189,6 +189,8 @@ ic-item-full ic-item-full-footer	.buttons {
 	flex-wrap: 					wrap;
 }
 
+ic-item-full [ic-item-full-footer] 	.buttons a,
+ic-item-full ic-item-full-footer	.buttons a,
 ic-item-full [ic-item-full-footer] 	.buttons button,
 ic-item-full ic-item-full-footer	.buttons button {
 	display:					block;
@@ -198,6 +200,8 @@ ic-item-full ic-item-full-footer	.buttons button {
 	margin:						1px;
 }
 
+ic-item-full [ic-item-full-footer] 	.buttons a > *,
+ic-item-full ic-item-full-footer	.buttons a > *,
 ic-item-full [ic-item-full-footer] 	.buttons button > *,
 ic-item-full ic-item-full-footer	.buttons button > * {
 	display:					block;

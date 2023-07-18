@@ -254,6 +254,7 @@ angular.module('icFilters', [
 					'instagram':	'',
 					'pinterest':	'',
 					'youtube':		'',
+					'vimeo':		'',
 					'mobile':		'tel:',
 					'email':		'mailto:',
 					'phone':		'tel:'
@@ -509,6 +510,24 @@ angular.module('icFilters', [
 
 									
 		}
+	}
+])
+
+.filter('allDistrictsTotal',[
+
+	'ic',
+	'icItemStorage',
+
+	function(ic, icItemStorage){
+
+		return function() {
+
+			if(!Array.isArray(ic.taxonomy.lor) || !ic.taxonomy.lor.length) return false
+			
+			return ic.taxonomy.lor.reduce((sum, obj) => sum + ic.itemStorage.currentStats.totals[obj.tag], 0);
+			
+		}
+		
 	}
 ])
 
