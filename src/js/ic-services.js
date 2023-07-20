@@ -2851,104 +2851,116 @@ angular.module('icServices', [
 
 
 .service('icTiles', [
+  '$q',
+  'icConfig',
+  function ($q, icConfig) {
+    var icTiles = [];
+    console.log(icConfig);
 
-	'$q',
-	'icConfig',
+    console.log("*** fetching Tiles ***")
+    async function getTileData() {
+      const useDpdAsTileSource = !icConfig.tilesUrl;
+      const useExternalTileSource = !useDpdAsTileSource;
 
-	function($q, icConfig){
+      if (useDpdAsTileSource) {
+        if (!dpd.tiles) {
+          console.warn('icTiles: missing dpd.tiles');
+          return [];
+        }
+        await dpd.tiles.get();
+      }
 
-		var icTiles 	= 	[]
-		
-		console.log(icConfig)
+      // Needs entry in config.json { ..., tilesUrl : '...', ...}
+      if (useExternalTileSource) {
+          const result = await fetch(icConfig.tilesUrl, {
+            headers: {
+              'Authorization': 'Bearer ' + icConfig.tilesUrlToken
+            }
+          });
+          const response = await result.json();
+
+          console.log("response from fetch")
+          console.log(response)
+
+          const responseArray = Object.values(response);
+
+          const tiles = [];
+          // transform raw data into array of tiles
+
+          function transformJSON(input) {
+            const transformedObject = {
+              label: input.title.rendered,
+              description: input.excerpt.rendered,
+            };
+            return transformedObject;
+          }
+
+          const transformedJSONArray = []; // Define transformedJSONArray here
+
+          responseArray.forEach((tile) => {
+            const transformedJSON = transformJSON(tile);
+            tiles.push(transformedJSON);
+          });
 
 
-		async function getTileData(){
-			
-			const useDpdAsTileSource 	= !icConfig.tilesUrl
-			const useExternalTileSource = !useDpdAsTileSource
+          /* 
+            See pratials/ic-tiles.html
+            Every Tiles(-Data) looks like this:
+            {
+              label: string  // Label/title on the tile, should be a translation string, normal strings work too though
+              description: string  // Subtitle/paragraph on the tile, should be a translation string, normal strings work too though
+              color: string  // As used in css color properties
+              link: string  // avoid absolute urls, to prevent page reloads
+              icon: string  // css icon class name without the 'icon-' prefix, same as filename in raw_icons without extension
+              background: string  // css image class name without the 'image-prefix' same as filename in large without extension
+              stretch: boolean  // truthy/falsey is suffices; whether or not the tile stretches a full row
+              order: number  // Where to put the tile
+              bottom: boolean // truthy/falsey is suffices; whether or not the subtitle is shown on the bottom of the tile instead of the top
+            }
+          */
 
-			if(useDpdAsTileSource){
 
-				if(!dpd.tiles){
-					console.warn('icTiles: missing dpd.tiles')
-					return []
-				}
+          console.log("*** tiles ***")
+          console.log(tiles)
 
-				await dpd.tiles.get()
-			}
+          return tiles;
+      }
+    }
 
-			// Needs entry in config.json { ..., tilesUrl : '...', ...}
-			if(useExternalTileSource){
+    icTiles.setup = async function () {
+      const tile_data = await $q.when(getTileData());
 
-				const result 	= await fetch(icConfig.tilesUrl)
-				const rawData 	= result.json() 
+      if (!tile_data.length) console.warn('icTiles: no tiles defined.');
 
-				const tiles		= rawData
-				// TODO: transform raw data into array of tiles
+      tile_data.forEach((tile) => {
+        const label = tile.label && tile.label.trim();
+        const description = tile.description && tile.description.trim();
+        const color = tile.color && tile.color.trim();
+        const link = tile.link && tile.link.trim();
+        const icon = tile.icon && tile.icon.trim();
+        const background = tile.background && tile.background.trim();
+        const stretch = !!tile.stretch;
+        const order = tile.order;
+        const bottom = !!tile.bottom;
 
-				//...
+        icTiles.push({
+          label,
+          description,
+          color,
+          link,
+          icon,
+          background,
+          stretch,
+          order,
+          bottom,
+        });
+      });
+    };
 
-				/* 
-					See pratials/ic-tiles.html
-					Every Tiles(-Data) looks like this:
-					{
-						label		: string 	// Label/title on the tile, should be a translation string, normal strings work too though
-						description	: string 	// Subtitle/paragraph on the tile, should be a translation string, normal strings work too though
-						color		: string 	// As used in css color properties
-						link		: string 	// avoid absolute urls, to prevent page reloads
-						icon		: string 	// css icon class name without the 'icon-' prefix, same as filename in raw_icons without extension
-						background	: string 	// css image class name without the 'image-prefeix' same as filename in large without extension
-						stretch		: boolean 	// truthy/falsey is suffices; wether or not the tile stretches a full row
-						order		: number 	// Where to put the tile
-						bottom		: boolean	// truthy/falsey is suffices; wether or not the subtile is shown on the bottom of the tile instead of the top
-					}
-				*/
+    icTiles.ready = dpd.tiles ? icTiles.setup() : $q.resolve();
 
-				return tiles
-			}
-		}
-
-		icTiles.setup = async function(){
-
-			const tile_data = await $q.when(getTileData())
-
-			if(!tile_data.length) console.warn('icTiles: no tiles defined.')
-
-			tile_data.forEach( tile =>{
-
-				const label 		=	tile.label 			&& tile.label.trim()
-				const description	=	tile.description	&& tile.description.trim()
-				const color			=	tile.color			&& tile.color.trim()
-				const link			=	tile.link			&& tile.link.trim()
-				const icon			=	tile.icon			&& tile.icon.trim()
-				const background	=	tile.background		&& tile.background.trim()
-				const stretch		=	!!tile.stretch
-				const order			=	tile.order
-				const bottom		=	!!tile.bottom
-
-				icTiles.push({
-					label,
-					description,
-					color,
-					link,
-					icon,
-					background,
-					stretch,
-					order,
-					bottom
-				})
-			})	
-			
-		}
-
-		icTiles.ready = dpd.tiles
-						?	icTiles.setup()
-						:	$q.resolve()
-
-		return 	icTiles
-				
-
-	}
+    return icTiles;
+  }
 ])
 
 
