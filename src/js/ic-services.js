@@ -2859,9 +2859,6 @@ angular.module('icServices', [
 
 		var icTiles 	= 	[]
 		
-		console.log(icConfig)
-
-
 		async function getTileData(){
 			
 			const useDpdAsTileSource 	= !icConfig.tilesUrl
@@ -2874,7 +2871,7 @@ angular.module('icServices', [
 					return []
 				}
 
-				await dpd.tiles.get()
+				return await dpd.tiles.get()
 			}
 
 			// Needs entry in config.json { ..., tilesUrl : '...', ...}
