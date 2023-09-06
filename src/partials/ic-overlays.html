@@ -6,6 +6,7 @@
 >	
 </ic-language-menu>	
 
+
 <ic-main-menu			ng-class = "{'ic-hide': !ic.overlays.show.mainMenu}"		class = "bg-0 left" ic-plain = "true">		</ic-main-menu>
  
 <ic-spinner				ng-class = "{'ic-hide': !ic.overlays.show.spinner}" 		active = "true">							</ic-spinner>
@@ -20,6 +21,7 @@
 >							
 </ic-confirmation-modal>
 
+
 <ic-popup				
 	ng-if 			= "ic.overlays.show.popup" 							
 	class 			= "bg-0 center"
@@ -27,13 +29,16 @@
 >		
 </ic-popup>
 
-<ic-auto-popup				
+
+<!-- <ic-auto-popup				
 	ng-if 			= "ic.overlays.show.autoPopup" 							
 	class 			= "bg-0 center"
 	ic-focus-me 	= "ic.overlays.show.autoPopup"
 >		
 </ic-autp-popup>
 
+
+ -->
 <ic-taxonomy-filter 	
 	ng-class 	= "{'ic-hide': !ic.overlays.show.taxonomyFilter}" 	
 	class 		= "bg-1 left"
