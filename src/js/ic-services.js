@@ -2967,6 +2967,7 @@ angular.module('icServices', [
 				const result 	= await fetch(icConfig.tilesUrl)
 				const rawData 	= await result.json() 
 
+
 				const tiles = rawData.map(item => {
 				        return {
 				            label: item.title.rendered,
@@ -2974,14 +2975,17 @@ angular.module('icServices', [
 				            color: item.acf.color,
 				            link: item.acf.tileLink,
 				            icon: item.acf.imgUrl,
-				            background: item.acf.background,
+				            backgroundUrl: item.acf.background,
+				            background: undefined,
 				            stretch: item.acf.stretch,
 				            order: item.acf.order,
 				            bottom: item.acf.bottom,
 				        };
 				    });
 
-				    return tiles
+				console.log(tiles)
+				
+				return tiles
 			}
 		}
 
@@ -3015,6 +3019,7 @@ angular.module('icServices', [
 				const link			=	tile.link			&& tile.link.trim()
 				const icon			=	tile.icon			&& tile.icon.trim()
 				const background	=	tile.background		&& tile.background.trim()
+				const backgroundUrl	=	tile.backgroundUrl	&& tile.backgroundUrl.trim()
 				const stretch		=	!!tile.stretch
 				const order			=	tile.order
 				const bottom		=	!!tile.bottom
@@ -3026,6 +3031,7 @@ angular.module('icServices', [
 					link,
 					icon,
 					background,
+					backgroundUrl,
 					stretch,
 					order,
 					bottom
