@@ -2983,8 +2983,6 @@ angular.module('icServices', [
 				        };
 				    });
 
-				console.log(tiles)
-				
 				return tiles
 			}
 		}
