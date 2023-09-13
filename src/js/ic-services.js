@@ -2878,32 +2878,41 @@ angular.module('icServices', [
 			if(useExternalTileSource){
 
 				const result 	= await fetch(icConfig.tilesUrl)
-				const rawData 	= result.json() 
+				const rawData 	= await result.json() 
 
-				const tiles		= rawData
-				// TODO: transform raw data into array of tiles
+				const tiles = rawData.map(item => {
+				        return {
+				            label: item.title.rendered,
+				            description: item.acf.description,
+				            color: item.acf.color,
+				            link: item.acf.tileLink,
+				            icon: item.acf.imgUrl,
+				            background: item.acf.background,
+				            stretch: item.acf.stretch,
+				            order: item.acf.order,
+				            bottom: item.acf.bottom,
+				        };
+				    });
 
-				//...
-
-				/* 
-					See pratials/ic-tiles.html
-					Every Tiles(-Data) looks like this:
-					{
-						label		: string 	// Label/title on the tile, should be a translation string, normal strings work too though
-						description	: string 	// Subtitle/paragraph on the tile, should be a translation string, normal strings work too though
-						color		: string 	// As used in css color properties
-						link		: string 	// avoid absolute urls, to prevent page reloads
-						icon		: string 	// css icon class name without the 'icon-' prefix, same as filename in raw_icons without extension
-						background	: string 	// css image class name without the 'image-prefeix' same as filename in large without extension
-						stretch		: boolean 	// truthy/falsey is suffices; wether or not the tile stretches a full row
-						order		: number 	// Where to put the tile
-						bottom		: boolean	// truthy/falsey is suffices; wether or not the subtile is shown on the bottom of the tile instead of the top
-					}
-				*/
-
-				return tiles
+				    return tiles
 			}
 		}
+
+				/* 
+					     See pratials/ic-tiles.html
+					     Every Tiles(-Data) looks like this:
+					     {
+					             label           : string        // Label/title on the tile, should be a translation string, normal strings work too though
+					             description     : string        // Subtitle/paragraph on the tile, should be a translation string, normal strings work too though
+					             color           : string        // As used in css color properties
+					             link            : string        // avoid absolute urls, to prevent page reloads
+					             icon            : string        // css icon class name without the 'icon-' prefix, same as filename in raw_icons without extension
+					             background      : string        // css image class name without the 'image-prefeix' same as filename in large without extension
+					             stretch         : boolean       // truthy/falsey is suffices; wether or not the tile stretches a full row
+					             order           : number        // Where to put the tile
+					             bottom          : boolean       // truthy/falsey is suffices; wether or not the subtile is shown on the bottom of the tile instead of the top
+					     }
+				*/
 
 		icTiles.setup = async function(){
 
