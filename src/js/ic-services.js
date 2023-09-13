@@ -633,8 +633,6 @@ angular.module('icServices', [
 				const response 		= await fetch(url)
 				const remoteData 	= await response.json()  
 
-				console.log(remoteData)
-
 				if(!Array.isArray(remoteData)) throw new Error ('icRemotePages.setup() expected remote data to be an Array')
 
 				const hydratedPages = {}
