@@ -297,10 +297,11 @@ angular.module('icServices', [
 	'plImages',
 	'plStyles',
 	'plTemplates',
+	'icRemotePages',
 	'$timeout',
 	'$rootScope', 
 
-	function($q, ic, icUser, icItemStorage, icLists, icLanguages, icTiles, icOptions, icMainMap, icUtils, icWebfonts, icConsent, plImages, plStyles, plTemplates, $timeout, $rootScope){
+	function($q, ic, icUser, icItemStorage, icLists, icLanguages, icTiles, icOptions, icMainMap, icUtils, icWebfonts, icConsent, plImages, plStyles, plTemplates, icRemotePages, $timeout, $rootScope){
 
 		var icInit 			= 	{},
 			promises 		= 	{
@@ -314,7 +315,8 @@ angular.module('icServices', [
 									icMainMap:			icMainMap.markersReady,
 									plImages:			plImages.ready,
 									plStyles:			plStyles.ready,
-									plTemplates:		plTemplates.ready
+									plTemplates:		plTemplates.ready,
+									icRemotePages:		icRemotePages.ready
 								}
 	
 
@@ -580,6 +582,40 @@ angular.module('icServices', [
 
 	}
 
+])
+
+.service('icRemotePages',[
+
+	'$q',
+	'icLanguages',
+	'icConfig',
+
+	function($q, icLanguages, icConfig){
+
+		this.ready = 	icConfig.remotePages
+						?	this.setup()
+						:	$q.resolve() 
+
+		this.setup() = async function(){
+
+			console.log('icRemotePages', icConfig.remotePages)
+
+			// return 	icLanguages.ready
+			// 		.then(function(){
+			// 			icLanguages.availableLanguages.forEach(function(lang){
+			// 				lang = lang.toUpperCase()
+			// 				if(!icLanguages.translationTable[lang]) return null
+			// 				if(!icLanguages.translationTable[lang]['UNSORTED_TAGS']) return null
+
+			// 				var utl = icLanguages.translationTable[lang]['UNSORTED_TAGS']['LIST'] || 'UNSORTED_TAGS.LIST'
+
+			// 				icLanguages.translationTable[lang]['UNSORTED_TAGS'][('list_'+list.id).toUpperCase()] = utl+' '+list.name
+
+			// 			})
+			// 			icLanguages.refreshTranslations()
+			// 		})
+		}	
+	}
 ])
 
 .service('icLists', [
@@ -3339,9 +3375,10 @@ angular.module('icServices', [
 	'icAutoFill',
 	'icExport',
 	'icGeo',
+	'icRemotePages',
 	'$rootScope',
 
-	function(ic, icInit, icSite, icItemStorage, icLayout, icItemConfig, icTaxonomy, icFilterConfig, icLanguages, icFavourites, icOverlays, icAdmin, icUser, icStats, icConfig, icUtils, icConsent, icTiles, icOptions, icLists, icMainMap, icWebfonts, icItemRef, icKeyboard, icAutoFill, icExport, icGeo, $rootScope ){
+	function(ic, icInit, icSite, icItemStorage, icLayout, icItemConfig, icTaxonomy, icFilterConfig, icLanguages, icFavourites, icOverlays, icAdmin, icUser, icStats, icConfig, icUtils, icConsent, icTiles, icOptions, icLists, icMainMap, icWebfonts, icItemRef, icKeyboard, icAutoFill, icExport, icGeo, icRemotePages, $rootScope ){
 
 		ic.admin		= icAdmin
 		ic.autoFill		= icAutoFill
@@ -3369,6 +3406,7 @@ angular.module('icServices', [
 		ic.webfonts		= icWebfonts
 		ic.export		= icExport
 		ic.geo			= icGeo
+		icRemotePages	= icRemotePages
 
 		var stop 		= 	$rootScope.$watch(function(){
 								if(icInit.ready){
