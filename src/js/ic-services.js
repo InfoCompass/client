@@ -294,14 +294,14 @@ angular.module('icServices', [
 	'icUtils',
 	'icWebfonts',
 	'icConsent',
+	'icRemotePages',
 	'plImages',
 	'plStyles',
 	'plTemplates',
-	'icRemotePages',
 	'$timeout',
 	'$rootScope', 
 
-	function($q, ic, icUser, icItemStorage, icLists, icLanguages, icTiles, icOptions, icMainMap, icUtils, icWebfonts, icConsent, plImages, plStyles, plTemplates, icRemotePages, $timeout, $rootScope){
+	function($q, ic, icUser, icItemStorage, icLists, icLanguages, icTiles, icOptions, icMainMap, icUtils, icWebfonts, icConsent, icRemotePages, plImages, plStyles, plTemplates, $timeout, $rootScope){
 
 		var icInit 			= 	{},
 			promises 		= 	{
@@ -313,10 +313,10 @@ angular.module('icServices', [
 									icLists:			icLists.ready,
 									icWebfonts:			icWebfonts.ready,
 									icMainMap:			icMainMap.markersReady,
+									icRemotePages:		icRemotePages.ready,
 									plImages:			plImages.ready,
 									plStyles:			plStyles.ready,
 									plTemplates:		plTemplates.ready,
-									icRemotePages:		icRemotePages.ready
 								}
 	
 
@@ -592,29 +592,82 @@ angular.module('icServices', [
 
 	function($q, icLanguages, icConfig){
 
-		this.ready = 	icConfig.remotePages
-						?	this.setup()
-						:	$q.resolve() 
+		class IcRemotePages {
 
-		this.setup() = async function(){
+			ready
 
-			console.log('icRemotePages', icConfig.remotePages)
+			constructor(){
+				this.ready	= 	icConfig.remotePages
+								?	$q.resolve(
+										this.setup()
+										.catch(e =>  console.warn(e) )
+									)
+								:	$q.resolve() 
 
-			// return 	icLanguages.ready
-			// 		.then(function(){
-			// 			icLanguages.availableLanguages.forEach(function(lang){
-			// 				lang = lang.toUpperCase()
-			// 				if(!icLanguages.translationTable[lang]) return null
-			// 				if(!icLanguages.translationTable[lang]['UNSORTED_TAGS']) return null
+			}
 
-			// 				var utl = icLanguages.translationTable[lang]['UNSORTED_TAGS']['LIST'] || 'UNSORTED_TAGS.LIST'
+			deflate(obj, path){
+				if(!path) 		return obj
+				if(!obj)		return undefined
 
-			// 				icLanguages.translationTable[lang]['UNSORTED_TAGS'][('list_'+list.id).toUpperCase()] = utl+' '+list.name
+				const [first, ...rest] = path.split('.')
 
-			// 			})
-			// 			icLanguages.refreshTranslations()
-			// 		})
-		}	
+				return this.deflate(obj[first], rest.join('.'))	
+
+			}
+
+			async setup(){
+
+				await icLanguages.ready
+
+				const config = icConfig.remotePages
+
+				if(typeof config.url !== 'string') throw new Error('icRemotePages.setup() icConfig.remotePages.url must be a string')
+
+				if(!config.pages) throw new Error('icRemotePages.setup() icConfig.remotePages.pages must be an dictionary')
+
+				if(!config.map) throw new Error('icRemotePages.setup() icConfig.remotePages.map must be an dictionary')
+
+				const {url, pages, map} = config
+
+				const response 		= await fetch(url)
+				const remoteData 	= await response.json()  
+
+				console.log(remoteData)
+
+				if(!Array.isArray(remoteData)) throw new Error ('icRemotePages.setup() expected remote data to be an Array')
+
+				const hydratedPages = {}
+
+				Object.entries(config.pages).forEach( ([page, id]) => {
+					const idPath			= map.id
+					const remotePage		= remoteData.find( entry => this.deflate(entry, idPath) === id)
+					
+					const contentPath 		= map.content
+					const content			= this.deflate(remotePage, contentPath)
+
+					hydratedPages[page] = content
+				})
+
+				await icLanguages.ready
+
+				Object.entries(hydratedPages).forEach( ([page, content]) => {
+
+						icLanguages.availableLanguages.forEach(function(lang){
+							lang = lang.toUpperCase()
+							if(!icLanguages.translationTable[lang]) return null
+							icLanguages.translationTable[lang]['CONTENT'] = icLanguages.translationTable[lang]['CONTENT'] || {}
+							icLanguages.translationTable[lang]['CONTENT'][page.toUpperCase()] = content
+						})
+				})
+
+				icLanguages.refreshTranslations()
+			}
+
+		}
+
+		return new IcRemotePages()
+
 	}
 ])
 
@@ -3406,7 +3459,7 @@ angular.module('icServices', [
 		ic.webfonts		= icWebfonts
 		ic.export		= icExport
 		ic.geo			= icGeo
-		icRemotePages	= icRemotePages
+		ic.remotePages	= icRemotePages
 
 		var stop 		= 	$rootScope.$watch(function(){
 								if(icInit.ready){
