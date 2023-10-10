@@ -3039,8 +3039,8 @@ angular.module('icServices', [
 				            description,
 				            color: item.color,
 				            link: item.tileLink,
-				            icon: item.imgUrl.replace("http://mittendrin.in.www343.your-server.de", "https://dev.mittendrin.in"), //TODO: remove replacement
-				            backgroundUrl: item.background.replace("http://mittendrin.in.www343.your-server.de", "https://dev.mittendrin.in"),  //TODO: remove replacement
+				            icon: item.icon,
+				            backgroundUrl: item.background,
 				            background: undefined,
 				            stretch: item.stretch,
 				            order: item.order,
