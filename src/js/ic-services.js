@@ -628,34 +628,59 @@ angular.module('icServices', [
 
 				if(!config.map) throw new Error('icRemotePages.setup() icConfig.remotePages.map must be an dictionary')
 
-				const {url, pages, map} = config
+				const {url, pages} = config
+
+				const defaultMap	=	{
+											id: 			'id',
+											translations: 	'translations'
+										}
+
+				const map 			= config.map || defaultMap
+
 
 				const response 		= await fetch(url)
 				const remoteData 	= await response.json()  
 
 				if(!Array.isArray(remoteData)) throw new Error ('icRemotePages.setup() expected remote data to be an Array')
 
-				const hydratedPages = {}
+				const pageTranslations = {}
 
 				Object.entries(config.pages).forEach( ([page, id]) => {
 					const idPath			= map.id
 					const remotePage		= remoteData.find( entry => this.deflate(entry, idPath) === id)
 					
-					const contentPath 		= map.content
-					const content			= this.deflate(remotePage, contentPath)
+					const translationsPath	= map.translations
+					const translations		= this.deflate(remotePage, translationsPath)
 
-					hydratedPages[page] = content
+					pageTranslations[page] 	= translations
 				})
 
 				await icLanguages.ready
 
-				Object.entries(hydratedPages).forEach( ([page, content]) => {
+				Object.entries(pageTranslations).forEach( ([page, translations]) => {
 
 						icLanguages.availableLanguages.forEach(function(lang){
+
+							if(!translations[lang]) return null
+
+
+							const body		= translations[lang].content
+							const title		= translations[lang].title
+
+							const content	= `<h1>${title}</h1>\n\n${body}`
+
 							lang = lang.toUpperCase()
+
 							if(!icLanguages.translationTable[lang]) return null
+
+							// updating actual page content
 							icLanguages.translationTable[lang]['CONTENT'] = icLanguages.translationTable[lang]['CONTENT'] || {}
 							icLanguages.translationTable[lang]['CONTENT'][page.toUpperCase()] = content
+
+							// updating title translations for the menu
+							icLanguages.translationTable[lang]['INTERFACE'] = icLanguages.translationTable[lang]['INTERFACE'] || {}
+							icLanguages.translationTable[lang]['INTERFACE'][page.toUpperCase()] = title
+
 						})
 				})
 
@@ -2941,10 +2966,46 @@ angular.module('icServices', [
 
 	'$q',
 	'icConfig',
+	'icLanguages',
 
-	function($q, icConfig){
+	function($q, icConfig, icLanguages){
 
 		var icTiles 	= 	[]
+
+
+		function addTileTranslation(id, translations){
+			
+			const translationStringPrefix 		= "TILES".toUpperCase()
+			const translationStringSuffix 		= `TILE-${id}`.toUpperCase()
+			const translationKeyTitle			= `HEADER_${translationStringSuffix}`.toUpperCase()
+			const translationKeyDescription		= `CONTENT_${translationStringSuffix}`.toUpperCase()
+			const translationStringTitle		= `${translationStringPrefix}.${translationKeyTitle}`.toUpperCase()
+			const translationStringDescription	= `${translationStringPrefix}.${translationKeyDescription}`.toUpperCase()
+
+
+			icLanguages.availableLanguages.forEach(function(lang){
+
+				if(!translations[lang]) return null
+
+				const title			= translations[lang].title || ''
+				const description	= translations[lang].description || ''
+
+				lang = lang.toUpperCase()
+
+				if(!icLanguages.translationTable[lang]) return null
+
+				
+				icLanguages.translationTable[lang][translationStringPrefix] 							= icLanguages.translationTable[lang][translationStringPrefix] || {}
+				icLanguages.translationTable[lang][translationStringPrefix][translationKeyTitle]	 	= title
+
+				icLanguages.translationTable[lang][translationStringPrefix] 							= icLanguages.translationTable[lang][translationStringPrefix] || {}
+				icLanguages.translationTable[lang][translationStringPrefix][translationKeyDescription] 	= description				
+
+			})	
+
+			return [translationStringTitle, translationStringDescription]
+		}
+
 		
 		async function getTileData(){
 			
@@ -2967,41 +3028,49 @@ angular.module('icServices', [
 				const result 	= await fetch(icConfig.tilesUrl)
 				const rawData 	= await result.json() 
 
+				await icLanguages.ready
 
 				const tiles = rawData.map(item => {
+					
+						const [label, description] = addTileTranslation(item.id, item.translations)
+
 				        return {
-				            label: item.title.rendered,
-				            description: item.acf.description,
-				            color: item.acf.color,
-				            link: item.acf.tileLink,
-				            icon: item.acf.imgUrl,
-				            backgroundUrl: item.acf.background,
+				            label,
+				            description,
+				            color: item.color,
+				            link: item.tileLink,
+				            icon: item.imgUrl.replace("http://mittendrin.in.www343.your-server.de", "https://dev.mittendrin.in"), //TODO: remove replacement
+				            backgroundUrl: item.background.replace("http://mittendrin.in.www343.your-server.de", "https://dev.mittendrin.in"),  //TODO: remove replacement
 				            background: undefined,
-				            stretch: item.acf.stretch,
-				            order: item.acf.order,
-				            bottom: item.acf.bottom,
+				            stretch: item.stretch,
+				            order: item.order,
+				            bottom: item.bottom,
 				        };
 				    });
+
+
+				icLanguages.refreshTranslations()
 
 				return tiles
 			}
 		}
 
-				/* 
-					     See pratials/ic-tiles.html
-					     Every Tiles(-Data) looks like this:
-					     {
-					             label           : string        // Label/title on the tile, should be a translation string, normal strings work too though
-					             description     : string        // Subtitle/paragraph on the tile, should be a translation string, normal strings work too though
-					             color           : string        // As used in css color properties
-					             link            : string        // avoid absolute urls, to prevent page reloads
-					             icon            : string        // css icon class name without the 'icon-' prefix, same as filename in raw_icons without extension
-					             background      : string        // css image class name without the 'image-prefeix' same as filename in large without extension
-					             stretch         : boolean       // truthy/falsey is suffices; wether or not the tile stretches a full row
-					             order           : number        // Where to put the tile
-					             bottom          : boolean       // truthy/falsey is suffices; wether or not the subtile is shown on the bottom of the tile instead of the top
-					     }
-				*/
+
+			/* 
+				     See pratials/ic-tiles.html
+				     Every Tiles(-Data) looks like this:
+				     {
+				             label           : string        // Label/title on the tile, should be a translation string, normal strings work too though
+				             description     : string        // Subtitle/paragraph on the tile, should be a translation string, normal strings work too though
+				             color           : string        // As used in css color properties
+				             link            : string        // avoid absolute urls, to prevent page reloads
+				             icon            : string        // css icon class name without the 'icon-' prefix, same as filename in raw_icons without extension
+				             background      : string        // css image class name without the 'image-prefeix' same as filename in large without extension
+				             stretch         : boolean       // truthy/falsey is suffices; wether or not the tile stretches a full row
+				             order           : number        // Where to put the tile
+				             bottom          : boolean       // truthy/falsey is suffices; wether or not the subtile is shown on the bottom of the tile instead of the top
+				     }
+			*/
 
 		icTiles.setup = async function(){
 
