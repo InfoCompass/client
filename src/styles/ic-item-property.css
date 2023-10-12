@@ -23,6 +23,7 @@ ic-item-property.short .title {
 
 ic-item-property.short .title::after {
 	content:				':';
+	margin-left: 		-3px;
 }
 
 ic-item-property .content {
