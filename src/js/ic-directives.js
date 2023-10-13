@@ -553,6 +553,12 @@ angular.module('icDirectives', [
 				}
 
 
+				scope.showCoordinates = function(){
+
+					icOverlays.open('showCoordinates')
+
+				}
+
 				scope.pickCoordinates = function(){
 
 					icMainMap.pickCoordinates(scope.icEdit)
@@ -2736,6 +2742,29 @@ angular.module('icDirectives', [
 			templateUrl:	'partials/ic-tiles.html',
 
 			link: function(scope, element){
+
+			}
+		}
+	}
+])
+
+.directive('icShowCoordinates', [
+
+	'icOverlays',
+
+	function(icOverlays){
+		return {
+			restrict:		'AE',
+			transclude:		true,
+			templateUrl:	'partials/ic-show-coordinates.html',
+
+			link: function(scope){
+
+				scope.icOverlays = icOverlays
+
+				scope.okay = function(){
+					icOverlays.toggle('showCoordinates')
+				}
 
 			}
 		}
