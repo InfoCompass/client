@@ -552,6 +552,12 @@ angular.module('icDirectives', [
 					scope.showAllLanguages = !scope.showAllLanguages
 				}
 
+				scope.showLatLonInput = false
+
+				scope.toggleLatLonInput = function(){
+					scope.showLatLonInput = !scope.showLatLonInput
+				}
+
 
 				scope.pickCoordinates = function(){
 
