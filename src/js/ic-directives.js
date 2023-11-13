@@ -1167,12 +1167,6 @@ angular.module('icDirectives', [
 							:	matching_options[0]
 				}
 
-				if (angular.isDefined(scope.icDefaultValue)) {
-								scope.icValue = scope.icDefaultValue;
-				    } else {
-				        scope.icValue = scope.value.edit;
-				    }
-
 
 				function updateDateData(){
 					if(!scope.value.edit || typeof scope.value.edit != 'string'){
@@ -1276,6 +1270,11 @@ angular.module('icDirectives', [
 						
 
 						scope.value.edit = 	scope.getValueFromItem(scope.icEdit)
+
+
+						if (angular.isDefined(scope.icDefaultValue) && scope.icItem.internal.new) {
+							scope.value.edit = scope.icDefaultValue
+						}
 
 					},
 					true
