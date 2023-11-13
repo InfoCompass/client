@@ -1101,7 +1101,8 @@ angular.module('icDirectives', [
 								icSkipTime:				"<?",
 								icActivate:				"@",
 								icToggleOn:				"@",
-								icToggleOff:			"@"
+								icToggleOff:			"@",
+								icDefaultValue:				"@",
 							},
 
 			templateUrl: 	function(tElement, tAttrs){
@@ -1165,6 +1166,12 @@ angular.module('icDirectives', [
 							?	matching_options
 							:	matching_options[0]
 				}
+
+				if (angular.isDefined(scope.icDefaultValue)) {
+								scope.icValue = scope.icDefaultValue;
+				    } else {
+				        scope.icValue = scope.value.edit;
+				    }
 
 
 				function updateDateData(){
