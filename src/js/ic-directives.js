@@ -1101,7 +1101,8 @@ angular.module('icDirectives', [
 								icSkipTime:				"<?",
 								icActivate:				"@",
 								icToggleOn:				"@",
-								icToggleOff:			"@"
+								icToggleOff:			"@",
+								icDefaultValue:				"@",
 							},
 
 			templateUrl: 	function(tElement, tAttrs){
@@ -1269,6 +1270,11 @@ angular.module('icDirectives', [
 						
 
 						scope.value.edit = 	scope.getValueFromItem(scope.icEdit)
+
+
+						if (angular.isDefined(scope.icDefaultValue) && scope.icItem.internal.new) {
+							scope.value.edit = scope.icDefaultValue
+						}
 
 					},
 					true
