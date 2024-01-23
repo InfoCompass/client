@@ -319,8 +319,8 @@ ic-page > a,
 ic-page p a,
 ic-page ul a {
 	color:						var(--primary-color);
-	padding-left: 				0.5rem;
-	padding-right: 				0.5rem;
+/*	padding-left: 				0.5rem;*/
+/*	padding-right: 				0.5rem;*/
 	text-decoration: 			underline;
 }
 
