@@ -5,7 +5,8 @@
 <a 
 	ng-repeat 	= "language in ic.languages.availableLanguages"	
 	ng-href		= "{{ {currentLanguage: language} | icLink  }}"
-	ng-class 	= "{'bg-3': ic.site.currentLanguage == language}"		
+	ng-class 	= "{'bg-3': ic.site.currentLanguage == language}"
+	ng-click	= "ic.overlays.show.languageMenu = false"		
 	ic-touch-me		
 >
 	<span class = "native">{{"LANGUAGES.%s" | fill : language | translate : null : null : language}}</span>
