@@ -51,9 +51,9 @@
 
 		<span>
 			<span 
-				class 		="icon large icon-interface-favourites active"
-				ng-class	= "{'icon-interface-favourites_remove': ic.favourites.contains(icItem), 'icon-interface-favourites': !ic.favourites.contains(icItem)}"
-			>
+        class     ="icon large icon-interface-favourites_add active"
+        ng-class  = "{'icon-interface-favourites_remove': ic.favourites.contains(icItem), 'icon-interface-favourites_add': !ic.favourites.contains(icItem)}"
+      >
 			</span>
 			{{'INTERFACE.FAVOURITE_%s' | fill : ic.favourites.contains(icItem) ? 'remove': 'add' | translate}}
 		</span>

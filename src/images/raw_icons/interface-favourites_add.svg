@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="48px" height="48px" viewBox="0 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>nav-icons/favorites_add_b copy 2</title>
+    <g id="nav-icons/favorites_add_b-copy-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <path d="M34,38 L14,38 L14,28 L14,12 L16,12 L16,16 L32,16 L32,12 L34,12 L34,30 L34,38 Z M18,12 L22,12 L22,10 C22,8.898 22.898,8 24,8 C25.102,8 26,8.898 26,10 L26,12 L30,12 L30,14 L18,14 L18,12 Z M28,10 C28,7.79 26.21,6 24,6 C21.79,6 20,7.79 20,10 L12,10 L12,40 L36,40 L36,10 L28,10 Z" id="Fill-3" fill="#000000"></path>
+        <rect id="Rectangle" fill="#000000" x="23" y="21" width="2" height="10"></rect>
+        <rect id="Rectangle" fill="#000000" transform="translate(24, 26) rotate(-90) translate(-24, -26)" x="23" y="21" width="2" height="10"></rect>
+    </g>
+</svg>
