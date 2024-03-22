@@ -4,6 +4,11 @@
 	</ic-spinner>	
 </header>
  -->
+
+<p ng-if="ic.itemStorage.filteredList.length === 0">
+    {{'INTERFACE.SEARCH_NOTE' | translate}}
+</p>
+
 <div
 	ic-scroll-repeat-limit 				= "ic.itemStorage.filteredList.length"
 	ic-scroll-repeat-limit-as 			= "displayLimit"
