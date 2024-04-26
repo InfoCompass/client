@@ -2046,6 +2046,8 @@ angular.module('icServices', [
 	'icItemConfig',
 
 	function($rootScope, icSite, icItemStorage, icTaxonomy, icLanguages, icItemConfig){
+		icSite.sortDirectionAlpha = 1;
+		icSite.sortDirection = -1;
 		var icFilterConfig = this
 
 		icSite
@@ -2170,6 +2172,24 @@ angular.module('icServices', [
 								var matches = path.match(/(^|\/)(asc|desc)/)
 
 								return matches && matches[2] && (matches[2] == 'asc' ? 1 : -1)
+							},
+			options:		[1, -1],
+			defaultValue:	-1
+		})
+
+		.registerParameter({
+			name:			'sortDirectionAlpha',
+			encode:			function(value, ic){
+								if(value != -1 && value != 1) return ''
+
+								return (value == -1 ?  'desc' : 'asc')
+							},
+			decode:			function(path, ic){
+								var matches = path.match(/(^|\/)(asc|desc)/);
+								var matchOrder = path.match(/(^|\/)(last_change)/);
+								if(!matchOrder || matchOrder[2] != "last_change" && matches){
+									return matches && matches[2] && (matches[2] == 'asc' ? 1 : -1)
+								}
 							},
 			options:		[1, -1],
 			defaultValue:	1
@@ -2311,13 +2331,20 @@ angular.module('icServices', [
 			icSite.sortOrder == sortCriterium
 			?	keep_direction || icFilterConfig.toggleSortDirection()
 			:	icSite.sortOrder = sortCriterium
-			
+
+			icSite.sortDirectionAlpha = 1;
+			icSite.sortDirection = -1;
 
 			return icFilterConfig
 		}
 
 		icFilterConfig.toggleSortDirection = function(dir){
-			icSite.sortDirection = dir || (icSite.sortDirection *-1)
+			icSite.sortDirection = dir || (icSite.sortDirection *-1);
+			return icFilterConfig
+		}
+
+		icFilterConfig.toggleSortDirectionAlpha = function(dir){
+			icSite.sortDirectionAlpha = (icSite.sortDirectionAlpha * -1);
 			return icFilterConfig
 		}
 
@@ -2456,14 +2483,21 @@ angular.module('icServices', [
 			function(){
 				return 	[
 							icSite.sortOrder,
-							icSite.sortDirection
+							icSite.sortDirection,
+							icSite.sortDirectionAlpha
 						]
 			},
 
 			function(){
 				icItemStorage.ready
 				.then(function(){
-					if(icSite.sortOrder)  icItemStorage.sortFilteredList(icSite.sortOrder, icSite.sortDirection)
+					let order = icSite.sortOrder.split('_')[0];
+					if(order == "alphabetical"){
+						icItemStorage.sortFilteredList(icSite.sortOrder, icSite.sortDirectionAlpha)
+					} else{
+						icItemStorage.sortFilteredList(icSite.sortOrder, icSite.sortDirection)
+					}
+
 				})
 			}
 		)

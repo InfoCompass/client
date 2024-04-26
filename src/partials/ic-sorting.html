@@ -11,7 +11,7 @@
 
 		<span 
 		>
-			{{'INTERFACE.SORT_ALPHABETICALLY_%s'| fill : (ic.site.sortDirection == 1 ? 'ASC' : 'DESC') | translate}}
+			{{'INTERFACE.SORT_ALPHABETICALLY_%s'| fill : (ic.site.sortDirectionAlpha == 1 ? 'ASC' : 'DESC') | translate}}
 		</span>
 	</button>
 
@@ -34,11 +34,20 @@
 
 <div>
 	<button	
+		ng-if = "ic.site.sortOrder != 'last_change'"
+		class		= "padding icon large icon-interface-sortorder active round {{ic.site.sortDirectionAlpha == 1 ? 'asc' : 'desc'}}"
+		ng-click 	= "ic.filterConfig.toggleSortDirectionAlpha()"
+		title		= "{{'INTERFACE.REVERSE_SORTING_ORDER' | translate}}"
+		ic-touch-me
+	>
+	</button>
+	<button
+		ng-if = "ic.site.sortOrder == 'last_change'"
 		class		= "padding icon large icon-interface-sortorder active round {{ic.site.sortDirection == 1 ? 'asc' : 'desc'}}" 
 		ng-click 	= "ic.filterConfig.toggleSortDirection()"
 		title		= "{{'INTERFACE.REVERSE_SORTING_ORDER' | translate}}"
 		ic-touch-me
 	>		
-	</button>	
+	</button>
 </div>
 
