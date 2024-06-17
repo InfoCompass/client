@@ -15,7 +15,13 @@
 				ng-repeat 	= "option in icOptions | section : value.current"
 			>
 				{{icOptionLabel 		&& icOptionLabel({option:option})+ ($last ? '' : ', ') }}
-				{{icOptionFilterKey 	&& icOptionFilterKey({option:option})+ ($last ? '' : ', ') }}
+				
+				<span
+					ng-if		= "!icOptionFilterKey || !icOptionLabel || icOptionLabel({option}) !== icOptionFilterKey({option})"
+				>
+					{{icOptionFilterKey 	&& icOptionFilterKey({option:option})+ ($last ? '' : ', ') }}	
+				</span>
+				
 			</span>
 
 			<span ng-if = "!value.current.length">

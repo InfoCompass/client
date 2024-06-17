@@ -1462,7 +1462,7 @@ angular.module('icDirectives', [
 													})	
 												:	[]
 
-					filtered_options = filtered_options.slice(0,scope.icOptionsFilterLimit)							
+					filtered_options = filtered_options.slice(0,scope.icOptionsFilterLimit)			
 
 					if(scope.icAllowMultipleChoices){
 						filtered_options.unshift(... scope.value.edit || [])
@@ -1480,7 +1480,7 @@ angular.module('icDirectives', [
 
 				}
 
-				scope.$watchGroup(['icOptionFilterKey', 'icOptions', 'icOptionsFilterLimit', 'filter.str'], () => scope.filterOptions() )
+				scope.$watchGroup(['icOptionFilterKey', 'icOptions', 'icOptionsFilterLimit', 'filter.str', 'value.edit', 'value.current'], () => scope.filterOptions() )
 
 
 
