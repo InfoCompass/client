@@ -513,12 +513,16 @@ angular.module('icServices', [
 			constructor(){}
 
 			get confirmationRequired(){
-				return this.cases.some( consent_case => !this.to(consent_case.key).isKnown) 
+				return this.confirmationCheckRequired()
 			}
 
-			add(key, server, default_value){
+			confirmationCheckRequired(cases = this.cases){
+				return cases.some( consent_case => !this.to(consent_case.key).isKnown) 
+			}
 
-				this.cases.push({key, server, default: default_value})
+			add(key, server, default_value, custom_prompt = false){
+
+				this.cases.push({key, server, default: default_value, customPrompt: !!custom_prompt})
 
 				return new Consent(key)
 

@@ -1,9 +1,19 @@
-<div class ="bg-0 half-padding rounded">
-	<span> {{'INTERFACE.MAP_CONSENT_REMINDER' | translate}}:</span> 				
-	<button 
-		ng-click 	= "ic.consent.clear()"
-		class		= "active half-padding"
-	>
-		{{'INTERFACE.REVOKE_AND_RELOAD' | translate}}
-	</button>
-</div>
+<h2>{{'INTERFACE.MAP_CONSENT_HEADING' | translate}}</h2>
+
+<p>	
+	{{'CONTENT.CONSENT_%s_DESCRIPTION' | fill : consentCase.key | translate }}
+</p>
+
+<p 
+	ng-if = "consentCase.server" 
+	class = "tac"
+>
+	({{consentCase.server}})
+</p>
+
+<button 
+	ng-click 	= "consent()"
+	class		= "bg-3 half-padding"
+>
+	{{'INTERFACE.MAP_CONSENT_AND_SHOW' | translate}}
+</button>

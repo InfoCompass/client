@@ -282,39 +282,29 @@
 		}
 	])
 
-	.service('icMapConsentReminder', [
-
-		'$compile',
-
-		function($compile){
-
-			if(!window.L){ console.error('icMapConsentReminder: missing Leaflet!'); return null}
-
-			var element = undefined
-
-
-			L.Control.icMapConsentReminder = L.Control.extend({
-				onAdd: function(map) {
-					return element && element[0]
-				},
-
-				onRemove: function(map) {
-				}
-			})
-
-			this.setScope = function(scope){
-				element = 	$compile('<ic-map-consent-reminder></ic-map-consent-reminder>')(scope)
-			}
-		}
-	])
 
 	.directive('icMapConsentReminder',[
-		function(){
+
+		'icMainMap',
+		'icConsent',
+
+		function(icMainMap, icConsent){
 			return {
 				restrict : 		'E',
 				templateUrl: 	'partials/ic-map-consent-reminder.html',
 
-				link: function(scope){}
+				link: function(scope){
+
+					scope.consent = function(){
+						icConsent.set('map_tiles', true)
+						console.log('ÄÄÄÄ', icConsent.to('map_tiles').isGiven)
+					}
+
+
+					scope.consentKey 	= icMainMap.consent.key
+					scope.consentCase 	= icConsent.cases.find( consent_case => consent_case.key == scope.consentKey)
+
+				}
 			}
 		}
 	])
@@ -547,7 +537,7 @@
 					
 
 					if(icMainMap.defaults.consent){
-						icMainMap.consent 		=	icConsent.add('map_tiles', icMainMap.defaults.consent.server, icMainMap.defaults.consent.default)
+						icMainMap.consent 		=	icConsent.add('map_tiles', icMainMap.defaults.consent.server, icMainMap.defaults.consent.default, icMainMap.defaults.consent.customPrompt)
 					}
 
 
@@ -678,13 +668,12 @@
 		'icMainMap',
 		'icMapItemMarker',
 		'icMapClusterMarker',
-		'icMapConsentReminder',
 		'icMapExpandControl',
 		'icMapSpinnerControl',
 		'icMapCoordinatePickerControl',
 		'icMapMarkerDigestQueue',
 
-		function($rootScope, $timeout, $q, icSite, icItemStorage, icItemRef, icConsent, icUtils, icMainMap, icMapItemMarker, icMapClusterMarker, icMapConsentReminder, icMapExpandControl, icMapSpinnerControl, icMapCoordinatePickerControl, icMapMarkerDigestQueue){
+		function($rootScope, $timeout, $q, icSite, icItemStorage, icItemRef, icConsent, icUtils, icMainMap, icMapItemMarker, icMapClusterMarker, icMapExpandControl, icMapSpinnerControl, icMapCoordinatePickerControl, icMapMarkerDigestQueue){
 			return {
 				restrict: 'AE',
 
@@ -740,7 +729,6 @@
 					icMainMap.setMapObject(map)
 					
 					icMapCoordinatePickerControl.setScope(scope)
-					icMapConsentReminder.setScope(scope)
 					icMapExpandControl.setScope(scope)
 					icMapSpinnerControl.setScope(scope)
 
@@ -748,8 +736,6 @@
 					new L.Control.Zoom(					{ position: 'topright' 		}).addTo(map)
 					new L.Control.IcMapExpand(			{ position: 'topleft'		}).addTo(map)
 					new L.Control.icMapSpinnerControl(	{ position:	'bottomleft'	}).addTo(map)
-
-					let reminderControl = new L.Control.icMapConsentReminder(	{ position: 'bottomcenter'	}).addTo(map)
 
 					pickerMarker.on('dragend ', function(event){
 						icMainMap.picker.latitude 	= event.target._latlng.lat
@@ -781,8 +767,6 @@
 										attribution: '&copy; <a href ="https://www.mapbox.com/about/maps/">Mapbox</a> &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 									}
 								).addTo(map)											
-
-								reminderControl.remove()
 
 							},
 

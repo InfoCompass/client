@@ -3,6 +3,12 @@
 
 ic-map {
 	display:				block;
+	transition:				filter 500ms;
+}
+
+ic-map-consent-reminder + ic-map {
+	filter:					blur(1rem) saturate(0.5) contrast(0.25) brightness(1.5);
+	transistion:			none;
 }
 
 
@@ -221,18 +227,26 @@ ic-map-expand-control button:active {
 }
 
 
-ic-map ic-map-consent-reminder > * {
-	display: 				flex;	
-	flex-wrap: 				wrap;
-	align-items: 			center;
+ic-map-consent-reminder {
+	position: 				absolute;
+	display:				flex;
+	top:					0;
+	left:					0;
+	right:					0;
+	bottom:					0;
+	background:				rgba(200,200,200,0.5);
+	z-index:				9999;	
+	align-items:			center;
 	justify-content:		center;
-	font-size: 				1rem;
-	margin: 				0 0.25rem;	
+	flex-direction:			column;
+	text-align:				center;
+	color:					#000;	
 }
 
-ic-map ic-map-consent-reminder > * > *{
-	text-align: 			center;
+ic-map-consent-reminder > * {
+	max-width:				min(calc(100% - 1rem), 30rem);
 }
+
 
 ic-map .spinner-pane {
 	position:				absolute;
