@@ -4,7 +4,10 @@ ic-taxonomy-filter {
 }
 
 ic-taxonomy-filter > * {
-	margin-bottom:				1rem;
+	display: 					block !important;
+	padding: 					0 !important;
+	margin-bottom:				1rem !important; 
+	margin-top: 				0 !important;
 }
 
 ic-taxonomy-filter:after {
@@ -31,17 +34,19 @@ ic-taxonomy-filter section ul {
 
 ic-taxonomy-filter section h2.icon, /*alt*/ 
 ic-taxonomy-filter section li,	/*alt*/
-ic-taxonomy-filter section button {
+ic-taxonomy-filter section button,
+ic-taxonomy-filter section.types > button /* gets overridden in ic-pages =( */{
 	display:					flex !important;
 	box-sizing:					border-box;
 	width: 						100%;
-	align-items:				center;
+	align-items:				center !important;
 	justify-content:			start;
 	height:						3rem;
-	padding-left:				3rem;
-	padding-right:				0.5rem;
+	padding-left:				3rem !important;
+	padding-right:				0.5rem !important;
 	background-position:		1rem 50% !important;
 	overflow-wrap: 				anywhere;
+	margin: 					0 !important;
 }
 
 ic-taxonomy-filter section button:not(.icon){

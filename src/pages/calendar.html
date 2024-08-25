@@ -1,0 +1,44 @@
+<div style = "display:flex; flex-direction:row; align-items:stretch; height: 100%">
+
+	<ic-taxonomy-filter
+		ng-if				= "ic.layout.mode.name != 'XS' && ic.layout.mode.name != 'S'"
+		style 				= "overflow: scroll; min-width: 20rem; flex: 0 1 auto; margin-right:1rem; max-width 30rem; display: inline-block; position:relative;"
+		ic-settle-scrollbar	= "true"
+	>
+	</ic-taxonomy-filter>
+
+	<div 
+		style = "display: flex; flex: 1 0 0; flex-direction: rows; line-height: 1rem; flex-wrap: wrap; gap: 1rem; margin-bottom:1rem"
+	>
+
+		<div
+			ng-init = "selectedItems = []; selectedRange = {}"
+			style	= "padding: 1rem; min-width:45rem; flex: 5 0 45rem;"
+			class = "bg-0"
+		>
+			<ic-calendar 
+				selected-items = "selectedItems" 
+				selected-range = "selectedRange"
+			></ic-calendar>
+		</div>
+
+		<div 
+			style = "padding:1rem; flex: 1 0 0; min-width: 25rem;"
+			class = "bg-0"
+		>
+			<h2 style = "margin-left: 0; margin-top: 0;">{{selectedRange.start | icDate}} {{selectedRange.end ? '–' :''}} {{selectedRange.end | icDate}}</h2>
+			<a
+				ng-repeat		= "item in selectedItems"
+				ng-href			= "{{ {activeItem: item} | icLink }}"
+				ic-touch-me
+			>
+				<ic-item-preview
+					class		= "bg-0"
+					ng-class 	= "{'active-item': item == ic.site.activeItem}"
+					ic-item 	= "item"
+					ng-if		= "!item.internal.failed"
+				></ic-item-preview>
+			</a>
+		</article>
+	</div>
+</div>

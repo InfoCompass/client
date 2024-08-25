@@ -2841,6 +2841,305 @@ angular.module('icDirectives', [
 	}
 ])
 
+.directive('icCalendar', [
+
+	'$rootScope',
+	'icSite',
+	'icItemStorage',
+
+	function( $rootScope, icSite, icItemStorage ){
+
+		return {
+
+			restrict:	'E',
+			// template: '<div ui-calendar="calendarConfig" ng-model="eventSources"></div> ',
+			template: 	'',
+			scope:		{
+							selectedItems:	'<?',
+							selectedRange:	'<?'
+						},
+
+			link: function( scope, element ){
+
+				const Calendar	= 	fullcalendar.Calendar
+
+				
+				const calendar 	=	new Calendar(
+											element[0], 
+											{
+												initialView: 	'dayGridMonth',
+												locale:			'de',
+												selectable:		true,
+												select:			handleSelect,
+												unselect:		handleUnselect,
+												eventClick:		handleEventClick,
+												moreLinkClick:	handleMoreLinkClick,
+												firstDay:		1,
+												views: 			{
+																	dayGridMonth: {
+																		dayMaxEventRows: 4 
+																	}
+																},
+											}
+									)
+				
+				console.log({calendar})
+
+				window.setTimeout( () => calendar.render(), 10) 
+
+				function updateEvents(){
+
+					const events	=	icItemStorage
+										.filteredList
+										.map( item => {
+
+											const hours			= 	item.hours && item.hours.de || ''
+
+											const isString 		= 	typeof hours === 'string'
+											const emptyString	= 	isString && hours.trim() ===''
+
+											const lines			= 	hours
+																	.split(/(\r|\n)/)
+																	.map(line => line.trim())
+																	.filter( line => !!line)
+
+											if(!isString || emptyString) return null
+
+											const events = lines.map( line => {
+
+
+												let matches
+
+												// Freitag, 19.04.2024: 10:00 – 11:30
+
+												matches = line.match(/^[\s-]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)[,\s\:]*(\d\d\.\d\d.\d\d\d\d)[\:\s]*(\d\d\:\d\d)[\s-–]*(\d\d\:\d\d)/)
+
+
+												if(matches){
+													console.log('MATCH 1', line, matches)
+													return 	{
+																title: 		item.title,
+																start: 		`${normalizeDate(matches[2])}T${matches[3]}`,
+																end:		`${normalizeDate(matches[2])}T${matches[4]}`,
+																item
+															}
+												}
+
+												// Jeden Mittwoch, 18:30 – 20 Uhr
+												// Jeden Mittwoch, 15:00 – 17:00 Uhr
+
+												matches = line.match(/^[\s-]*Jeden[\s]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)s?[\,\s\:]*(\d?\d:\d\d|\d?\d)[\s-–]*(\d?\d\:\d\d|\d?\d[\s]*Uhr)/)
+
+												if(matches){
+
+													console.info('MATCH 2', line, matches)
+													return	{
+																title: 		item.title,
+																startTime: 	`${normalizeTime(matches[2])}`,
+																endTime:	`${normalizeTime(matches[3])}`,
+																daysOfWeek:	[normalizeDayOfWeek(matches[1])],
+																item
+															}
+												}
+
+												// 14.09.2024, von 14 bis 22 Uhr
+
+												matches = line.match(/^[\s-]*(\d\d\.\d\d.\d\d\d\d)[\,\svon]*(\d\d)[\s-–bis]*(\d\d)/)
+
+
+												if(matches){
+													console.info('MATCH 3', line, matches)
+													return	{
+																title: 		item.title,
+																start: 		`${normalizeDate(matches[1])}T${normalizeTime(matches[2])}`,
+																end:		`${normalizeDate(matches[1])}T${normalizeTime(matches[3])}`,
+																item
+															}
+												}
+
+												// Dienstags: 17:30 – 19:30 Uhr
+												matches = line.match(/^[\s-]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)s?[\,\s\:]*(\d\d:\d\d|\d?\d)[\s-–]*(\d\d\:\d\d|\d?\d[\s]*Uhr)/)
+
+												if(matches){
+
+													console.info('MATCH 4', line, matches)
+													return 	{
+																title: 		item.title,
+																startTime: 	`${normalizeTime(matches[2])}`,
+																endTime:	`${normalizeTime(matches[3])}`,
+																daysOfWeek:	[normalizeDayOfWeek(matches[1])],
+																item
+															}
+												}
+
+
+												// Montag – Freitag: 08:00 – 14:00 Uhr	
+
+												matches = line.match(/^[\s-]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)[\s-–bis]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)[\,\s\:]*(\d?\d:\d\d)[\s-–]*(\d?\d\:\d\d|\d\d[\s]*Uhr)/)
+
+												if(matches){
+
+													console.info('MATCH 5', line, matches)
+
+													const startDay 	= normalizeDayOfWeek(matches[1])
+													const endDay	= normalizeDayOfWeek(matches[2])
+
+													return	{
+																title: 		item.title,
+																startTime: 	`${normalizeTime(matches[3])}`,
+																endTime:	`${normalizeTime(matches[4])}`,
+																daysOfWeek:	[0,1,2,3,4,5,6].slice(startDay, endDay+1),
+																item
+															}
+												}
+
+												// Montag, Freitag: 08:00 – 14:00 Uhr	
+
+												matches = line.match(/^[\s-]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)[\s,]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)[\,\s\:]*(\d?\d:\d\d)[\s-–]*(\d?\d\:\d\d|\d\d[\s]*Uhr)/)
+
+												if(matches){
+
+													console.info('MATCH 6', line, matches)
+
+													return	{
+																title: 		item.title,
+																startTime: 	`${normalizeTime(matches[3])}`,
+																endTime:	`${normalizeTime(matches[4])}`,
+																daysOfWeek:	[matches[1], matches[2]],
+																item
+															}
+												}
+
+												// Montag, Dienstag, Freitag: 08:00 – 14:00 Uhr	
+
+												matches = line.match(/^[\s-]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)[\s,]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)[\s,]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)[\,\s\:]*(\d?\d:\d\d)[\s-–]*(\d?\d\:\d\d|\d\d[\s]*Uhr)/)
+
+												if(matches){
+
+													console.info('MATCH 7', line, matches)
+
+													return	{
+																title: 		item.title,
+																startTime: 	`${normalizeTime(matches[4])}`,
+																endTime:	`${normalizeTime(matches[5])}`,
+																daysOfWeek:	[matches[1], matches[2], matches[3]],
+																item
+															}
+												}
+
+												console.warn({line, hours})
+											})	
+
+											return events.filter(ev=>!!ev)
+
+										})
+										.flat()
+										.filter( event => !!event)
+									
+					console.log(events)					
+
+					calendar.setOption('events', events)
+				}
+
+				function normalizeDate(d){
+
+					let match 
+					const germanDate = /(\d\d)\.(\d\d)\.(\d\d\d\d)/
+
+					match = d.match(germanDate)
+					
+					return `${match[3]}-${match[2]}-${match[1]}`
+				}
+
+				function normalizeTime(t){
+
+					if(t.match(/^\d\d:\d\d$/)) 	return t
+					if(t.match(/^\d\d$/)) 		return t+':00'
+					if(t.match(/^\d$/)) 		return '0'+t+':00'
+					if(t.match(/^\d:\d\d$/)) 	return '0'+t
+
+					let match 
+					
+					match = t.match(/^(\d\d)[\s]*Uhr$/)
+					
+					if(match) return `${match[1]}:00`
+
+				}	
+
+				function normalizeDayOfWeek(dow){
+					return {
+						'Montag':		1,
+						'Dienstag':		2,
+						'Mittwoch':		3,
+						'Donnerstag':	4,
+						'Freitag':		5,
+						'Samstag':		6,
+						'Sonntag':		0,
+					}[dow]
+				}
+
+				function handleSelect(selectionInfo){
+
+					if(!Array.isArray(scope.selectedItems)) return undefined
+
+					const eventsInSelection = calendar.getEvents().filter(x => x.start >= selectionInfo.start && x.end <= selectionInfo.end)
+					const items				= Array.from(new Set(eventsInSelection.map( event => event.extendedProps.item)))
+
+					while(scope.selectedItems.length) scope.selectedItems.pop()
+
+					scope.selectedItems.push(...items)
+					
+					if(typeof scope.selectedRange == 'object'){
+
+						const start = selectionInfo.start
+						const end	= selectionInfo.end
+
+						end.setDate(end.getDate()-1)
+
+						scope.selectedRange.start 	= start
+
+						if( (end.getTime()-start.getTime()) *1000 * 60 * 60 > 2 ) scope.selectedRange.end = selectionInfo.end
+
+					}
+
+					scope.$parent.$digest()
+				}
+
+				function handleUnselect(){
+					if(!Array.isArray(scope.selectedItems)) return undefined
+
+					while(scope.selectedItems.length) scope.selectedItems.pop()
+
+					if(typeof scope.selectedRange == 'object'){
+						scope.selectedRange.start 	= undefined
+						scope.selectedRange.end		= undefined
+					}
+				}
+
+				function handleEventClick(info) {
+					icSite.activeItem = info.event.extendedProps.item
+					$rootScope.$digest()
+				}
+
+				function handleMoreLinkClick(info){
+					calendar.select(info.date)
+				}
+			
+
+				scope.$watch(() => icSite.currentLanguage, lang => {
+					calendar.setOption('locale', lang)
+				})
+
+				scope.$watch( () => icItemStorage.filteredList.length, items => {
+					updateEvents()
+				})
+			}
+
+		}
+1
+	}
+
+])
 
 
 .directive('icIconClasses', [
