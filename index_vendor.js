@@ -16,3 +16,4 @@ var angular 					= require('angular'),
 	// jquery						= require('jquery')
 
 
+window.fullcalendar = fullcalendar
