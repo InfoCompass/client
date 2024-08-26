@@ -2800,6 +2800,36 @@ angular.module('icDirectives', [
 ])
 
 
+/* work in progress not done*/
+.directive('icConfirm',[
+
+	'ic',
+
+	function(ic){
+
+		return {
+			restrict:	'AE',
+			transclude:	{
+				'placeholderSlot' : 'icPlaceholder',
+				'contentSlot':		'icContent'
+			},
+
+			template:	`
+				<div ng-if = "!confirmed" ng-click = "confirmed=!confirmed">
+					<div ng-transclude = "placeholderSlot">
+					</div
+				</div>
+				<div ng-if = "confirmed">
+					<div ng-transclude = "contentSlot"></div>
+				</div>
+			`,
+
+			link: function(scope, element, attrs){
+
+			}
+		}
+	}
+])
 
 // legacy:
 .directive('icOneTimePopup',[
