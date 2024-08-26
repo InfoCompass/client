@@ -316,6 +316,8 @@
 									},
 					show:			function(ic){
 
+										if(ic.site.page == 'calendar')		return false
+
 										if(ic.site.pickCoordinates)			return true
 
 										if(ic.site.expandMap)				return true
