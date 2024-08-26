@@ -502,13 +502,14 @@ angular.module('icServices', [
 
 
 
-		class icConsent{
+		class icConsent {
 
 			
 			cases 				= []
 			defer				= $q.defer()
 			ready				= this.defer.promise
 			promises			= new Set()
+			events				= new EventTarget()
 
 			constructor(){}
 
@@ -564,9 +565,9 @@ angular.module('icServices', [
 
 					if(this.to(key).isGiven) 	promise.resolve()
 					if(this.to(key).isDenied)	promise.reject('consent denied: '+key)					
-
-
 				})
+
+				this.events.dispatchEvent( new CustomEvent("change") )
 
 			}
 

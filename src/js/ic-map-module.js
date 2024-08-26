@@ -297,7 +297,6 @@
 
 					scope.consent = function(){
 						icConsent.set('map_tiles', true)
-						console.log('ÄÄÄÄ', icConsent.to('map_tiles').isGiven)
 					}
 
 
@@ -755,28 +754,9 @@
 
 
 
-					if(icMainMap.defaults.tiles){
+					if(icMainMap.defaults.tiles) addTiles()
 
-						$q.resolve( !icMainMap.consent || icConsent.when(icMainMap.consent.key) )
-						.then( 
-							() => {
-							
-								L.tileLayer(
-									icMainMap.defaults.tiles,
-									{
-										attribution: '&copy; <a href ="https://www.mapbox.com/about/maps/">Mapbox</a> &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-									}
-								).addTo(map)											
-
-							},
-
-							() => console.info('icMainMap: tile consent denied')
-						)
-
-
-
-					}
-
+					icConsent.events.addEventListener('change', addTiles )	
 
 					// if(icMainMap.defaults.vectorTiles){
 
@@ -804,6 +784,25 @@
 					})
 
 
+					function addTiles(){
+						console.log('ADD TILES')
+
+						$q.resolve( !icMainMap.consent || icConsent.when(icMainMap.consent.key) )
+						.then( 
+							() => {
+							
+								L.tileLayer(
+									icMainMap.defaults.tiles,
+									{
+										attribution: '&copy; <a href ="https://www.mapbox.com/about/maps/">Mapbox</a> &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+									}
+								).addTo(map)											
+
+							},
+
+							() => console.info('icMainMap: tile consent denied')
+						)
+					}
 
 					function updateListMarkers(){
 
