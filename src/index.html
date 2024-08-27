@@ -2,11 +2,12 @@
 <html 
 	lang			=	"{{ic.site.currentLanguage}}" 
 	ng-class		=	"{
-							'show-page': 	ic.site.displayedComponents.page, 
-							'show-list': 	ic.site.displayedComponents.list, 
-							'show-item':	ic.site.displayedComponents.item, 
-							'show-map':		ic.site.displayedComponents.map, 
-							'expand-map':	ic.site.expandMap
+							'show-page': 		ic.site.displayedComponents.page, 
+							'show-list': 		ic.site.displayedComponents.list, 
+							'show-item':		ic.site.displayedComponents.item, 
+							'show-map':			ic.site.displayedComponents.map, 
+							'expand-map':		ic.site.expandMap,
+							'item-print-off':	!ic.site.activeItem
 						}"
 >
 
@@ -64,11 +65,101 @@
 		<meta property="og:site_name" 		content="CONFIG.TITLE" />
 		<meta property="og:description" 	content="CONFIG.DESCRIPTION" />
 
+		<style ng-if = "!ic.site.activeItem">
+
+			@page {
+				size: 		A5 portrait;
+				margin:		0;
+			}
+
+			@media print {
+
+				html {
+					height:				auto!important;
+					overflow:			scroll!important;
+				}
+
+				body,
+				main,
+				main > section,
+				main > section > article
+				{
+					height:				auto !important;
+					overflow:			visible !important;
+					display:			block !important;
+					background: 		#fff!important;
+				}
+
+
+				article.padding {
+					padding:			0!important;
+				}
+
+				ic-category,
+				ic-page p {
+    				break-inside: 		avoid;
+    				margin:				0!important;
+    				padding:			1rem 0;
+				}
+
+				ic-page > article {
+					padding:			1rem!important;
+					margin-bottom:		0!important;
+				}
+
+				ic-page article h1 {
+					padding-top:		1rem!important;
+				}
+
+				ic-page article h1,
+				ic-page article h2,
+				ic-page article h3,
+				ic-page article h4 {
+					margin:				0;
+					break-after:		avoid;
+    				break-inside: 		avoid;
+    				padding:			0;					
+    				padding-top:		1rem;
+				}
+
+				ic-page article h1::after,
+				ic-page article h2::after,
+				ic-page article h3::after,
+				ic-page article h4::after {
+					content: 			"";
+					display: 			block;
+					height: 			100px;
+					margin-bottom: 		-100px;
+				}
+
+				ic-header .tools {
+					display:			none!important;
+				}
+
+
+				ic-header  nav {
+					display:			none!important;
+				}
+
+				ic-footer {
+					break-before:		page;
+					break-inside:		avoid;
+				}
+
+				ic-footer > a {
+					display:			none!important;
+				}
+
+			}
+
+		</style>
 	</head>
 
 
 
 	<body class = "col-0">
+
+				
 		<noscript>Please enable javascript.</noscript>
 	
 		<ic-loading-screen 
