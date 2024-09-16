@@ -445,12 +445,47 @@
 					.catch( function() { return dpd(ic.itemConfig.collectionName).get() })
 					.then(
 						function(data){
+
+
+
+							/* 
+							 * start proposals
+							 *
+							 * This was previously done in the backend and took very long;
+							 * that's why I moved it here:
+							*/
+
+							const all_proposals 		= data.filter( item_data => !!item_data.proposalFor )
+
+
+							// add item proposals to the target items							
+							all_proposals.forEach( item_proposal => {
+
+								const id 			= item_proposal.proposalFor
+								const target_item	= data.find(item_data => item_data.id == id)
+
+								if(!target_item) return
+
+								target_item.proposals = target_item.proposals || []
+								target_item.proposals.push(item_proposal)
+
+
+							})
+
+							/* end proposals */
+
 							data.forEach(function(item_data){
+
+								if(item_data.proposalFor) return // drop proposals as regular items
+
+								item_data.proposals = item_data.proposals || []
+								
 								icItemStorage.storeItem(item_data, false) //for some reason second parameter skip_internals was set to true, why?
 							}) 
 							icItemStorage.runAsyncTriggers()
 						},
 						function(reason){
+							
 							console.error('icItemStorage: unable to load items: '+reason)
 
 							icItemStorage.runAsyncTriggers()
