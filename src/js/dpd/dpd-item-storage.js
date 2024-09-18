@@ -447,7 +447,6 @@
 						function(data){
 
 
-
 							/* 
 							 * start proposals
 							 *
@@ -455,31 +454,35 @@
 							 * that's why I moved it here:
 							*/
 
-							const all_proposals 		= data.filter( item_data => !!item_data.proposalFor )
+							const normal_items		=	[]														
+							const proposals 		= 	[]
 
+							data.forEach( item_data => {
+								if(!item_data.proposalFor) normal_items.push(item_data)
+								if( item_data.proposalFor) proposals.push(item_data)
+							})
+
+							console.log({ proposals })
 
 							// add item proposals to the target items							
-							all_proposals.forEach( item_proposal => {
+							proposals.forEach( item_proposal => {
 
 								const id 			= item_proposal.proposalFor
-								const target_item	= data.find(item_data => item_data.id == id)
+								const target_item	= normal_items.find( item_data => item_data.id == id )
 
 								if(!target_item) return
 
 								target_item.proposals = target_item.proposals || []
 								target_item.proposals.push(item_proposal)
 
-
 							})
 
 							/* end proposals */
 
-							data.forEach(function(item_data){
+							normal_items.forEach(function(item_data){
 
-								if(item_data.proposalFor) return // drop proposals as regular items
+								if(item_data.proposals && item_data.proposals.length) console.log(item_data.proposals)
 
-								item_data.proposals = item_data.proposals || []
-								
 								icItemStorage.storeItem(item_data, false) //for some reason second parameter skip_internals was set to true, why?
 							}) 
 							icItemStorage.runAsyncTriggers()
