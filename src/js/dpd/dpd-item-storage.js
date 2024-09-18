@@ -481,9 +481,8 @@
 
 							normal_items.forEach(function(item_data){
 
-								if(item_data.proposals && item_data.proposals.length) console.log(item_data.proposals)
-
 								icItemStorage.storeItem(item_data, false) //for some reason second parameter skip_internals was set to true, why?
+								
 							}) 
 							icItemStorage.runAsyncTriggers()
 						},
