@@ -462,8 +462,6 @@
 								if( item_data.proposalFor) proposals.push(item_data)
 							})
 
-							console.log({ proposals })
-
 							// add item proposals to the target items							
 							proposals.forEach( item_proposal => {
 
