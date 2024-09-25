@@ -100,6 +100,10 @@ ic-item-property-edit .options button {
 	text-align: 				left;
 }
 
+ic-item-property-edit .options button.check-none {
+	flex:						1 0 100%;
+}
+
 ic-item-property-edit .options button.leading {
 	min-width: 					100%;
 }

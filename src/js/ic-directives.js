@@ -1100,6 +1100,7 @@ angular.module('icDirectives', [
 								icOptionsFilterLimit:	"<?",
 								icOptionLabel:			"&?",
 								icOptionIconClass:		"&?",
+								icAllowMultipleChoices:	"<?",
 								icLeadingOption:		"<?",
 								icCheckAll:				"<?",
 								icCheckNone:			"<?",
@@ -1151,12 +1152,12 @@ angular.module('icDirectives', [
 					scope.icOptions	 =	scope.icProperty.options
 				}
 
-				scope.icAllowMultipleChoices = scope.icAllowMultipleChoices || false
+				// scope.icAllowMultipleChoices = scope.icAllowMultipleChoices || false
 
 
 				scope.icTranslatable 			= attrs.icTranslatable 			? $parse(attrs.icTranslatable)() 			: false
 				scope.icHideErrors				= attrs.icHideErrors			? $parse(attrs.icHideErrors)()				: false
-				scope.icAllowMultipleChoices	= attrs.icAllowMultipleChoices	? $parse(attrs.icAllowMultipleChoices)()	: false
+				// scope.icAllowMultipleChoices	= attrs.icAllowMultipleChoices	? $parse(attrs.icAllowMultipleChoices)()	: false
 
 
 				function copyOptions(array){
