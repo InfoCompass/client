@@ -1353,8 +1353,12 @@ angular.module('icUiDirectives', [
 			var result 	= [],
 				keys	= include_keys || Object.keys(obj)
 
-			if(typeof keys == 'string') keys = [keys]
-			if(exclude_keys) 			keys = keys.filter(function(key){ return exclude_keys.indexOf(key) == -1 })
+
+
+			if(typeof keys 			== 'string') keys 			= [keys]
+			if(typeof exclude_keys 	== 'string') exclude_keys 	= [exclude_keys]
+
+			if(exclude_keys) keys = keys.filter(function(key){ return exclude_keys.indexOf(key) == -1 })
 
 			keys.forEach(function(key){ result = result.concat(obj[key]) })
 
