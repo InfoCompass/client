@@ -1,0 +1,181 @@
+<form 
+	ng-if		= "icItem && icEdit"
+	ng-submit	= "ic.keyboard.tabNextInput()"
+	ng-class	= "{invalid: errors}"
+>
+		
+	<div ng-if 	= "!hideCurrentValue" class = "current-value-parent-box">
+		
+		<div class	= "current-value {{diff()? 'diff': ''}}">	
+			{{ value.current || ('INTERFACE.PROPERTY_EMPTY' | translate) }}
+
+			<div ng-repeat = "mode in currentRuleModes">
+				{{'ITEMS.RECUR_%s' | fill: mode | translate}}
+			</div>
+
+		</div>	
+
+		<button
+			ng-click	= "revert()" 
+			ng-if		= "!updating && diff()"
+			type		= "button"
+			title		= "{{ 'INTERFACE.PROPERTY_REVERT' | translate }}"
+			class		= "icon icon-interface-item_revert active"
+		>			
+		</button>	
+	</div>
+
+
+
+
+	<!-- property proposals  start -->
+	<div
+		ng-if			= "showProposals &&  ic.user.can('edit_items')"		
+		class			= "proposals screen-only"		
+	>
+		<span class ="round mini vbottom icon icon-interface-proposals bg-3 white"></span>
+		{{'ITEMS.PROPOSED_EDIT' | translate}}:
+
+		<button
+			ng-repeat 	= "proposal in proposals"	
+			class		= "proposal-indicator"
+			ng-class	= "{'bg-3 white': editMatchesProposal(proposal), 'active border-3': !editMatchesProposal(proposal), 'disabled': !isApplicable(proposal)}"
+			ng-click	= "isApplicable(proposal) && updateEditWithProposal(proposal)"
+			type		= "button"
+		>
+			<span>{{proposal.index+1}}</span>
+		</button>	
+	</div>
+
+
+	<!-- property proposals  end -->
+
+
+	<div> 
+
+
+		<input 
+			class				= "bg-1 col-0"
+			type 				= "text"
+			maxlength			= "{{icProperty.max}}"
+			ng-model			= "value.edit"
+			ng-model-options	= "{updateOn: 'default blur', debounce: { 'default': 500, 'blur': 0 }, allowInvalid}"
+			ng-trim				= "false"
+			ic-expose-internal-model = "internalModel"
+		></input>		
+		
+
+		<div 
+			ng-repeat 	= "params in eventModel"
+			class		= "recurring-rule"
+		>
+
+
+			<select 
+				class 		= "iteration icon right icon-interface-down border-1"
+				ng-model	= "params.iteration"
+			>
+				<option value = "daily">
+					{{'ITEMS.RECUR_DAILY' | translate}}
+				</option>
+				<option value = "mon-fri">
+					{{'ITEMS.RECUR_MON_FRI' | translate}}
+				</option>
+				<option value = "weekly">
+					{{'ITEMS.RECUR_WEEKLY' | translate}} &hellip; 
+				</option>
+				<option value = "bi-weekly">
+					{{'ITEMS.RECUR_BI_WEEKLY' | translate}} &hellip;
+				</option>
+				<option value = "three-weekly">
+					{{'ITEMS.RECUR_THREE_WEEKLY' | translate}} &hellip;
+				</option>
+				<option value = "four-weekly">
+					{{'ITEMS.RECUR_FOUR_WEEKLY' | translate}} &hellip;
+				</option>
+				<!-- <option value = "fixed_date">
+					{{'ITEMS.RECUR_FIXED_DATE' | translate}}
+				</option> -->
+			</select>
+
+			<select 
+				ng-if		= "params.iteration != 'daily' && params.iteration != 'mon-fri'"
+				ng-model	= "params.weekday"
+				class 		= "day icon right icon-interface-down border-1"
+			>
+
+				<option value = "mon">
+					{{'ITEMS.RECUR_MONDAY' | translate }}
+				</option>
+
+				<option value = "tue">
+					{{'ITEMS.RECUR_TUESDAY' | translate }}
+				</option>
+
+				<option value = "wed">
+					{{'ITEMS.RECUR_WEDNESDAY' | translate }}
+				</option>
+
+				<option value = "thu">
+					{{'ITEMS.RECUR_THURSDAY' | translate }}
+				</option>
+
+				<option value = "fri">
+					{{'ITEMS.RECUR_FRIDAY' | translate }}
+				</option>
+
+				<option value = "sun">
+					{{'ITEMS.RECUR_SATURDAY' | translate }}
+				</option>
+
+				<option value = "sat">
+					{{'ITEMS.RECUR_SUNDAY' | translate }}
+				</option>
+			
+			</select>
+
+			<div class ="spacer"></div>
+
+			<input 
+				type 		= time 
+				class 		= "start-time"
+				ng-model	= "params.startTime"
+
+			>
+
+			<input 
+				type 		= time 
+				class 		= "end-time"
+				ng-model	= "params.endtime"				
+			>
+
+
+			<button 
+				ng-click 	= "params.remove()"
+				class		= "remove icon icon-interface-close round border-3"
+				title		= "{{'ITEMS.RECUR_REMOVE_RULE' | translate}}"
+			>
+			</button>
+
+		</div>
+
+		<button 
+			class		= "icon left icon-interface-add border-3 padding"
+			ng-click 	= "addRule()"
+		>
+			{{'ITEMS.RECUR_ADD_RULE' | translate}}
+		</button>
+
+	</div>
+
+
+	<div class  = "note col-1">{{"ITEMS.%s_NOTE" | fill : (icTranslationKey || icKey) | translate }}</div>
+	
+	<div ng-if = "!error || icHideErrors" class = "error"></div>
+	<div ng-if = "error && !icHideErrors" class = "error col-3"> 
+		{{'ITEMS.%s_%s' | fill : [(icTranslationKey || icKey), error.code] | translate}} 
+		{{error.key ? "(" + ('LANGUAGES.%s' | fill : error.key | translate) +")" : '' }}
+	</div>
+
+</form>
+

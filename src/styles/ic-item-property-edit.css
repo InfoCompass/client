@@ -61,6 +61,10 @@ ic-item-property-edit textarea:focus {
 	box-shadow:					0 0 0 1px #000 inset;
 }
 
+ic-item-property-edit select {
+	border-radius:				0.5em;
+}
+
 
 ic-item-property-edit .extra-padding input[type="text"] {
 	padding-right:				5rem;
@@ -211,8 +215,34 @@ ic-item-property-edit .time label > *{
 }
 
 
+ic-item-property-edit .recurring-rule {
+	position:					relative;
+	display:					flex;
+	align-items:				center;
+	gap:						0.5rem;
+	width:						100%;
+	margin:						0.25rem 0;
+}
+
+.XL ic-item-property-edit .recurring-rule {
+	flex-wrap:					wrap;
+	margin-bottom:				1.5rem;
+}
+
+ic-item-property-edit .recurring-rule > * {
+	flex:						0 0 auto;
+	width:						auto;
+}
+
+.XS ic-item-property-edit .recurring-rule > * {
+	flex:						1 1 100%;
+}
 
 
+
+ic-item-property-edit .recurring-rule .spacer {
+	flex:						1 0 0;
+}
 
 
 

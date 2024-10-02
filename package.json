@@ -4,6 +4,8 @@
   "description": "",
   "main": "Gruntfile.js",
   "dependencies": {
+    "@rschedule/core": "^1.5.0",
+    "@rschedule/standard-date-adapter": "^1.5.0",
     "angular": "^1.8.2",
     "angular-qrcode": "^7.2.0",
     "angular-sanitize": "^1.8.2",

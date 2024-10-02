@@ -1107,16 +1107,18 @@ angular.module('icDirectives', [
 								icForceChoice:			"<?",
 								icDate:					"<?",
 								icSkipTime:				"<?",
+								icRecurringEvent:		"<?",
 								icActivate:				"@",
 								icToggleOn:				"@",
 								icToggleOff:			"@",
-								icDefaultValue:				"@",
+								icDefaultValue:			"@",
 							},
 
 			templateUrl: 	function(tElement, tAttrs){
 
-								if(tAttrs.icOptions)	return "partials/ic-item-property-edit-options.html"
-								if(tAttrs.icDate)		return "partials/ic-item-property-edit-date.html"
+								if(tAttrs.icOptions)		return "partials/ic-item-property-edit-options.html"
+								if(tAttrs.icDate)			return "partials/ic-item-property-edit-date.html"
+								if(tAttrs.icRecurringEvent)	return "partials/ic-item-property-edit-recurring-event.html"
 
 								return "partials/ic-item-property-edit-simple-value.html"
 
@@ -1693,6 +1695,141 @@ angular.module('icDirectives', [
 				}
 
 				scope.$watch('value.current', () => scope.refreshProposals() )
+
+
+
+				// recurring events:
+
+	
+				if(scope.icRecurringEvent) {
+
+					scope.eventModel = []
+
+					scope.addRule = () => {
+
+						const new_rule_params = {
+							iteration:	'weekly',
+							weekday:	'mon',
+							startTime:	undefined,
+							endtime:	undefined
+						}
+
+						new_rule_params.remove = () => {
+							const index = scope.eventModel.indexOf(new_rule_params)
+							if (index != -1) scope.eventModel.splice(index, 1)					
+
+						}
+
+						scope.eventModel.push(new_rule_params)
+					}
+
+					scope.eventModelToString = function(eventModel) {
+
+						const s = scope.eventModel.map(params => {
+
+							const rule = [] // [iteration mode, weekday, start time, end time]
+
+							if(['daily', 'mon-fri', 'weekly', 'bi-weekly', 'three-weekly', 'four-weekly'].includes(params.iteration)){
+
+								rule[0] 			= 	params.iteration
+								rule[1]				=	['daily', 'mon-fri'].includes(params.iteration)
+														?	null
+														:	params.weekday								
+
+								rule[2]				=	params.startTime
+								rule[3]				=	params.endTime
+
+								return rule
+
+							}
+
+							if(['fixed_date'].includes(params.iteration)){
+								return null
+							}
+
+							throw new Error('Bad recurring event params.', {cause: params.iteration})
+						})
+
+						return JSON.stringify(s)					
+					}
+
+
+
+					scope.stringToEventModel = function(s){
+
+						let rules 			= 	[]
+
+						try 		{ rules = JSON.parse(s) }
+						catch(e) 	{}
+
+						const eventModel 	= 	rules.map( rule => {
+
+													const params = {}
+
+													params.iteration 	= 	rule[0]
+													params.weekDay		= 	rule[1]
+													params.startTime	= 	rule[2]
+													params.endTime		= 	rule[3]
+
+													return params
+												}) 
+
+						return 	eventModel
+					}
+
+					scope.$watch('value.edit', () => { // chANGE TO .CURRENT
+
+						console.log('value.edit', scope.value.edit)
+
+						const currentEventModel 	= scope.stringToEventModel(scope.value.edit) // chzange to current!!
+
+						console.log(currentEventModel)
+
+						scope.currentRulesByMode	= scope.currentRulesByMode || {}
+
+						currentEventModel.forEach( rule => {
+							scope.currentRulesByMode[rule.iteration] 		= scope.currentRulesByMode[rule.iteration] || {}	
+							scope.currentRulesByMode[rule.iteration].rules	= scope.currentRulesByMode[rule.iteration].rules || []
+
+							scope.currentRulesByMode[rule.iteration].rules.push(rule)
+						})
+
+						scope.currentRuleModes = Object.keys(scope.currentRulesByMode)
+						console.log('SDFSDF', scope.currentRulesByMode, scope.currentRuleModes)
+					})
+
+					
+					scope.$watch('value.edit', () => {
+
+						const stringFromModel = scope.eventModelToString() 
+
+						console.log('checking existing string...')
+						if(stringFromModel == scope.value.edit) return
+
+						console.log('difference detected')	
+
+						if(!scope.value.edit) console.log('nothing set')
+						if(scope.value.edit) console.log('edit value:', scope.value.edit)
+
+						try {
+							scope.eventModel = scope.stringToEventModel(scope.value.edit)
+						} catch(e) {
+							scope.eventModel = []
+						}	
+				
+
+					})
+
+					scope.$watch( () => scope.eventModel, () => {
+
+						const current_edit 	= scope.value.edit 
+						const next_edit		= scope.eventModelToString()						
+					
+						if(current_edit !== next_edit) scope.value.edit = next_edit
+
+					}, true)
+
+				}
 
 
 			}
