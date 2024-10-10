@@ -1488,6 +1488,17 @@ angular.module('icUiDirectives', [
 	}
 ])
 
+.filter('isValidDate', [
+	function() {
+		return function(d) {
+
+			if(! (d instanceof Date) ) 	return false
+			if( isNaN(d.getTime()))		return false
+
+			return true	
+		}
+	}
+])
 
 
 
@@ -1495,8 +1506,10 @@ angular.module('icUiDirectives', [
 
 .filter('consoleLog', [
 	function(){
-		return function(x){
-			console.log(x)
+		return function(x, prefix){
+			prefix
+			?	console.log(prefix, x)
+			:	console.log(x)
 			return x
 		}
 	}

@@ -214,35 +214,85 @@ ic-item-property-edit .time label > *{
 	display:					block;
 }
 
+ic-item-property-edit[ic-recurring-event] .current-value-parent-box {
+	display:					flex;	
+	flex-wrap:					wrap;
+	gap:						0.5rem;
+}
 
-ic-item-property-edit .recurring-rule {
+ic-item-property-edit[ic-recurring-event] .current-value-parent-box > * {
+	flex:						0 0 auto;	
+}
+
+ic-item-property-edit[ic-recurring-event] .current-value {
+	line-height:				1.1rem;
+}
+
+ic-item-property-edit[ic-recurring-event] .current-value.diff{
+	background:					linear-gradient(to top left,
+									rgba(0,0,0,0) 0%,
+									rgba(0,0,0,0) calc(50% - max(0.1rem, 1px)),
+									rgba(0,0,0,1) 50%,
+									rgba(0,0,0,0) calc(50% + max(0.1rem, 1px)),
+									rgba(0,0,0,0) 100%),
+								linear-gradient(to top right,
+									rgba(0,0,0,0) 0%,
+									rgba(0,0,0,0) calc(50% - max(0.1rem, 1px)),
+									rgba(0,0,0,1) 50%,
+									rgba(0,0,0,0) calc(50% + max(0.1rem, 1px)),
+									rgba(0,0,0,0) 100%);
+
+	text-decoration:			none;							
+}
+
+
+ic-item-property-edit[ic-recurring-event] .recurring-rules {
 	position:					relative;
-	display:					flex;
+	display:					grid;
 	align-items:				center;
 	gap:						0.5rem;
 	width:						100%;
 	margin:						0.25rem 0;
+	grid-template-columns:		max-content max-content 1fr max-content max-content max-content;
 }
 
-.XL ic-item-property-edit .recurring-rule {
+ic-item-property-edit[ic-recurring-event] .recurring-rules + button {
+	display:					block;
+	margin:						auto;
+	padding-left:				1rem;
+	padding-right:				1rem;
+}
+
+ic-item-property-edit[ic-recurring-event] input[type="time"] {
+	font-family:				mono;
+}
+
+.XS ic-item-property-edit[ic-recurring-event] .recurring-rules {
+	display:					flex;
 	flex-wrap:					wrap;
 	margin-bottom:				1.5rem;
 }
 
-ic-item-property-edit .recurring-rule > * {
+ic-item-property-edit[ic-recurring-event] .recurring-rules > * {
 	flex:						0 0 auto;
 	width:						auto;
 }
 
-.XS ic-item-property-edit .recurring-rule > * {
+.XS ic-item-property-edit[ic-recurring-event] .recurring-rules > * {
 	flex:						1 1 100%;
+	position:					relative;
+}
+
+.XS ic-item-property-edit[ic-recurring-event] .recurring-rules > .iteration {
+	margin-top:					2rem;
+}
+
+.XS ic-item-property-edit[ic-recurring-event] .recurring-rules > * > * {
+	width:						100%;
 }
 
 
 
-ic-item-property-edit .recurring-rule .spacer {
-	flex:						1 0 0;
-}
 
 
 

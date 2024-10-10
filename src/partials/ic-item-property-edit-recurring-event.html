@@ -5,24 +5,39 @@
 >
 		
 	<div ng-if 	= "!hideCurrentValue" class = "current-value-parent-box">
-		
-		<div class	= "current-value {{diff()? 'diff': ''}}">	
-			{{ value.current || ('INTERFACE.PROPERTY_EMPTY' | translate) }}
 
-			<div ng-repeat = "mode in currentRuleModes">
-				{{'ITEMS.RECUR_%s' | fill: mode | translate}}
+			<div>
+				<span class =" flex">
+					{{'ITEMS.RECUR_CURRENT_VALUE' | translate }}:	
+				</span>
+				<ic-event-details 
+					class				= "current-value {{diff()? 'diff': ''}}"
+					ic-recurring-rules	= "currentRecurringRuleset" 
+				>
+				</ic-event-details>			
 			</div>
 
-		</div>	
-
-		<button
-			ng-click	= "revert()" 
-			ng-if		= "!updating && diff()"
-			type		= "button"
-			title		= "{{ 'INTERFACE.PROPERTY_REVERT' | translate }}"
-			class		= "icon icon-interface-item_revert active"
-		>			
-		</button>	
+			<div ng-if		= "!updating && diff()">
+				<div class =" flex">	
+					<span  class =" flex-grow">
+						{{'ITEMS.RECUR_EDIT_VALUE' | translate }}:	
+					</span>
+					<button
+						ng-click	= "revert()" 
+						
+						type		= "button"
+						title		= "{{ 'INTERFACE.PROPERTY_REVERT' | translate }}"
+						class		= "icon icon-interface-item_revert active"
+					>			
+					</button>	
+				</div>
+				<ic-event-details 
+					class				= "current-value"
+					ic-recurring-rules 	= "editRecurringRuleset" 
+				>		
+				</ic-event-details>
+			</div>
+			
 	</div>
 
 
@@ -50,118 +65,114 @@
 
 	<!-- property proposals  end -->
 
+	<div>
 
-	<div> 
-
-
-		<input 
-			class				= "bg-1 col-0"
-			type 				= "text"
-			maxlength			= "{{icProperty.max}}"
-			ng-model			= "value.edit"
-			ng-model-options	= "{updateOn: 'default blur', debounce: { 'default': 500, 'blur': 0 }, allowInvalid}"
-			ng-trim				= "false"
-			ic-expose-internal-model = "internalModel"
-		></input>		
-		
-
-		<div 
-			ng-repeat 	= "params in eventModel"
-			class		= "recurring-rule"
-		>
-
+		<div class	= "recurring-rules">
 
 			<select 
-				class 		= "iteration icon right icon-interface-down border-1"
-				ng-model	= "params.iteration"
+				ng-repeat-start 	= "rule in editRecurringRuleset.rules"
+				class 				= "iteration icon right icon-interface-down border-1"
+				ng-model			= "rule.iteration"
+				title				= "{{'ITEMS.RECUR_INTERVAL' | translate}}"
 			>
 				<option value = "daily">
 					{{'ITEMS.RECUR_DAILY' | translate}}
 				</option>
 				<option value = "mon-fri">
-					{{'ITEMS.RECUR_MON_FRI' | translate}}
+					{{'ITEMS.RECUR_MON-FRI' | translate}}
 				</option>
 				<option value = "weekly">
 					{{'ITEMS.RECUR_WEEKLY' | translate}} &hellip; 
 				</option>
 				<option value = "bi-weekly">
-					{{'ITEMS.RECUR_BI_WEEKLY' | translate}} &hellip;
+					{{'ITEMS.RECUR_BI-WEEKLY' | translate}} &hellip;
 				</option>
 				<option value = "three-weekly">
-					{{'ITEMS.RECUR_THREE_WEEKLY' | translate}} &hellip;
+					{{'ITEMS.RECUR_THREE-WEEKLY' | translate}} &hellip;
 				</option>
 				<option value = "four-weekly">
-					{{'ITEMS.RECUR_FOUR_WEEKLY' | translate}} &hellip;
+					{{'ITEMS.RECUR_FOUR-WEEKLY' | translate}} &hellip;
 				</option>
 				<!-- <option value = "fixed_date">
 					{{'ITEMS.RECUR_FIXED_DATE' | translate}}
 				</option> -->
 			</select>
 
-			<select 
-				ng-if		= "params.iteration != 'daily' && params.iteration != 'mon-fri'"
-				ng-model	= "params.weekday"
-				class 		= "day icon right icon-interface-down border-1"
-			>
+			<div>
+				<select 
+					ng-if		= "rule.iteration != 'daily' && rule.iteration != 'mon-fri'"
+					ng-model	= "rule.weekday"
+					class 		= "day icon right icon-interface-down border-1"
+					title		= "{{'ITEMS.RECUR_WEEKDAY' | translate}}" 
+				>
 
-				<option value = "mon">
-					{{'ITEMS.RECUR_MONDAY' | translate }}
-				</option>
+					<option value = "mon">
+						{{'ITEMS.RECUR_MON' | translate }}
+					</option>
 
-				<option value = "tue">
-					{{'ITEMS.RECUR_TUESDAY' | translate }}
-				</option>
+					<option value = "tue">
+						{{'ITEMS.RECUR_TUE' | translate }}
+					</option>
 
-				<option value = "wed">
-					{{'ITEMS.RECUR_WEDNESDAY' | translate }}
-				</option>
+					<option value = "wed">
+						{{'ITEMS.RECUR_WED' | translate }}
+					</option>
 
-				<option value = "thu">
-					{{'ITEMS.RECUR_THURSDAY' | translate }}
-				</option>
+					<option value = "thu">
+						{{'ITEMS.RECUR_THU' | translate }}
+					</option>
 
-				<option value = "fri">
-					{{'ITEMS.RECUR_FRIDAY' | translate }}
-				</option>
+					<option value = "fri">
+						{{'ITEMS.RECUR_FRI' | translate }}
+					</option>
 
-				<option value = "sun">
-					{{'ITEMS.RECUR_SATURDAY' | translate }}
-				</option>
+					<option value = "sat">
+						{{'ITEMS.RECUR_SAT' | translate }}
+					</option>
 
-				<option value = "sat">
-					{{'ITEMS.RECUR_SUNDAY' | translate }}
-				</option>
-			
-			</select>
+					<option value = "son">
+						{{'ITEMS.RECUR_SUN' | translate }}
+					</option>
+				
+				</select>
+
+			</div>
 
 			<div class ="spacer"></div>
 
 			<input 
-				type 		= time 
-				class 		= "start-time"
-				ng-model	= "params.startTime"
-
+				type 				= "time" 
+				class 				= "start-time"
+				ng-model			= "rule.startTime"
+				ng-model-options	= "{timeSecondsFormat:''}"
+				title				= "{{'ITEMS.RECUR_START_TIME' | translate}}" 
 			>
 
 			<input 
-				type 		= time 
-				class 		= "end-time"
-				ng-model	= "params.endtime"				
+				type 				= "time"
+				step				= "60"
+				class 				= "end-time"
+				ng-model			= "rule.endTime"				
+				ng-model-options	= "{timeSecondsFormat:''}"
+				title				= "{{'ITEMS.RECUR_END_TIME' | translate}}" 
 			>
-
-
-			<button 
-				ng-click 	= "params.remove()"
-				class		= "remove icon icon-interface-close round border-3"
-				title		= "{{'ITEMS.RECUR_REMOVE_RULE' | translate}}"
+			<div 
+				ng-repeat-end
+				class				= "action"
 			>
-			</button>
+				<button 
+					ng-click 	= "editRecurringRuleset.removeRule(rule)"
+					class		= "remove icon icon-interface-close round bg-3 white"
+					title		= "{{'ITEMS.RECUR_REMOVE_RULE' | translate}}"					
+				>
+				</button>
+			</div>
 
 		</div>
 
 		<button 
-			class		= "icon left icon-interface-add border-3 padding"
-			ng-click 	= "addRule()"
+			class		= "bg-3 padding"
+			ng-click 	= "editRecurringRuleset.addRule(['weekly'])"
 		>
 			{{'ITEMS.RECUR_ADD_RULE' | translate}}
 		</button>

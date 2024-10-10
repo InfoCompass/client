@@ -420,15 +420,6 @@
 				if(!(window.ic && window.ic.itemConfig)) 
 					console.error('icTaxonomyProvider:  missing ic.itemConfig. Please load ic-item-config.js.')
 				
-				// REMOVE ME NOW:
-				window.ic.itemConfig.properties.push({
-					name: 'recurring_event',
-					type: 'string',
-					getErrors: () => null,	
-				})
-
-				console.log(window.ic.itemConfig)
-
 				icItemConfigProvider
 				.setItemConfig(window.ic.itemConfig)
 			}

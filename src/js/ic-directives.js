@@ -1080,11 +1080,12 @@ angular.module('icDirectives', [
 	'icSite',
 	'icItemEdits',
 	'icItemConfig',
+	'icRecurring',
 	'ic',
 	'$q',
 	'$parse',
 
-	function(icSite, icItemEdits, icItemConfig, ic, $q, $parse){
+	function(icSite, icItemEdits, icItemConfig, icRecurring, ic, $q, $parse){
 		return {
 			restrict:		'AE',
 			require:		['^^icItemFullEdit'],
@@ -1703,128 +1704,47 @@ angular.module('icDirectives', [
 	
 				if(scope.icRecurringEvent) {
 
-					scope.eventModel = []
-
-					scope.addRule = () => {
-
-						const new_rule_params = {
-							iteration:	'weekly',
-							weekday:	'mon',
-							startTime:	undefined,
-							endtime:	undefined
-						}
-
-						new_rule_params.remove = () => {
-							const index = scope.eventModel.indexOf(new_rule_params)
-							if (index != -1) scope.eventModel.splice(index, 1)					
-
-						}
-
-						scope.eventModel.push(new_rule_params)
-					}
-
-					scope.eventModelToString = function(eventModel) {
-
-						const s = scope.eventModel.map(params => {
-
-							const rule = [] // [iteration mode, weekday, start time, end time]
-
-							if(['daily', 'mon-fri', 'weekly', 'bi-weekly', 'three-weekly', 'four-weekly'].includes(params.iteration)){
-
-								rule[0] 			= 	params.iteration
-								rule[1]				=	['daily', 'mon-fri'].includes(params.iteration)
-														?	null
-														:	params.weekday								
-
-								rule[2]				=	params.startTime
-								rule[3]				=	params.endTime
-
-								return rule
-
-							}
-
-							if(['fixed_date'].includes(params.iteration)){
-								return null
-							}
-
-							throw new Error('Bad recurring event params.', {cause: params.iteration})
-						})
-
-						return JSON.stringify(s)					
-					}
-
-
-
-					scope.stringToEventModel = function(s){
-
-						let rules 			= 	[]
-
-						try 		{ rules = JSON.parse(s) }
-						catch(e) 	{}
-
-						const eventModel 	= 	rules.map( rule => {
-
-													const params = {}
-
-													params.iteration 	= 	rule[0]
-													params.weekDay		= 	rule[1]
-													params.startTime	= 	rule[2]
-													params.endTime		= 	rule[3]
-
-													return params
-												}) 
-
-						return 	eventModel
-					}
-
-					scope.$watch('value.edit', () => { // chANGE TO .CURRENT
-
-						console.log('value.edit', scope.value.edit)
-
-						const currentEventModel 	= scope.stringToEventModel(scope.value.edit) // chzange to current!!
-
-						console.log(currentEventModel)
-
-						scope.currentRulesByMode	= scope.currentRulesByMode || {}
-
-						currentEventModel.forEach( rule => {
-							scope.currentRulesByMode[rule.iteration] 		= scope.currentRulesByMode[rule.iteration] || {}	
-							scope.currentRulesByMode[rule.iteration].rules	= scope.currentRulesByMode[rule.iteration].rules || []
-
-							scope.currentRulesByMode[rule.iteration].rules.push(rule)
-						})
-
-						scope.currentRuleModes = Object.keys(scope.currentRulesByMode)
-						console.log('SDFSDF', scope.currentRulesByMode, scope.currentRuleModes)
-					})
-
-					
+					scope.editRecurringRuleset 		= icRecurring.createRecurringRuleset()
+					scope.currentRecurringRuleset 	= icRecurring.createRecurringRuleset()
+	
 					scope.$watch('value.edit', () => {
 
-						const stringFromModel = scope.eventModelToString() 
+						console.log('VALU EDIT')
 
-						console.log('checking existing string...')
-						if(stringFromModel == scope.value.edit) return
+						const stringFromRuleset = scope.editRecurringRuleset.toString()
 
-						console.log('difference detected')	
+						console.log('VALU EDIT', stringFromRuleset == scope.value.edit, stringFromRuleset)
 
-						if(!scope.value.edit) console.log('nothing set')
-						if(scope.value.edit) console.log('edit value:', scope.value.edit)
+						if(stringFromRuleset == scope.value.edit) return
 
-						try {
-							scope.eventModel = scope.stringToEventModel(scope.value.edit)
-						} catch(e) {
-							scope.eventModel = []
-						}	
-				
+
+
+						scope.editRecurringRuleset = icRecurring.createRecurringRuleset(scope.value.edit)
+
 
 					})
 
-					scope.$watch( () => scope.eventModel, () => {
+					scope.$watch('value.current', () => {
+
+						const stringFromRuleset = scope.currentRecurringRuleset.toString()
+
+
+						if(stringFromRuleset === scope.value.current) return
+
+						scope.currentRecurringRuleset = icRecurring.createRecurringRuleset(scope.value.current)
+
+
+
+					})
+
+					scope.$watch( () => scope.editRecurringRuleset, () => {
+
 
 						const current_edit 	= scope.value.edit 
-						const next_edit		= scope.eventModelToString()						
+						const next_edit		= scope.editRecurringRuleset.toString()					
 					
+						console.log(scope.editRecurringRuleset,{current_edit, next_edit}, current_edit !== next_edit)
+
 						if(current_edit !== next_edit) scope.value.edit = next_edit
 
 					}, true)
@@ -1835,6 +1755,83 @@ angular.module('icDirectives', [
 			}
 		}
 	}
+])
+
+.directive('icEventDetails' ,[
+
+	'icRecurring',
+
+	function(icRecurring){
+
+		return {
+			restrict: 	'E',		
+			templateUrl: 'partials/ic-event-details.html',
+			scope:		{
+							icRecurringRules:	"<",
+							icTitle:			"<",
+							icDescription:		"<",
+							icUrl:				"<",
+							icIncludeIcalLink:	"<"
+						},
+
+			link: function(scope, element){
+
+
+				scope.updateDownload = () => {
+
+
+					if(!scope.icIncludeIcalLink) return
+
+					const calendar				=	scope.recurringRuleset
+													.toVCALENDAR({
+														title:			scope.icTitle,
+														description:	scope.icDescription,
+														url:			scope.icUrl
+													})
+
+						const filename			=	scope.icTitle
+													.toLowerCase()
+													.replaceAll(/\W/g,'-')
+													+'.ics'
+
+						const data				=	URL.createObjectURL( new File([calendar], filename ) )
+
+
+						const anchor = element[0].querySelector('a')
+					    anchor.setAttribute('href', data)
+					    anchor.setAttribute('download', filename)
+
+					    console.log(calendar)
+				}
+
+
+				scope.$watch('icRecurringRules', () => {
+
+					scope.recurringRuleset		= 	typeof scope.icRecurringRules == 'string'
+													?	icRecurring.createRecurringRuleset(scope.icRecurringRules)
+													:	scope.icRecurringRules
+
+					scope.currentRulesByMode	=	{}
+
+					scope.recurringRuleset.rules.forEach( rule => {
+						scope.currentRulesByMode[rule.iteration] 	= scope.currentRulesByMode[rule.iteration] || []	
+
+						scope.currentRulesByMode[rule.iteration].push(rule)
+					})
+
+					scope.currentRuleModes 		= 	Object.keys(scope.currentRulesByMode)
+					scope.sortedRules 			= 	icRecurring.availableIntervals
+													.map( key => scope.currentRulesByMode[key] || [])
+													.flat()
+
+				}, true)
+
+				scope.$watchGroup(['icRecurringRules', 'icIncludeIcalLink', 'icTitle', 'icDescription', 'icUrl'], () => scope.updateDownload() )
+			}
+		}
+
+	}
+
 ])
 
 
@@ -1848,6 +1845,7 @@ angular.module('icDirectives', [
 
 		return {
 			restrict:		'AE',
+			transclude:		true,
 			templateUrl:	'partials/ic-item-property.html',
 			scope:			{
 								icTitle:		"<",
@@ -1859,7 +1857,7 @@ angular.module('icDirectives', [
 								icLor:			"<"
 							},
 
-			link: function(scope, element, attrs){
+			link: function(scope, element, attrs, controller){
 				
 				scope.ic = ic
 
@@ -1873,7 +1871,6 @@ angular.module('icDirectives', [
 						let		html 		= scope.icContent
 
 						;(matches||[]).forEach( match => {
-							console.log('match: ', match)
 							const number 	= match.replace(/[-\s\/]/g,'')
 							const link		= `<a class = "active" href = "tel:${number}">${match}</a>`
 							html = html.replace(match, link)

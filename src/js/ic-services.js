@@ -181,8 +181,6 @@ angular.module('icServices', [
 
 			updateValue(key, value){
 				this.newValues[key] = value
-
-				console.log('UPDATE', this.newValues)
 			}
 
 			toggleConfirmation(key, toggle){
@@ -207,7 +205,6 @@ angular.module('icServices', [
 
 				localStorage.setItem(this.storeKey, JSON.stringify(this.currentValues))
 
-				console.log('sTORE', this.confirmation, this.currentValues)
 			}
 
 		}
@@ -865,8 +862,6 @@ angular.module('icServices', [
 		})
 
 		function addFilter(list){
-
-			console.log('addFilter', list) //remove me
 
 			icItemStorage.registerFilter('list_'+list.id, function(item){
 				return icLists.itemInList(item, list.id)
@@ -3494,8 +3489,6 @@ angular.module('icServices', [
 
 				const data		= response.json()
 
-				console.log(data)
-
 				return data
 			}
 
@@ -3504,6 +3497,317 @@ angular.module('icServices', [
 		return new IcGeo()
 	}
 
+])
+
+.service('icRecurring', [
+
+	'icConfig',
+
+	function(icConfig){
+
+		class RecurringRule {
+
+
+			static availableIntervals = ['daily', 'mon-fri', 'weekly', 'bi-weekly', 'three-weekly', 'four-weekly']
+
+			_iteration	= undefined
+			_weekday	= undefined
+			startTime	= undefined
+			endTime		= undefined
+
+			set iteration(x) {
+				if(!RecurringRule.availableIntervals.includes(x)) throw new Error(`Unavailable iteration: ${x}`, { cause:x })
+				this._iteration = x
+			}
+
+			get iteration() {
+				return 	RecurringRule.availableIntervals.includes(this._iteration)
+						?	this._iteration
+						:	undefined
+			}
+
+			set weekday(x){
+				this._weekday = x
+			}
+
+			get weekday(){
+				return	['daily', 'mon-fri'].includes(this.iteration)
+						?	undefined
+						:	this._weekday
+			}
+
+			get startTimeString(){
+
+				if( !(this.startTime instanceof Date) ) return undefined
+				if( isNaN(this.startTime.getTime()) )	return undefined
+
+				return (""+this.startTime.getHours()).padStart(2,'0') + ':' + (""+this.startTime.getMinutes()).padStart(2,'0')
+			}
+
+			get endTimeString(){
+				if( !(this.endTime instanceof Date) ) 	return undefined
+				if( isNaN(this.endTime.getTime()) )		return undefined
+
+
+				return (""+this.endTime.getHours()).padStart(2, '0') + ':' + (""+this.endTime.getMinutes()).padStart(2,'0')
+			}
+
+
+
+			static from(flatRule){
+
+				flatRule 			= 	typeof flatRule === 'string'
+											?	JSON.parse(str)
+											:	flatRule
+
+				flatRule			=	flatRule || []							
+
+				const params 		= 	{}
+
+				params.iteration 	= 	flatRule[0]
+				params.weekday		= 	flatRule[1]
+				params.startTime	= 	new Date(1970,0,1,(flatRule[2]||'xx:xx').split(':')[0],(flatRule[2]||'xx:xx').split(':')[1]) 
+				params.endTime		= 	new Date(1970,0,1,(flatRule[3]||'xx:xx').split(':')[0],(flatRule[3]||'xx:xx').split(':')[1])
+
+				return new RecurringRule(params)
+			}
+
+			constructor({iteration, weekday, startTime, endTime}) {
+
+				this.iteration 	= iteration
+				this.weekday	= weekday
+				this.startTime	= startTime
+				this.endTime	= endTime
+
+			}
+
+			toJSON() {
+
+				const flatRule = [] // [iteration mode, weekday, start time, end time]
+
+				if(['daily', 'mon-fri', 'weekly', 'bi-weekly', 'three-weekly', 'four-weekly'].includes(this.iteration)){
+
+					flatRule[0] 	= 	this.iteration || undefined
+					flatRule[1]		=	['daily', 'mon-fri'].includes(this.iteration)
+										?	undefined
+										:	this.weekday || undefined					
+
+					flatRule[2]		=	this.startTimeString
+					flatRule[3]		=	this.endTimeString
+
+					return flatRule					
+				}
+
+			}
+
+			toVEVENT({title, description, location, startDate, endDate, url} = {}){
+
+				let fakeStartStr 	= undefined
+
+				if(!startDate){
+
+					const fakeStart = new Date()
+
+					fakeStart.setDate(fakeStart.getDate()-2)
+					fakeStartStr	=	fakeStart.toISOString().split('T')[0].replaceAll('-','')
+					startDate		=	fakeStartStr
+
+				}
+
+				const startDateStr 	= 	(startDate || '').replaceAll('-', '') 					// assumming YYYY-MM-DD
+
+				const startTimeStr 	= 	this.startTimeString
+										?	'T'+this.startTimeString.replaceAll(':', '')+'00' 	// assumming HH:mm
+										:	''
+				const endDateStr	= 	(endDate || '').replaceAll('-', '') 					// assumming YYYY-MM-DD
+
+				const endTimeStr 	= 	this.endTimeString
+										?	'T'+this.endTimeString.replaceAll(':', '')+'00' 	// assumming HH:mm
+										:	''
+
+
+				if(!this.iteration) throw new Error('missing .iteration')
+
+
+				const freq			=	{
+											'daily':		'FREQ=DAILY',
+											'weekly': 		'FREQ=WEEKLY',
+											'mon-fri':		'FREQ=WEEKLY',
+											'bi-weekly':	'FREQ=WEEKLY',
+											'three-weekly':	'FREQ=WEEKLY',
+											'four-weekly':	'FREQ=WEEKLY'
+
+										}[this.iteration]
+
+				const interval		=	{
+											'daily':		'INTERVAL=1',
+											'weekly': 		'INTERVAL=1',
+											'mon-fri':		'INTERVAL=1',
+											'bi-weekly':	'INTERVAL=2',
+											'three-weekly':	'INTERVAL=3',
+											'four-weekly':	'INTERVAL=4',
+
+										}[this.iteration]
+
+				const day			=	{
+											'mon':		'MO',
+											'tue':		'TU',
+											'wed':		'WE',
+											'thu':		'TH',
+											'fri':		'FR',
+											'sat':		'SA',
+											'sun':		'SU',
+										}[this.weekday]						
+
+				const byday			=	{
+											'daily':		'',
+											'weekly': 		`BYDAY=${day}`,
+											'mon-fri':		'BYDAY=MO,TU,WE,TH,FR',
+											'bi-weekly':	`BYDAY=${day}`,
+											'three-weekly':	`BYDAY=${day}`,
+											'four-weekly':	`BYDAY=${day}`
+
+										}[this.iteration]		
+
+				const rrule			=	[freq, interval, byday]
+										.filter( x => !!x)					
+										.join(';')
+
+				const exDate		=	fakeStartStr
+										?	`EXDATE;TZID=Europe/Berlin:${fakeStartStr}`
+										:	''
+
+				const dtstamp		=	new Date().toISOString().replaceAll(/(\:)|(\-)|(\.\d\d\d)/g,'')
+
+				const uid			=	crypto.randomUUID()
+
+				const dtstart		=	`DTSTART;TZID=Europe/Berlin:${startDateStr}${startTimeStr}`
+
+				const dtend			=	endDateStr
+										?	`DTEND;TZID=Europe/Berlin:${endDateStr}${endTimeStr}`
+										:	''
+
+
+				console.log({title})						
+
+				const vEVENT		=	`
+											BEGIN:VEVENT
+												UID:${uid}
+												DTSTAMP:${dtstamp}
+												${dtstart}
+												RRULE:${rrule}
+												${dtend}
+												SUMMARY:${title || ''}
+												URL:${url || ''}
+												DESCRIPTION;ENCODING=QUOTED-PRINTABLE:${ (description || '').replaceAll(/\n/g, '\\n')}
+												LOCATION:${location || ''}
+												${exDate}
+											END:VEVENT				
+										`					
+										.replaceAll(/(^\s*)|(\s*$)/gm, '')
+
+
+				return vEVENT
+			}
+
+
+			getErrors() {
+
+			}
+
+		}
+
+		class RecurringRuleset {
+
+			rules	= []
+
+			static from(flatRules){
+
+				flatRules =	typeof flatRules === 'string'
+							?	flatRules = JSON.parse(flatRules)
+							:	flatRules
+
+				if(!Array.isArray(flatRules)) throw new Error('Unable to parse argument into array of rules.', { cause: s })
+
+				
+				return new RecurringRuleset(flatRules)
+			}
+
+			constructor(rules) {
+				(rules|| []).forEach( rule => this.addRule(rule) )
+			}
+
+			toJSON() {
+				return this.rules
+			}
+
+			toString() {
+				return JSON.stringify(this.toJSON())
+			}
+
+			removeRule(rule){
+				const index = this.rules.indexOf(rule)
+				this.rules.splice(index,1)
+			}
+
+			addRule(rule){
+
+				if(! (rule instanceof RecurringRule ) ) rule = RecurringRule.from(rule)
+
+				this.rules.push(rule)
+			}
+
+			toVCALENDAR({title, description, location, startDate, startTime, endDate, endTime, url} = {}){
+
+				const prodId	=	icConfig.title.toLowerCase().replaceAll(/\W/g,'-')
+				const dtstamp	=	new Date().toISOString().replaceAll(/(\:)|(\-)|(\.\d\d\d)/g,'')
+				const vEVENTS 	= 	this.rules.map( rule => rule.toVEVENT({title, description, location, startDate, startTime, endDate, endTime, url}) ).join('\n')
+				const vCALENDAR	=	`
+										BEGIN:VCALENDAR										
+											VERSION:2.0											
+											PRODID:${prodId}
+											DTSTAMP:${dtstamp}
+											CALSCALE:GREGORIAN
+											BEGIN:VTIMEZONE
+												TZID:Europe/Berlin
+												BEGIN:DAYLIGHT
+													TZNAME:CEST
+													TZOFFSETFROM:+0100
+													TZOFFSETTO:+0200
+													DTSTART:19700329T020000
+													RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU
+												END:DAYLIGHT
+												BEGIN:STANDARD
+													TZNAME:CET
+													TZOFFSETFROM:+0200
+													TZOFFSETTO:+0100
+													DTSTART:19701025T030000
+													RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU
+												END:STANDARD
+											END:VTIMEZONE
+											${vEVENTS}
+										END:VCALENDAR
+									`
+									.replaceAll(/(^\s*)|(\s*$)/gm, '')
+
+				return vCALENDAR
+
+			}
+
+		}
+
+		class IcRecurring {
+
+			get availableIntervals(){ return RecurringRule.availableIntervals }
+
+			createRecurringRuleset(str){
+				return RecurringRuleset.from(str||[])
+			} 
+		
+		}
+
+		return new IcRecurring
+	}
 ])
 
 
@@ -3540,9 +3844,10 @@ angular.module('icServices', [
 	'icExport',
 	'icGeo',
 	'icRemotePages',
+	'icRecurring',
 	'$rootScope',
 
-	function(ic, icInit, icSite, icItemStorage, icLayout, icItemConfig, icTaxonomy, icFilterConfig, icLanguages, icFavourites, icOverlays, icAdmin, icUser, icStats, icConfig, icUtils, icConsent, icTiles, icOptions, icLists, icMainMap, icWebfonts, icItemRef, icKeyboard, icAutoFill, icExport, icGeo, icRemotePages, $rootScope ){
+	function(ic, icInit, icSite, icItemStorage, icLayout, icItemConfig, icTaxonomy, icFilterConfig, icLanguages, icFavourites, icOverlays, icAdmin, icUser, icStats, icConfig, icUtils, icConsent, icTiles, icOptions, icLists, icMainMap, icWebfonts, icItemRef, icKeyboard, icAutoFill, icExport, icGeo, icRemotePages, icRecurring, $rootScope ){
 
 		ic.admin		= icAdmin
 		ic.autoFill		= icAutoFill
@@ -3571,6 +3876,7 @@ angular.module('icServices', [
 		ic.export		= icExport
 		ic.geo			= icGeo
 		ic.remotePages	= icRemotePages
+		ic.recurring	= icRecurring
 
 		var stop 		= 	$rootScope.$watch(function(){
 								if(icInit.ready){
