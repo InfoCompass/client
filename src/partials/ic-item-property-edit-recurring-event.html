@@ -65,119 +65,117 @@
 
 	<!-- property proposals  end -->
 
-	<div>
 
-		<div class	= "recurring-rules">
+	<div class	= "recurring-rules">
 
+		<select 
+			ng-repeat-start 	= "rule in editRecurringRuleset.rules"
+			class 				= "iteration icon right icon-interface-down border-1"
+			ng-model			= "rule.iteration"
+			title				= "{{'ITEMS.RECUR_INTERVAL' | translate}}"
+		>
+			<option value = "daily">
+				{{'ITEMS.RECUR_DAILY' | translate}}
+			</option>
+			<option value = "mon-fri">
+				{{'ITEMS.RECUR_MON-FRI' | translate}}
+			</option>
+			<option value = "weekly">
+				{{'ITEMS.RECUR_WEEKLY' | translate}} &hellip; 
+			</option>
+			<option value = "bi-weekly">
+				{{'ITEMS.RECUR_BI-WEEKLY' | translate}} &hellip;
+			</option>
+			<option value = "three-weekly">
+				{{'ITEMS.RECUR_THREE-WEEKLY' | translate}} &hellip;
+			</option>
+			<option value = "four-weekly">
+				{{'ITEMS.RECUR_FOUR-WEEKLY' | translate}} &hellip;
+			</option>
+			<!-- <option value = "fixed_date">
+				{{'ITEMS.RECUR_FIXED_DATE' | translate}}
+			</option> -->
+		</select>
+
+		<div>
 			<select 
-				ng-repeat-start 	= "rule in editRecurringRuleset.rules"
-				class 				= "iteration icon right icon-interface-down border-1"
-				ng-model			= "rule.iteration"
-				title				= "{{'ITEMS.RECUR_INTERVAL' | translate}}"
+				ng-if		= "rule.iteration != 'daily' && rule.iteration != 'mon-fri'"
+				ng-model	= "rule.weekday"
+				class 		= "day icon right icon-interface-down border-1"
+				title		= "{{'ITEMS.RECUR_WEEKDAY' | translate}}" 
 			>
-				<option value = "daily">
-					{{'ITEMS.RECUR_DAILY' | translate}}
+
+				<option value = "mon">
+					{{'ITEMS.RECUR_MON' | translate }}
 				</option>
-				<option value = "mon-fri">
-					{{'ITEMS.RECUR_MON-FRI' | translate}}
+
+				<option value = "tue">
+					{{'ITEMS.RECUR_TUE' | translate }}
 				</option>
-				<option value = "weekly">
-					{{'ITEMS.RECUR_WEEKLY' | translate}} &hellip; 
+
+				<option value = "wed">
+					{{'ITEMS.RECUR_WED' | translate }}
 				</option>
-				<option value = "bi-weekly">
-					{{'ITEMS.RECUR_BI-WEEKLY' | translate}} &hellip;
+
+				<option value = "thu">
+					{{'ITEMS.RECUR_THU' | translate }}
 				</option>
-				<option value = "three-weekly">
-					{{'ITEMS.RECUR_THREE-WEEKLY' | translate}} &hellip;
+
+				<option value = "fri">
+					{{'ITEMS.RECUR_FRI' | translate }}
 				</option>
-				<option value = "four-weekly">
-					{{'ITEMS.RECUR_FOUR-WEEKLY' | translate}} &hellip;
+
+				<option value = "sat">
+					{{'ITEMS.RECUR_SAT' | translate }}
 				</option>
-				<!-- <option value = "fixed_date">
-					{{'ITEMS.RECUR_FIXED_DATE' | translate}}
-				</option> -->
+
+				<option value = "son">
+					{{'ITEMS.RECUR_SUN' | translate }}
+				</option>
+			
 			</select>
-
-			<div>
-				<select 
-					ng-if		= "rule.iteration != 'daily' && rule.iteration != 'mon-fri'"
-					ng-model	= "rule.weekday"
-					class 		= "day icon right icon-interface-down border-1"
-					title		= "{{'ITEMS.RECUR_WEEKDAY' | translate}}" 
-				>
-
-					<option value = "mon">
-						{{'ITEMS.RECUR_MON' | translate }}
-					</option>
-
-					<option value = "tue">
-						{{'ITEMS.RECUR_TUE' | translate }}
-					</option>
-
-					<option value = "wed">
-						{{'ITEMS.RECUR_WED' | translate }}
-					</option>
-
-					<option value = "thu">
-						{{'ITEMS.RECUR_THU' | translate }}
-					</option>
-
-					<option value = "fri">
-						{{'ITEMS.RECUR_FRI' | translate }}
-					</option>
-
-					<option value = "sat">
-						{{'ITEMS.RECUR_SAT' | translate }}
-					</option>
-
-					<option value = "son">
-						{{'ITEMS.RECUR_SUN' | translate }}
-					</option>
-				
-				</select>
-
-			</div>
-
-			<div class ="spacer"></div>
-
-			<input 
-				type 				= "time" 
-				class 				= "start-time"
-				ng-model			= "rule.startTime"
-				ng-model-options	= "{timeSecondsFormat:''}"
-				title				= "{{'ITEMS.RECUR_START_TIME' | translate}}" 
-			>
-
-			<input 
-				type 				= "time"
-				step				= "60"
-				class 				= "end-time"
-				ng-model			= "rule.endTime"				
-				ng-model-options	= "{timeSecondsFormat:''}"
-				title				= "{{'ITEMS.RECUR_END_TIME' | translate}}" 
-			>
-			<div 
-				ng-repeat-end
-				class				= "action"
-			>
-				<button 
-					ng-click 	= "editRecurringRuleset.removeRule(rule)"
-					class		= "remove icon icon-interface-close round bg-3 white"
-					title		= "{{'ITEMS.RECUR_REMOVE_RULE' | translate}}"					
-				>
-				</button>
-			</div>
 
 		</div>
 
-		<button 
-			class		= "bg-3 padding"
-			ng-click 	= "editRecurringRuleset.addRule(['weekly'])"
+		<div class ="spacer"></div>
+
+		<input 
+			type 				= "time" 
+			class 				= "start-time"
+			ng-model			= "rule.startTime"
+			ng-model-options	= "{timeSecondsFormat:''}"
+			title				= "{{'ITEMS.RECUR_START_TIME' | translate}}" 
 		>
-			{{'ITEMS.RECUR_ADD_RULE' | translate}}
-		</button>
+
+		<input 
+			type 				= "time"
+			step				= "60"
+			class 				= "end-time"
+			ng-model			= "rule.endTime"				
+			ng-model-options	= "{timeSecondsFormat:''}"
+			title				= "{{'ITEMS.RECUR_END_TIME' | translate}}" 
+		>
+		<div 
+			ng-repeat-end
+			class				= "action"
+		>
+			<button 
+				ng-click 	= "editRecurringRuleset.removeRule(rule)"
+				class		= "remove icon icon-interface-close round bg-3 white"
+				title		= "{{'ITEMS.RECUR_REMOVE_RULE' | translate}}"					
+			>
+			</button>
+		</div>
 
 	</div>
+
+	<button 
+		class		= "bg-3 padding"
+		ng-click 	= "editRecurringRuleset.addRule(['weekly']); $event.preventDefault()"
+	>
+		{{'ITEMS.RECUR_ADD_RULE' | translate}}
+	</button>
+
 
 
 	<div class  = "note col-1">{{"ITEMS.%s_NOTE" | fill : (icTranslationKey || icKey) | translate }}</div>
