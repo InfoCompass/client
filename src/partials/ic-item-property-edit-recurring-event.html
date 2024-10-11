@@ -4,9 +4,9 @@
 	ng-class	= "{invalid: errors}"
 >
 		
-	<div ng-if 	= "!hideCurrentValue" class = "current-value-parent-box">
+	<div class = "current-value-parent-box">
 
-			<div>
+			<div ng-if 	= "!hideCurrentValue">
 				<span class =" flex">
 					{{'ITEMS.RECUR_CURRENT_VALUE' | translate }}:	
 				</span>
@@ -31,8 +31,8 @@
 						{{'ITEMS.RECUR_EDIT_VALUE' | translate }}:	
 					</span>
 					<button
+						ng-if 		= "!hideCurrentValue"
 						ng-click	= "revert()" 
-						
 						type		= "button"
 						title		= "{{ 'INTERFACE.PROPERTY_REVERT' | translate }}"
 						class		= "icon icon-interface-item_revert active"
