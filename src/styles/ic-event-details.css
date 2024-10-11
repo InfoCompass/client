@@ -1,0 +1,35 @@
+
+ic-event-details .details {
+	display:					grid !important;
+	grid-template-columns:		repeat(3,min-content);
+	column-gap:					0.5rem;
+}
+
+ic-event-details .details  .leading:not(.first) {
+	margin-top:					1rem;
+}
+
+ic-event-details .details  .iteration {
+	white-space:				nowrap;
+}
+
+
+ic-event-details .details  .time-range {
+	font-family:				mono;
+	display:					flex;
+	white-space:				nowrap;
+}
+
+ic-event-details .details  .time-range .link {
+	flex:						1 1 0;
+}
+
+ic-event-details .details  .time-range > * {
+	display:					inline-block;
+}
+
+ic-event-details a[download] {
+	display:					inline-block;
+	margin-top:					1rem;
+}
+

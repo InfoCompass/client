@@ -11,10 +11,18 @@
 					{{'ITEMS.RECUR_CURRENT_VALUE' | translate }}:	
 				</span>
 				<ic-event-details 
+					ng-if				= "currentRecurringRuleset && currentRecurringRuleset.rules.length > 0"
 					class				= "current-value {{diff()? 'diff': ''}}"
 					ic-recurring-rules	= "currentRecurringRuleset" 
 				>
-				</ic-event-details>			
+				</ic-event-details>		
+
+				<div 
+					ng-if				= "!currentRecurringRuleset || currentRecurringRuleset.rules.length == 0 "			
+					class 				= "no-value current-value {{diff()? 'diff': ''}}"
+				>
+					{{'ITEMS.RECUR_NO_RULES' | translate}}
+				</div>	
 			</div>
 
 			<div ng-if		= "!updating && diff()">
@@ -32,10 +40,18 @@
 					</button>	
 				</div>
 				<ic-event-details 
-					class				= "current-value"
+					ng-if				= "editRecurringRuleset && editRecurringRuleset.rules.length > 0"
+					class				= "current-value"				
 					ic-recurring-rules 	= "editRecurringRuleset" 
 				>		
 				</ic-event-details>
+
+				<div 
+					ng-if				= "!editRecurringRuleset || editRecurringRuleset.rules.length == 0 "			
+					class 				= "no-value current-value"
+				>
+					{{'ITEMS.RECUR_NO_RULES' | translate}}
+				</div>	
 			</div>
 			
 	</div>

@@ -1,0 +1,60 @@
+<div class = "details">
+	<span 
+		ng-repeat-start 	= "rule in sortedRules"
+		class 				= "iteration"
+		ng-class			= "{ leading: !sortedRules[$index-1] || sortedRules[$index-1].iteration != rule.iteration, first: $first }" 
+		title				= "{{'ITEMS.RECUR_INTERVAL' | translate}}"
+
+	>
+		<span
+			ng-if = "rule.iteration && (!sortedRules[$index-1] || sortedRules[$index-1].iteration != rule.iteration)"
+		>
+			{{ ('ITEMS.RECUR_%s' | fill: rule.iteration | translate) }}:
+		</span>
+	</span>
+
+	<span 
+		class 				= "weekday"
+		ng-class			= "{ leading: !sortedRules[$index-1] || sortedRules[$index-1].iteration != rule.iteration, first: $first  }"
+		title				= "{{'ITEMS.RECUR_WEEKDAY' | translate}}"
+
+	>
+		{{rule.weekday && ('ITEMS.RECUR_%s' | fill: rule.weekday | translate) }}
+	</span>
+
+	<span 
+		class 				= "time-range"
+		ng-class			= "{ leading: !sortedRules[$index-1] || sortedRules[$index-1].iteration != rule.iteration, first: $first}" 	
+		ng-repeat-end
+	>
+		<time
+			class 			= "start-time"
+			date-time 		= "{{ ( rule.startTime | isValidDate) && (rule.startTime	| date : 'HH:mm') || '' }}"
+			title			= "{{'ITEMS.RECUR_START_TIME' | translate}}"
+		>
+			{{ ( rule.startTime | isValidDate) && ( rule.startTime	| date : 'HH:mm') || '' }}
+		</time><!--
+	 --><span class = "link">
+			{{ 
+				    ( rule.startTime | isValidDate) 	&& ( rule.endTime | isValidDate ) && '&ndash;' 
+				|| !( rule.startTime | isValidDate ) 	&& ( rule.endTime | isValidDate ) && ('ITEMS.RECUR_UNTIL'|translate)+'&nbsp;' || ''}}
+		</span><!--
+	 --><time
+			class 			= "end-time"
+			date-time 		= "{{ (rule.endTime | isValidDate) && (rule.endTime	| date : 'HH:mm') || '' }}"
+			title			= "{{'ITEMS.RECUR_END_TIME' | translate}}"
+		>
+			{{ ( rule.endTime | isValidDate) && (rule.endTime | date : 'HH:mm') || ''}}
+
+		</time>
+	</span>
+</div>
+<a 
+	ng-if		= "icIncludeIcalLink"
+	class		= "active"
+	download
+>
+	{{'ITEMS.RECUR_DOWNLOAD' | translate}}
+</a>
+
+

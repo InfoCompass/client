@@ -218,6 +218,7 @@ ic-item-property-edit[ic-recurring-event] .current-value-parent-box {
 	flex-wrap:					wrap;
 	gap:						0.5rem;
 	margin:						1rem 0;
+	line-height:				1.5;
 }
 
 ic-item-property-edit[ic-recurring-event] .current-value-parent-box > *{
@@ -229,16 +230,15 @@ ic-item-property-edit[ic-recurring-event] .current-value-parent-box > *:last-chi
 }
 
 ic-item-property-edit[ic-recurring-event] .current-value {
-	line-height:				1.1rem;
+	line-height:				1.2rem;
 }
 
-ic-item-property-edit[ic-recurring-event] ic-event-details {
+ic-item-property-edit[ic-recurring-event] ic-event-details,
+ic-item-property-edit[ic-recurring-event] .no-value {
 	margin-top:					1rem;
 }
 
 ic-item-property-edit[ic-recurring-event] .current-value.diff{
-
-	margin-top:					0.5rem;
 
 	background:					linear-gradient(to top left,
 									rgba(0,0,0,0) 0%,

@@ -1709,11 +1709,7 @@ angular.module('icDirectives', [
 	
 					scope.$watch('value.edit', () => {
 
-						console.log('VALU EDIT')
-
 						const stringFromRuleset = scope.editRecurringRuleset.toString()
-
-						console.log('VALU EDIT', stringFromRuleset == scope.value.edit, stringFromRuleset)
 
 						if(stringFromRuleset == scope.value.edit) return
 
