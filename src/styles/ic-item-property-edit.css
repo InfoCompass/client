@@ -216,13 +216,12 @@ ic-item-property-edit .time label > *{
 ic-item-property-edit[ic-recurring-event] .current-value-parent-box {
 	display:					flex;	
 	flex-wrap:					wrap;
-	gap:						0.5rem;
 	margin:						1rem 0;
 	line-height:				1.5;
 }
 
 ic-item-property-edit[ic-recurring-event] .current-value-parent-box > *{
-	flex:						0 0 auto;	
+	flex:						1 0 auto;	
 }
 
 ic-item-property-edit[ic-recurring-event] .current-value-parent-box > *:last-child {
@@ -233,7 +232,6 @@ ic-item-property-edit[ic-recurring-event] .current-value {
 	line-height:				1.2rem;
 }
 
-ic-item-property-edit[ic-recurring-event] ic-event-details,
 ic-item-property-edit[ic-recurring-event] .no-value {
 	margin-top:					1rem;
 }

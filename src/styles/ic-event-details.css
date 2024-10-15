@@ -1,16 +1,35 @@
 
 ic-event-details .details {
 	display:					grid !important;
-	grid-template-columns:		repeat(3,min-content);
-	column-gap:					0.5rem;
+	grid-template-columns:		repeat(2,max-content);
+	column-gap:					1rem;
+	margin-bottom:				1rem;
 }
 
-ic-event-details .details  .leading:not(.first) {
+
+ic-event-details .details .iteration {
+	grid-column:				span 2;
+	white-space:				nowrap;
+}
+
+ic-event-details .details .iteration.leading {
 	margin-top:					1rem;
 }
 
-ic-event-details .details  .iteration {
-	white-space:				nowrap;
+ic-event-details .details .iteration.daily {
+	grid-column:				span 1;
+}
+
+ic-event-details .details .iteration.daily + .weekday {
+	display:					none;
+}
+
+ic-event-details .details .iteration.daily.leading  + .weekday + .time-range {
+	margin-top:					1rem;
+}
+
+ic-event-details .details .weekday {
+	padding-left:				1rem;
 }
 
 
@@ -29,7 +48,7 @@ ic-event-details .details  .time-range > * {
 }
 
 ic-event-details a[download] {
-	display:					inline-block;
-	margin-top:					1rem;
+	display:					block !important;
+	margin-bottom:				1rem;
 }
 

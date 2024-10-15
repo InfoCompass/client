@@ -1,8 +1,11 @@
-<div class = "details">
+<div 
+	ng-if	= "sortedRules && sortedRules.length > 0"
+	class 	= "details"
+>
 	<span 
 		ng-repeat-start 	= "rule in sortedRules"
-		class 				= "iteration"
-		ng-class			= "{ leading: !sortedRules[$index-1] || sortedRules[$index-1].iteration != rule.iteration, first: $first }" 
+		class 				= "iteration {{rule.iteration}}"
+		ng-class			= "{ leading: !sortedRules[$index-1] || sortedRules[$index-1].iteration != rule.iteration, first: $first}" 
 		title				= "{{'ITEMS.RECUR_INTERVAL' | translate}}"
 
 	>
@@ -50,11 +53,10 @@
 	</span>
 </div>
 <a 
-	ng-if		= "icIncludeIcalLink"
+	ng-if		= "sortedRules && sortedRules.length > 0 && icIncludeIcalLink"
 	class		= "active"
-	download
+	href		= "{{data}}"
+	download	= "{{filename}}"
 >
 	{{'ITEMS.RECUR_DOWNLOAD' | translate}}
 </a>
-
-

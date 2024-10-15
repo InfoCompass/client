@@ -1756,8 +1756,9 @@ angular.module('icDirectives', [
 .directive('icEventDetails' ,[
 
 	'icRecurring',
+	'$sce',
 
-	function(icRecurring){
+	function(icRecurring, $sce){
 
 		return {
 			restrict: 	'E',		
@@ -1771,35 +1772,6 @@ angular.module('icDirectives', [
 						},
 
 			link: function(scope, element){
-
-
-				scope.updateDownload = () => {
-
-
-					if(!scope.icIncludeIcalLink) return
-
-					const calendar				=	scope.recurringRuleset
-													.toVCALENDAR({
-														title:			scope.icTitle,
-														description:	scope.icDescription,
-														url:			scope.icUrl
-													})
-
-						const filename			=	scope.icTitle
-													.toLowerCase()
-													.replaceAll(/\W/g,'-')
-													+'.ics'
-
-						const data				=	URL.createObjectURL( new File([calendar], filename ) )
-
-
-						const anchor = element[0].querySelector('a')
-					    anchor.setAttribute('href', data)
-					    anchor.setAttribute('download', filename)
-
-					    console.log(calendar)
-				}
-
 
 				scope.$watch('icRecurringRules', () => {
 
@@ -1821,6 +1793,32 @@ angular.module('icDirectives', [
 													.flat()
 
 				}, true)
+
+				scope.updateDownload = () => {
+
+
+					if(!scope.icIncludeIcalLink) return
+
+					const calendar	=	scope.recurringRuleset
+													.toVCALENDAR({
+														title:			scope.icTitle,
+														description:	scope.icDescription,
+														url:			scope.icUrl
+													})
+
+					const filename	=	scope.icTitle
+										.toLowerCase()
+										.replaceAll(/\W/g,'-')
+										+'.ics'
+
+					const data		=	URL.createObjectURL( new File([calendar], filename ) )
+
+					scope.data 		= $sce.trustAsUrl(data)
+					scope.filename	= filename
+
+				}
+
+
 
 				scope.$watchGroup(['icRecurringRules', 'icIncludeIcalLink', 'icTitle', 'icDescription', 'icUrl'], () => scope.updateDownload() )
 			}

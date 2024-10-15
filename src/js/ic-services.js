@@ -3688,8 +3688,6 @@ angular.module('icServices', [
 										:	''
 
 
-				console.log({title})						
-
 				const vEVENT		=	`
 											BEGIN:VEVENT
 												UID:${uid}
