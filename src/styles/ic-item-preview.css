@@ -116,6 +116,8 @@ ic-item-preview[ic-date] .stats > * .icon {
 ic-item-preview[ic-date] .stats .time {
 	flex:					0 0 auto;
 	min-width:				7em;
+	display:				grid;
+	grid-template-columns:	repeat(3, auto);
 }
 
 ic-item-preview[ic-date] .stats .location {

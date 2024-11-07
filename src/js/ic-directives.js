@@ -298,6 +298,7 @@ angular.module('icDirectives', [
 
 							if(!times || times.length == 0)  return
 
+
 							let 	itemsByTime = timesByDate.get(date)
 
 							if(!itemsByTime){
@@ -318,14 +319,16 @@ angular.module('icDirectives', [
 					scope.dates 		= 	Array.from(timesByDate.keys()).sort()
 					scope.itemsByDate	= 	new Map(scope.dates.map( date =>  {
 
-												const itemsByTime 	= timesByDate.get(date)
-												const times			= Array.from(itemsByTime.keys()).sort()
+												const itemsByTime 	= 	timesByDate.get(date)
+												const times			= 	Array.from(itemsByTime.keys()).sort()
 
+												const items			= 	times
+																		.map( time => itemsByTime.get(time))
+																		.filter( (x,i,a) => a.indexOf(x) == i)
 
-												return [date, times.map( time => itemsByTime.get(time))]
+												return [date, items]
 											}))
 
-					console.log('IBD', scope.itemsByDate)
 
 				}						
 
@@ -360,8 +363,8 @@ angular.module('icDirectives', [
 
 				if(!calendarKey) return
 
-				if(scope.icItem){
 
+				scope.$watch( () => scope.icItem, () => {
 					scope.times = []
 
 					//TODO use actual values!!
@@ -369,11 +372,10 @@ angular.module('icDirectives', [
 
 					if(!ruleset) return 
 
-					scope.times = ruleset.getMatchingTimes()
+					scope.times = ruleset.getMatchingTimes(scope.icDate)
 
-					console.log(scope.icItem.title, scope.times)
-
-				}
+					console.log(scope.icItem.title, scope.times, ruleset)
+				})
 
 			}
 		}

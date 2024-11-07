@@ -3901,87 +3901,108 @@ angular.module('icServices', [
 										.filter( line => !!line)
 
 
-				const flatRules 	=  	lines.map( line => {
 
-											const weekdays = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag']
+				const preRules 	=  	[]
 
-											let matches
+				lines.forEach( line => {
 
-											// Jeden Mittwoch, 18:30 – 20 Uhr
-											// Jeden Mittwoch, 15:00 – 17:00 Uhr
+							const weekdays = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag']
 
-											matches = line.match(/^[\s-]*Jeden[\s]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)s?[\,\s\:]*(\d?\d:\d\d|\d?\d)[\s-–]*(\d?\d\:\d\d|\d?\d[\s]*Uhr)/)
+							let matches
 
-											if(matches){
+							// Jeden Mittwoch, 18:30 – 20 Uhr
+							// Jeden Mittwoch, 15:00 – 17:00 Uhr
 
-												return	{
-															startTime: 	`${normalizeTime(matches[2])}`,
-															endTime:	`${normalizeTime(matches[3])}`,
-															daysOfWeek:	[normalizeDayOfWeek(matches[1])],
-														}
-											}
+							matches = line.match(/^[\s-]*Jeden[\s]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)s?[\,\s\:]*(\d?\d:\d\d|\d?\d)[\s-–]*(\d?\d\:\d\d|\d?\d[\s]*Uhr)/)
 
-											// Dienstags: 17:30 – 19:30 Uhr
-											matches = line.match(/^[\s-]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)s?[\,\s\:]*(\d\d:\d\d|\d?\d)[\s-–]*(\d\d\:\d\d|\d?\d[\s]*Uhr)/)
+							if(matches){
 
-											if(matches){
+								preRules.push({
+									startTime: 	`${normalizeTime(matches[2])}`,
+									endTime:	`${normalizeTime(matches[3])}`,
+									daysOfWeek:	[normalizeDayOfWeek(matches[1])],
+								})
+							}
 
-												return 	{
-															startTime: 	`${normalizeTime(matches[2])}`,
-															endTime:	`${normalizeTime(matches[3])}`,
-															daysOfWeek:	[normalizeDayOfWeek(matches[1])],
-														}
-											}
+							// Dienstags: 17:30 – 19:30 Uhr
+							matches = line.match(/^[\s-]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)s?[\,\s\:]*(\d\d:\d\d|\d?\d)[\s-–]*(\d\d\:\d\d|\d?\d[\s]*Uhr)/)
 
+							if(matches){
 
-											// Montag – Freitag: 08:00 – 14:00 Uhr	
+								preRules.push({
+									startTime: 	`${normalizeTime(matches[2])}`,
+									endTime:	`${normalizeTime(matches[3])}`,
+									daysOfWeek:	[normalizeDayOfWeek(matches[1])],
+								})
+							}
 
-											matches = line.match(/^[\s-]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)[\s-–bis]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)[\,\s\:]*(\d?\d:\d\d)[\s-–]*(\d?\d\:\d\d|\d\d[\s]*Uhr)/)
+							// Freitag: 09:00 – 12:00 Uhr und 13:00 – 17:00 Uhr <-- zweiter Teil	
 
-											if(matches){
+							matches = line.match(/^[\s-]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)s?[\,\s\:]*.*und\s*(\d\d:\d\d|\d?\d)[\s-–]*(\d\d\:\d\d|\d?\d[\s]*Uhr)/)
 
+							if(matches){
 
-												return	{
-															startTime: 	`${normalizeTime(matches[3])}`,
-															endTime:	`${normalizeTime(matches[4])}`,
-															daysOfWeek:	weekdays
-																		.slice(weekdays.indexOf(matches[1]), weekdays.indexOf(matches[2])+1)
-																		.map(normalizeDayOfWeek),
-														}
-											}
+								preRules.push({
+									startTime: 	`${normalizeTime(matches[2])}`,
+									endTime:	`${normalizeTime(matches[3])}`,
+									daysOfWeek:	[normalizeDayOfWeek(matches[1])],
+								})
+							}
 
-											// Montag, Freitag: 08:00 – 14:00 Uhr	
+							// Montag – Freitag: 08:00 – 14:00 Uhr	
 
-											matches = line.match(/^[\s-]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)[\s,]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)[\,\s\:]*(\d?\d:\d\d)[\s-–]*(\d?\d\:\d\d|\d\d[\s]*Uhr)/)
+							matches = line.match(/^[\s-]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)[\s-–bis]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)[\,\s\:]*(\d?\d:\d\d)[\s-–]*(\d?\d\:\d\d|\d\d[\s]*Uhr)/)
 
-											if(matches){
-
-
-												return	{
-															startTime: 	`${normalizeTime(matches[3])}`,
-															endTime:	`${normalizeTime(matches[4])}`,
-															daysOfWeek:	[normalizeDayOfWeek(matches[1]), normalizeDayOfWeek(matches[2])],
-														}
-											}
-
-											// Montag, Dienstag, Freitag: 08:00 – 14:00 Uhr	
-
-											matches = line.match(/^[\s-]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)[\s,]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)[\s,]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)[\,\s\:]*(\d?\d:\d\d)[\s-–]*(\d?\d\:\d\d|\d\d[\s]*Uhr)/)
-
-											if(matches){
+							if(matches){
 
 
-												return	{
-															startTime: 	`${normalizeTime(matches[4])}`,
-															endTime:	`${normalizeTime(matches[5])}`,
-															daysOfWeek:	[normalizeDayOfWeek(matches[1]), normalizeDayOfWeek(matches[2]), normalizeDayOfWeek(matches[3])],
-														}
-											}
+								preRules.push({
+									startTime: 	`${normalizeTime(matches[3])}`,
+									endTime:	`${normalizeTime(matches[4])}`,
+									daysOfWeek:	weekdays
+												.slice(weekdays.indexOf(matches[1]), weekdays.indexOf(matches[2])+1)
+												.map(normalizeDayOfWeek),
+								})
+							}
 
-										})	
-										.filter(ev=>!!ev)
-										.map( ev => (ev.daysOfWeek||[]).map( weekday => ['weekly', weekday, ev.startTime, ev.endTime ]) )
-										.flat()
+							// Montag, Freitag: 08:00 – 14:00 Uhr	
+
+							matches = line.match(/^[\s-]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)[\s,]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)[\,\s\:]*(\d?\d:\d\d)[\s-–]*(\d?\d\:\d\d|\d\d[\s]*Uhr)/)
+
+							if(matches){
+
+
+								preRules.push({
+									startTime: 	`${normalizeTime(matches[3])}`,
+									endTime:	`${normalizeTime(matches[4])}`,
+									daysOfWeek:	[normalizeDayOfWeek(matches[1]), normalizeDayOfWeek(matches[2])],
+								})
+							}
+
+							// Montag, Dienstag, Freitag: 08:00 – 14:00 Uhr	
+
+							matches = line.match(/^[\s-]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)[\s,]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)[\s,]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)[\,\s\:]*(\d?\d:\d\d)[\s-–]*(\d?\d\:\d\d|\d\d[\s]*Uhr)/)
+
+							if(matches){
+
+								preRules.push({
+									startTime: 	`${normalizeTime(matches[4])}`,
+									endTime:	`${normalizeTime(matches[5])}`,
+									daysOfWeek:	[normalizeDayOfWeek(matches[1]), normalizeDayOfWeek(matches[2]), normalizeDayOfWeek(matches[3])],
+								})
+							}
+
+
+
+						})	
+
+						const flatRules	=	 preRules
+											.filter(ev=>!!ev)
+											.map( ev => (ev.daysOfWeek||[]).map( weekday => ['weekly', weekday, ev.startTime, ev.endTime ]) )
+											.flat()
+											.map( rule => JSON.stringify(rule))
+											.filter( (str,index,arr) => arr.indexOf(str) == index)
+											.map( str => JSON.parse(str) )
 
 
 						return this.createRecurringRuleset(flatRules)

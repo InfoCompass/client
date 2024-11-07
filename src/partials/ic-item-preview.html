@@ -65,11 +65,12 @@
 			 --><span class = "link">
 					{{ 
 						    ( timeRange[0] | isValidDate) 	&& ( timeRange[1] | isValidDate ) && '&ndash;' 
-						|| !( timeRange[0] | isValidDate ) && ( timeRange[1] | isValidDate ) && ('ITEMS.RECUR_UNTIL'|translate)+'&nbsp;' 
+						|| !( timeRange[0] | isValidDate ) 	&& ( timeRange[1] | isValidDate ) && ('ITEMS.RECUR_UNTIL'|translate)+'&nbsp;' 
 						|| ''
 					}}
 				</span><!--
-			 --><time			 		
+			 --><time	
+			 		ng-repeat-end
 					class 			= "end-time"
 					date-time 		= "{{ (timeRange[1] | isValidDate) && (timeRange[1]	| date : 'HH:mm') || '' }}"
 					title			= "{{'ITEMS.RECUR_END_TIME' | translate}}"
@@ -77,7 +78,6 @@
 					{{ ( timeRange[1] | isValidDate) && (timeRange[1] | date : 'HH:mm') || ''}}
 
 				</time>
-				<br ng-repeat-end>
 			</div>
 			<div class = "location">
 				<div class = "icon icon-section-location"></div>
