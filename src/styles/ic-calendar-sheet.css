@@ -1,0 +1,12 @@
+ic-calendar-sheet {
+	display:				block;
+}
+
+ic-calendar-sheet .day {	
+	font-size:			1.25rem;	
+}
+
+ic-calendar-sheet .month {
+	font-size:			0.9rem;
+	text-transform:		uppercase;
+}

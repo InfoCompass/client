@@ -40,7 +40,9 @@
 	 --><span class = "link">
 			{{ 
 				    ( rule.startTime | isValidDate) 	&& ( rule.endTime | isValidDate ) && '&ndash;' 
-				|| !( rule.startTime | isValidDate ) 	&& ( rule.endTime | isValidDate ) && ('ITEMS.RECUR_UNTIL'|translate)+'&nbsp;' || ''}}
+				|| !( rule.startTime | isValidDate ) 	&& ( rule.endTime | isValidDate ) && ('ITEMS.RECUR_UNTIL'|translate)+'&nbsp;' 
+				|| ''
+			}}
 		</span><!--
 	 --><time
 			class 			= "end-time"

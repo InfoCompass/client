@@ -28,3 +28,8 @@ ic-sorting button {
 	padding-left:				1rem !important;
 	padding-right:				1rem !important;
 }
+
+#section-list h2 {
+	margin-top:					0;
+
+}

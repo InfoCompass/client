@@ -1,4 +1,13 @@
-<ic-item-badge ic-item = "icItem"></ic-item-badge>
+<ic-item-badge 
+	ng-if	= "!icDate"
+	ic-item = "icItem"
+></ic-item-badge>
+
+<ic-calendar-sheet
+	ng-if	= "icDate"
+	ic-date = "icDate"
+>
+</ic-calendar-sheet>
 
 <div 
 	class 		= "content"
@@ -39,19 +48,44 @@
 		</div>
 
 
-		<!-- <span 
-			ng-if = "icCategory"
-			class = "category ic-col-cat-{{(icItem|icCategory).name}}"
+		<div 
+			ng-if 	= "icDate"
+			class	= "stats"
 		>
-			{{'CATEGORIES.%s' | fill : icCategory.name | translate}}
-		</span>
+			<div class = "time">
+				<div class = "icon icon-section-hours"></div>
+				<time
+					ng-repeat-start	= "timeRange in times"
+					class 			= "start-time"
+					date-time 		= "{{ ( timeRange[0] | isValidDate) && (timeRange[0]	| date : 'HH:mm') || '' }}"
+					title			= "{{'ITEMS.RECUR_START_TIME' | translate}}"
+				>
+				{{ ( timeRange[0] | isValidDate) && ( timeRange[0] | date : 'HH:mm') || '' }}
+				</time><!--
+			 --><span class = "link">
+					{{ 
+						    ( timeRange[0] | isValidDate) 	&& ( timeRange[1] | isValidDate ) && '&ndash;' 
+						|| !( timeRange[0] | isValidDate ) && ( timeRange[1] | isValidDate ) && ('ITEMS.RECUR_UNTIL'|translate)+'&nbsp;' 
+						|| ''
+					}}
+				</span><!--
+			 --><time			 		
+					class 			= "end-time"
+					date-time 		= "{{ (timeRange[1] | isValidDate) && (timeRange[1]	| date : 'HH:mm') || '' }}"
+					title			= "{{'ITEMS.RECUR_END_TIME' | translate}}"
+				>
+					{{ ( timeRange[1] | isValidDate) && (timeRange[1] | date : 'HH:mm') || ''}}
 
-		<span 
-			ng-if = "icType"
-			class ="type ic-col-type-{{(icItem|icType).name}}"
-		>
-			{{'TYPES.%s' | fill : icType.name | translate }}
-		</span> -->
+				</time>
+				<br ng-repeat-end>
+			</div>
+			<div class = "location">
+				<div class = "icon icon-section-location"></div>
+				<span> {{ (icItem | project : 'location') }} </span>
+				<span> {{ (icItem | project : 'address') }} </span>
+			</div>
+		</div>
+
 </div>
 
 <div 

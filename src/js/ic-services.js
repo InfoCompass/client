@@ -3505,6 +3505,9 @@ angular.module('icServices', [
 
 	function(icConfig){
 
+
+		// TODO: change startTime to strings, no need for Date objects, right?
+
 		class RecurringRule {
 
 
@@ -3560,14 +3563,14 @@ angular.module('icServices', [
 											?	JSON.parse(str)
 											:	flatRule
 
-				flatRule			=	flatRule || []							
+				flatRule			=	flatRule || []						
 
 				const params 		= 	{}
 
 				params.iteration 	= 	flatRule[0]
 				params.weekday		= 	flatRule[1]
-				params.startTime	= 	new Date(1970,0,1,(flatRule[2]||'xx:xx').split(':')[0],(flatRule[2]||'xx:xx').split(':')[1]) 
-				params.endTime		= 	new Date(1970,0,1,(flatRule[3]||'xx:xx').split(':')[0],(flatRule[3]||'xx:xx').split(':')[1])
+				params.startTime	= 	new Date(1970,0,1,...(flatRule[2]||'xx:xx').split(':')) 
+				params.endTime		= 	new Date(1970,0,1,...(flatRule[3]||'xx:xx').split(':'))
 
 				return new RecurringRule(params)
 			}
@@ -3585,7 +3588,7 @@ angular.module('icServices', [
 
 				const flatRule = [] // [iteration mode, weekday, start time, end time]
 
-				if(['daily', 'mon-fri', 'weekly', 'bi-weekly', 'three-weekly', 'four-weekly'].includes(this.iteration)){
+				if(this.iteration){
 
 					flatRule[0] 	= 	this.iteration || undefined
 					flatRule[1]		=	['daily', 'mon-fri'].includes(this.iteration)
@@ -3595,40 +3598,14 @@ angular.module('icServices', [
 					flatRule[2]		=	this.startTimeString
 					flatRule[3]		=	this.endTimeString
 
-					return flatRule					
 				}
+
+				return flatRule					
 
 			}
 
-			toVEVENT({title, description, location, startDate, endDate, url} = {}){
 
-				let fakeStartStr 	= undefined
-
-				if(!startDate){
-
-					const fakeStart = new Date()
-
-					fakeStart.setDate(fakeStart.getDate()-2)
-					fakeStartStr	=	fakeStart.toISOString().split('T')[0].replaceAll('-','')
-					startDate		=	fakeStartStr
-
-				}
-
-				const startDateStr 	= 	(startDate || '').replaceAll('-', '') 					// assumming YYYY-MM-DD
-
-				const startTimeStr 	= 	this.startTimeString
-										?	'T'+this.startTimeString.replaceAll(':', '')+'00' 	// assumming HH:mm
-										:	''
-				const endDateStr	= 	(endDate || '').replaceAll('-', '') 					// assumming YYYY-MM-DD
-
-				const endTimeStr 	= 	this.endTimeString
-										?	'T'+this.endTimeString.replaceAll(':', '')+'00' 	// assumming HH:mm
-										:	''
-
-
-				if(!this.iteration) throw new Error('missing .iteration')
-
-
+			getRRule(){
 				const freq			=	{
 											'daily':		'FREQ=DAILY',
 											'weekly': 		'FREQ=WEEKLY',
@@ -3673,6 +3650,41 @@ angular.module('icServices', [
 										.filter( x => !!x)					
 										.join(';')
 
+				return 'RRULE:'+rrule
+			}
+
+
+			toVEVENT({title, description, location, startDate, endDate, url} = {}){
+
+				let fakeStartStr 	= undefined
+
+				if(!startDate){
+
+					const fakeStart = new Date()
+
+					fakeStart.setDate(fakeStart.getDate()-2)
+					fakeStartStr	=	fakeStart.toISOString().split('T')[0].replaceAll('-','')
+					startDate		=	fakeStartStr
+
+				}
+
+				const startDateStr 	= 	(startDate || '').replaceAll('-', '') 					// assumming YYYY-MM-DD
+
+				const startTimeStr 	= 	this.startTimeString
+										?	'T'+this.startTimeString.replaceAll(':', '')+'00' 	// assumming HH:mm
+										:	''
+				const endDateStr	= 	(endDate || '').replaceAll('-', '') 					// assumming YYYY-MM-DD
+
+				const endTimeStr 	= 	this.endTimeString
+										?	'T'+this.endTimeString.replaceAll(':', '')+'00' 	// assumming HH:mm
+										:	''
+
+
+				if(!this.iteration) throw new Error('missing .iteration')
+
+				
+				const rrule			=	this.getRRule()
+
 				const exDate		=	fakeStartStr
 										?	`EXDATE;TZID=Europe/Berlin:${fakeStartStr}`
 										:	''
@@ -3693,7 +3705,7 @@ angular.module('icServices', [
 												UID:${uid}
 												DTSTAMP:${dtstamp}
 												${dtstart}
-												RRULE:${rrule}
+												${rrule}
 												${dtend}
 												SUMMARY:${title || ''}
 												URL:${url || ''}
@@ -3713,6 +3725,32 @@ angular.module('icServices', [
 
 			}
 
+			match(d = new Date()) {
+
+				const date		= new Date(d.getTime())
+
+				date.setHours(0)
+				date.setMinutes(0)
+
+				const next		= new Date(date.getTime())
+
+				next.setDate(date.getDate()+1)
+
+				const rrule 	= this.getRRule()
+
+				const year		= date.getFullYear()
+				const month		= (date.getMonth()+1+'').padStart(2, '0')
+				const day		= (date.getDate()+'').padStart(2, '0')
+
+				const dtstart 	= `DTSTART:${year}${month}${day}T000000`
+
+				const rule		= `${dtstart};\n${rrule}`
+
+				const isMatch	= RRule.fromString(rule).between(date,next).length != 0
+				
+				return isMatch
+			}
+
 		}
 
 		class RecurringRuleset {
@@ -3720,6 +3758,7 @@ angular.module('icServices', [
 			rules	= []
 
 			static from(flatRules){
+
 
 				flatRules =	typeof flatRules === 'string'
 							?	flatRules = JSON.parse(flatRules)
@@ -3732,7 +3771,7 @@ angular.module('icServices', [
 			}
 
 			constructor(rules) {
-				(rules|| []).forEach( rule => this.addRule(rule) )
+				(rules || []).forEach( rule => this.addRule(rule) )
 			}
 
 			toJSON() {
@@ -3753,6 +3792,13 @@ angular.module('icServices', [
 				if(! (rule instanceof RecurringRule ) ) rule = RecurringRule.from(rule)
 
 				this.rules.push(rule)
+			}
+
+			getMatchingTimes(date = new Date() ){
+
+				return 	this.rules
+						.filter(	rule => rule.match(date) )
+						.map( 		rule => [ rule.startTime, rule.endTime ] )
 			}
 
 			toVCALENDAR({title, description, location, startDate, startTime, endDate, endTime, url} = {}){
@@ -3800,6 +3846,146 @@ angular.module('icServices', [
 
 			createRecurringRuleset(str){
 				return RecurringRuleset.from(str||[])
+			}
+
+
+
+			guessFromTextDe(str){
+
+				function normalizeDate(d){
+
+					let match 
+					const germanDate = /(\d\d)\.(\d\d)\.(\d\d\d\d)/
+
+					match = d.match(germanDate)
+					
+					return `${match[3]}-${match[2]}-${match[1]}`
+				}
+
+				function normalizeTime(t){
+
+					if(t.match(/^\d\d:\d\d$/)) 	return t
+					if(t.match(/^\d\d$/)) 		return t+':00'
+					if(t.match(/^\d$/)) 		return '0'+t+':00'
+					if(t.match(/^\d:\d\d$/)) 	return '0'+t
+
+					let match 
+					
+					match = t.match(/^(\d\d)[\s]*Uhr$/)
+					
+					if(match) return `${match[1]}:00`
+
+				}	
+
+				function normalizeDayOfWeek(dow){
+					return {
+						'Montag':		'mon',
+						'Dienstag':		'tue',
+						'Mittwoch':		'wed',
+						'Donnerstag':	'thu',
+						'Freitag':		'fri',
+						'Samstag':		'sat',
+						'Sonntag':		'sun'
+					}[dow]
+				}
+
+
+				const isString 		= 	typeof str === 'string'
+				const emptyString	= 	isString && str.trim() ===''
+
+				if(!isString || emptyString) return null
+
+				const lines			= 	str
+										.split(/(\r|\n)/)
+										.map(line => line.trim())
+										.filter( line => !!line)
+
+
+				const flatRules 	=  	lines.map( line => {
+
+											const weekdays = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag']
+
+											let matches
+
+											// Jeden Mittwoch, 18:30 – 20 Uhr
+											// Jeden Mittwoch, 15:00 – 17:00 Uhr
+
+											matches = line.match(/^[\s-]*Jeden[\s]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)s?[\,\s\:]*(\d?\d:\d\d|\d?\d)[\s-–]*(\d?\d\:\d\d|\d?\d[\s]*Uhr)/)
+
+											if(matches){
+
+												return	{
+															startTime: 	`${normalizeTime(matches[2])}`,
+															endTime:	`${normalizeTime(matches[3])}`,
+															daysOfWeek:	[normalizeDayOfWeek(matches[1])],
+														}
+											}
+
+											// Dienstags: 17:30 – 19:30 Uhr
+											matches = line.match(/^[\s-]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)s?[\,\s\:]*(\d\d:\d\d|\d?\d)[\s-–]*(\d\d\:\d\d|\d?\d[\s]*Uhr)/)
+
+											if(matches){
+
+												return 	{
+															startTime: 	`${normalizeTime(matches[2])}`,
+															endTime:	`${normalizeTime(matches[3])}`,
+															daysOfWeek:	[normalizeDayOfWeek(matches[1])],
+														}
+											}
+
+
+											// Montag – Freitag: 08:00 – 14:00 Uhr	
+
+											matches = line.match(/^[\s-]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)[\s-–bis]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)[\,\s\:]*(\d?\d:\d\d)[\s-–]*(\d?\d\:\d\d|\d\d[\s]*Uhr)/)
+
+											if(matches){
+
+
+												return	{
+															startTime: 	`${normalizeTime(matches[3])}`,
+															endTime:	`${normalizeTime(matches[4])}`,
+															daysOfWeek:	weekdays
+																		.slice(weekdays.indexOf(matches[1]), weekdays.indexOf(matches[2])+1)
+																		.map(normalizeDayOfWeek),
+														}
+											}
+
+											// Montag, Freitag: 08:00 – 14:00 Uhr	
+
+											matches = line.match(/^[\s-]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)[\s,]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)[\,\s\:]*(\d?\d:\d\d)[\s-–]*(\d?\d\:\d\d|\d\d[\s]*Uhr)/)
+
+											if(matches){
+
+
+												return	{
+															startTime: 	`${normalizeTime(matches[3])}`,
+															endTime:	`${normalizeTime(matches[4])}`,
+															daysOfWeek:	[normalizeDayOfWeek(matches[1]), normalizeDayOfWeek(matches[2])],
+														}
+											}
+
+											// Montag, Dienstag, Freitag: 08:00 – 14:00 Uhr	
+
+											matches = line.match(/^[\s-]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)[\s,]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)[\s,]*(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)[\,\s\:]*(\d?\d:\d\d)[\s-–]*(\d?\d\:\d\d|\d\d[\s]*Uhr)/)
+
+											if(matches){
+
+
+												return	{
+															startTime: 	`${normalizeTime(matches[4])}`,
+															endTime:	`${normalizeTime(matches[5])}`,
+															daysOfWeek:	[normalizeDayOfWeek(matches[1]), normalizeDayOfWeek(matches[2]), normalizeDayOfWeek(matches[3])],
+														}
+											}
+
+										})	
+										.filter(ev=>!!ev)
+										.map( ev => (ev.daysOfWeek||[]).map( weekday => ['weekly', weekday, ev.startTime, ev.endTime ]) )
+										.flat()
+
+
+						return this.createRecurringRuleset(flatRules)
+
 			} 
 		
 		}

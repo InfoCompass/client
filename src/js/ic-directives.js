@@ -244,7 +244,92 @@ angular.module('icDirectives', [
 			scope:			{},
 
 			link: function(scope){
-				scope.ic = ic
+				scope.ic 		= ic
+				
+			}
+		}
+	}	
+])
+
+.directive('icSearchResultCalendar', [
+
+	'ic',
+	'icRecurring',
+	'icLanguages',
+
+	function(ic,icRecurring, icLanguages){
+		return 	{
+			restrict:		'E',
+			templateUrl:	'partials/ic-search-result-calendar.html',
+			scope:			{},
+
+			link: function(scope){
+				scope.ic 			= ic
+
+				scope.date 			= new Date()
+
+				scope.groupedItems 	= 	{}
+
+				scope.updateItemGroups = function(){
+
+					const timesByDate		= 	new Map()
+
+					const dates 			= 	new Array(7).fill().map( (_, index) => {
+													const d = new Date()
+													d.setDate(d.getDate()+index)
+													return d
+												})
+
+
+					scope.headingsByDate	=	new Map(dates.map(date => {
+													return [date, date.toLocaleString(icLanguages.currentLanguage,{ weekday:'long', day: '2-digit', month: 'long' })]
+												}))
+
+					ic.itemStorage.filteredList.forEach( item => {
+
+						ruleset = icRecurring.guessFromTextDe(item.hours.de)
+
+						if(!ruleset) return 
+
+						dates.forEach(date => {
+							//TODO use actual values!!
+													
+							const 	times 		= ruleset.getMatchingTimes(date)
+
+							if(!times || times.length == 0)  return
+
+							let 	itemsByTime = timesByDate.get(date)
+
+							if(!itemsByTime){
+								itemsByTime = new Map()
+								timesByDate.set(date, itemsByTime)
+							}
+
+							times.forEach( ([startTime, endTime]) => {
+								// its a new date object every time, so there should be no collision:
+								itemsByTime.set(startTime || endTime, item)
+
+							})
+
+						})
+
+					})
+
+					scope.dates 		= 	Array.from(timesByDate.keys()).sort()
+					scope.itemsByDate	= 	new Map(scope.dates.map( date =>  {
+
+												const itemsByTime 	= timesByDate.get(date)
+												const times			= Array.from(itemsByTime.keys()).sort()
+
+
+												return [date, times.map( time => itemsByTime.get(time))]
+											}))
+
+					console.log('IBD', scope.itemsByDate)
+
+				}						
+
+				scope.$watchCollection( () => ic.itemStorage.filteredList, () => scope.updateItemGroups() )
 			}
 		}
 	}	
@@ -255,18 +340,41 @@ angular.module('icDirectives', [
 
 	'ic',
 	'icTaxonomy',
+	'icConfig',
+	'icRecurring',
 
-	function(ic, icTaxonomy){
+	function(ic, icTaxonomy, icConfig, icRecurring){
 		return {
 
 			restrict: 		'AE',
 			templateUrl: 	'partials/ic-item-preview.html',
 			scope:			{
 								icItem:	"<",
+								icDate:	"<"
 							},
 
 			link: function(scope, element, attrs){
-				scope.ic = ic
+				scope.ic 			= 	ic
+
+				const calendarKey	=	icConfig && icConfig.calendar && icConfig.calendar.recurringRulesKey
+
+				if(!calendarKey) return
+
+				if(scope.icItem){
+
+					scope.times = []
+
+					//TODO use actual values!!
+					ruleset = icRecurring.guessFromTextDe(scope.icItem.hours.de)
+
+					if(!ruleset) return 
+
+					scope.times = ruleset.getMatchingTimes()
+
+					console.log(scope.icItem.title, scope.times)
+
+				}
+
 			}
 		}
 	}
@@ -293,6 +401,39 @@ angular.module('icDirectives', [
 	}
 ])
 
+.directive('icCalendarSheet', [
+
+	'ic',
+	'icLanguages',
+
+	function(ic,icLanguages){
+		return {
+
+			restrict: 		'E',
+			template: 		'<div class ="day">{{day}}</div><div class ="month">{{month}}</div>',
+			scope:			{
+								icItem:		"<",
+								icDate: 	"<",
+							},
+
+			link: function(scope, element, attrs){
+				scope.ic = ic
+
+
+				function update(){
+
+					if(scope.icDate instanceof Date){
+						scope.day	= scope.icDate.toLocaleString(icLanguages.currentLanguage,{ day: 	'2-digit' })
+						scope.month = scope.icDate.toLocaleString(icLanguages.currentLanguage,{ month: 	'short' })
+					}
+				}
+				
+				scope.$watch( () => icLanguages.currentLanguage,	update )
+				scope.$watch( () => scope.icDate, 					update )
+			}
+		}
+	}
+])
 
 .directive('icItemFullFooter',[
 	'icSite',
@@ -1777,9 +1918,15 @@ angular.module('icDirectives', [
 
 					scope.recurringRuleset		= 	typeof scope.icRecurringRules == 'string'
 													?	icRecurring.createRecurringRuleset(scope.icRecurringRules)
-													:	scope.icRecurringRules
+													:	undefined
 
 					scope.currentRulesByMode	=	{}
+
+					if(!scope.recurringRuleset){
+						scope.sortedRules		= []	
+						scope.currentRuleModes	= []	
+						return
+					}
 
 					scope.recurringRuleset.rules.forEach( rule => {
 						scope.currentRulesByMode[rule.iteration] 	= scope.currentRulesByMode[rule.iteration] || []	
@@ -1794,10 +1941,15 @@ angular.module('icDirectives', [
 
 				}, true)
 
-				scope.updateDownload = () => {
+				scope.updateDownloadLink = () => {
 
-
-					if(!scope.icIncludeIcalLink) return
+					if(	
+							!scope.icIncludeIcalLink 
+						||	!scope.recurringRuleset
+					){
+						scope.data = undefined
+						return
+					}
 
 					const calendar	=	scope.recurringRuleset
 													.toVCALENDAR({
@@ -1820,7 +1972,7 @@ angular.module('icDirectives', [
 
 
 
-				scope.$watchGroup(['icRecurringRules', 'icIncludeIcalLink', 'icTitle', 'icDescription', 'icUrl'], () => scope.updateDownload() )
+				scope.$watchGroup(['icRecurringRules', 'icIncludeIcalLink', 'icTitle', 'icDescription', 'icUrl'], () => scope.updateDownloadLink() )
 			}
 		}
 
@@ -2062,7 +2214,7 @@ angular.module('icDirectives', [
 				scope.update = function(search_term){
 					var input = element[0].querySelector('input')
 					
-					search_term = search_term.replace(/[\/?#]+/g,' ')
+					search_term = (search_term||'').replace(/[\/?#]+/g,' ')
 
 
 					input.focus()
@@ -3045,6 +3197,8 @@ angular.module('icDirectives', [
 				console.log({calendar})
 
 				window.setTimeout( () => calendar.render(), 10) 
+
+				// replace the following with icRecurring service
 
 				function updateEvents(){
 

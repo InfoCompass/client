@@ -14,9 +14,14 @@ var angular 					= require('angular'),
 	fullcalendar				= require('fullcalendar'),
 	fullcalendarAllLocales		= require('@fullcalendar/core/locales-all.cjs')
 
+	// rrule
+	rrule						= require('rrule')
+
 	// ui_calendar					= require('angular-ui-calendar'),
 	// jquery						= require('jquery')
 
 
 window.fullcalendar 	= fullcalendar
+window.rrule			= rrule
+window.RRule			= rrule.RRule
 

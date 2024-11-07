@@ -28,6 +28,7 @@
     "react-dom": "^18.2.0",
     "rimraf": "^3.0.2",
     "roboto-fontface": "^0.10.0",
+    "rrule": "^2.8.1",
     "sanitize-html": "^2.7.3",
     "save": "^2.9.0",
     "svgo": "^3.0.0",
