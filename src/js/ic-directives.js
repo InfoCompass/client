@@ -1112,6 +1112,7 @@ angular.module('icDirectives', [
 								icToggleOn:				"@",
 								icToggleOff:			"@",
 								icDefaultValue:			"@",
+								icStandardValues:		"<?"
 							},
 
 			templateUrl: 	function(tElement, tAttrs){
@@ -1828,6 +1829,62 @@ angular.module('icDirectives', [
 						if(current_edit !== next_edit) scope.value.edit = next_edit
 
 					}, true)
+
+
+
+				}
+
+
+				// standard values
+
+				scope.splitEditValues = function() {
+					return	(scope.value.edit || '')
+							.trim()
+							.split(',')
+							.map( x => x.trim())
+							.filter(v => !!v)
+
+				}
+
+				scope.isStandardValueSelected = function(x){
+					const values = 	scope.splitEditValues()
+					return values.includes(x)
+				}
+
+				scope.addStandardValue = function(x) {
+					if(!scope.icStandardValues.includes(x)) throw new Error(`Unknown standard value: ${x}, allowed values are: '${(scope.icStandardValues||[]).join(', ')}'`)
+
+					if(scope.isStandardValueSelected(x)) return
+
+					const values 		= scope.splitEditValues()
+
+					values.push(x)
+
+					scope.value.edit 	= values.join(', ')
+				}
+
+				scope.removeStandardValue = function(x){
+
+					if(!scope.icStandardValues.includes(x)) throw new Error(`Unknown standard value: ${x}, allowed values are: '${(scope.icStandardValues||[]).join(', ')}'`)
+
+					const values 		= 	scope.splitEditValues()
+
+					scope.value.edit 	=	values
+											.filter(v => v != x)
+											.join(', ')
+				}
+
+				scope.toggleStandardValue = function(x, toggle = undefined){
+					
+					if(toggle === undefined){
+						if( scope.isStandardValueSelected(x)) toggle = false
+						if(!scope.isStandardValueSelected(x)) toggle = true
+					}
+
+					toggle
+					?	scope.addStandardValue(x)
+					:	scope.removeStandardValue(x)
+
 
 				}
 
