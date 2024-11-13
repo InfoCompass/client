@@ -866,8 +866,6 @@ angular.module('icServices', [
 
 		function addFilter(list){
 
-			console.log('addFilter', list) //remove me
-
 			icItemStorage.registerFilter('list_'+list.id, function(item){
 				return icLists.itemInList(item, list.id)
 			})
@@ -2050,8 +2048,9 @@ angular.module('icServices', [
 	'icTaxonomy',
 	'icLanguages',
 	'icItemConfig',
+	'icOptions',
 
-	function($rootScope, icSite, icItemStorage, icTaxonomy, icLanguages, icItemConfig){
+	function($rootScope, icSite, icItemStorage, icTaxonomy, icLanguages, icItemConfig, icOptions){
 		icSite.sortDirectionAlpha = 1;
 		icSite.sortDirection = -1;
 		var icFilterConfig = this
@@ -2442,6 +2441,10 @@ angular.module('icServices', [
 			if(!x.match(/^[0-9a-zA-Z_-]+$/))	return 	[]	
 			if(!x.match(/[a-zA-Z]/))			return 	[]
 
+			const optionLabel = icOptions.getLabel(x)
+
+			if(optionLabel) return [optionLabel]
+
 			const tagKind = icTaxonomy.getTagKind(x)
 
 			if(tagKind)		return	(Object.values(icLanguages.translationTable) || [])
@@ -2450,6 +2453,8 @@ angular.module('icServices', [
 															&&	table[tagKind.toUpperCase()][x.toUpperCase()]
 										)
 										.filter(x => !!x)
+
+
 
 			return []
 
@@ -2460,10 +2465,10 @@ angular.module('icServices', [
 			function(){
 				// Tag groups:
 				return 	[
-							icItemStorage.getSearchTag(icSite.searchTerm, x => adHocTranslation(x) ),
 							icSite.filterByType,
 							icSite.filterByCategory,
-							icSite.filterByUnsortedTag
+							icSite.filterByUnsortedTag,
+							icItemStorage.getSearchTag(icSite.searchTerm, x => adHocTranslation(x) ),
 						]
 			},
 			arr => {
@@ -2472,9 +2477,9 @@ angular.module('icServices', [
 				.then( () => {
 					icItemStorage.updateFilteredList(arr, [
 						// Groups considered alternative to the above tags groups, only one tag of these groups can be active
-						null, 
 						icTaxonomy.types.map(function(type){ return type.name }), 
 						icTaxonomy.categories.map( category => [category.name, ...(category.tags||[]) ] ).flat(), 
+						null, 
 						null
 					])
 

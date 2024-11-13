@@ -507,30 +507,37 @@
 			return result
 		}
 
+		const normalizeString = function(s){
+			return 	accent_fold(s)
+					.trim()
+					.replace(/\s+/g, ' ')
+					.toLowerCase()
+
+		}
+
 		icItemStorage.getSearchTag = function(search_term, translationFn ){
 
 			if(typeof search_term != 'string') return null
 
-			search_term = accent_fold(search_term)
+			search_term 	= normalizeString(search_term)
 
 			if(!search_term) return null
 
-			var index 		= searchTerms.indexOf(search_term),
-				search_tag 	= 'search%1' 
+			var index 		= searchTerms.indexOf(search_term)
 
 			if(index == -1){
 
-
 				searchTerms.push(search_term)
+
 				index = searchTerms.length-1
 
 				var regex_array				= 	search_term.split(/\s/).map(function(part){ 
 													var regex = undefined
 													
 													try {
-														regex = new RegExp(accent_fold(part), 'i') 
+														regex = new RegExp(part, 'i') 
 													} catch(e) {
-														regex = new RegExp(accent_fold(part).replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"), 'i')
+														regex = new RegExp(part.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"), 'i')
 													}
 
 													return regex
@@ -540,16 +547,19 @@
 												})
 
 
-				const matchesString = function(x, regex){
+
+				const matchesString = function(x, needle){
 
 
 					if(typeof x != 'string') return false
 
-					const str = accent_fold( String(x) )
+					const str = normalizeString(x)
 
 					if(!str) return false
 
-					const matches_raw = str.match(regex)
+					const matches_raw = needle instanceof RegExp
+										?	str.match(needle)
+										:	normalizeString(str).includes(needle)
 
 					if(matches_raw) return true
 
@@ -559,38 +569,74 @@
 
 					if(translated_arr.length == 0) return false
 
-					const matches_translation = translated_arr.some( s => s.match(regex) )
+					const matches_translation = translated_arr.some( 
+													s =>	needle instanceof RegExp
+															?	s.match(needle) 
+															:	normalizeString(s).includes(needle)
+												)
 
 					if(matches_translation) return true
 
 					return false
 
-				}	
+				}
 
-				icItemStorage.registerFilter(search_tag.replace(/%1/,index), function(item){
-					return	regex_array.every(function(regex){
-								return searchable_properties.some(function(property){
-											switch(property.type){
-												case "array": 
-													return (item[property.name]||[]).some(sub => matchesString(sub, regex))
-												break 
 
-												case "object": 
-													return Object.keys(item[property.name]||{}).some(key => matchesString(item[property.name][key], regex) )
-												break 
+				// //loose:
+				// icItemStorage.registerFilter(`search-${index}-loose`, function(item){
+				// 	return	regex_array.every(function(regex){
+				// 				return searchable_properties.some(function(property){
+				// 							switch(property.type){
+				// 								case "array": 
+				// 									return (item[property.name]||[]).some(sub => matchesString(sub, regex))
+				// 								break 
 
-												default:
-													return matchesString(item[property.name], regex)
-												break
-											}
-										})
-							})
+				// 								case "object": 
+				// 									return Object.keys(item[property.name]||{}).some(key => matchesString(item[property.name][key], regex) )
+				// 								break 
 
-				}) 			
+				// 								default:
+				// 									return matchesString(item[property.name], regex)
+				// 								break
+				// 							}
+				// 						})
+				// 			})
+
+				// })
+
+				//strict:
+				icItemStorage.registerFilter(`search-${index}-strict`, function(item){
+					return	search_term.split(/\s/).every(function(part){
+						return searchable_properties.some(function(property){
+
+							let match = false
+
+							switch(property.type){
+								case "array": 
+									match = (item[property.name]||[]).some(sub => matchesString(sub, part))
+								break 
+
+								case "object": 
+									match =  Object.keys(item[property.name]||{}).some(key => matchesString(item[property.name][key], part) )
+								break 
+
+								default:
+									match = matchesString(item[property.name], part)
+								break
+							}
+
+							return match
+
+
+						})
+					})
+
+				})
+
 			} 
 
 
-			return search_tag.replace(/%1/,index)
+			return `search-${index}-strict`
 		}
 
 
