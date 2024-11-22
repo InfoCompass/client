@@ -45,6 +45,22 @@
 
 	<!-- property proposals  end -->
 
+	<div 
+		ng-if = "icStandardValues && icStandardValues.length > 0"
+		class = "options"
+	>
+
+		<button 
+			ng-repeat 	= "value in icStandardValues"
+			ng-click	= "toggleStandardValue(value)"
+			class		= "icon left icon-interface-checkbox {{isStandardValueSelected(value) ? 'checked active' : ''}}"
+			tabindex	= "0"
+			type		= "button"			
+			ic-touch-me
+		>
+			<span>{{value}}</span>
+		</button>
+	</div>
 
 	<div 
 		class 		= "input-wrapper"
