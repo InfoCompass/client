@@ -194,6 +194,7 @@
 
 										if(ic.site.activeItem)			return this.defaultValue
 										if(ic.site.list)				return this.defaultValue
+										if(ic.site.calendar)			return this.defaultValue
 						
 
 										return ic.site.page
@@ -208,7 +209,7 @@
 					name:			'page',
 					template:		'partials/ic-section-page.html',
 					active:			function(ic){									
-										return ic.site.page && !ic.site.list && !ic.site.activeItem
+										return ic.site.page && !ic.site.list && !ic.site.activeItem && !ic.site.calendar
 									},
 					show:			function(ic){
 
@@ -356,6 +357,42 @@
 					name:			'pickCoordinates',
 					index:			2,					
 				})
+
+
+				if(icConfig.calendar){
+					console.log('CALENDAR CONFIG')
+
+					icSiteProvider
+					.registerParameter({
+						name: 			'calendar',
+						encode:			function(value, ic){
+											return 	value 
+													?	'calendar' 
+													:	''
+										},
+						decode:			function(path, ic){
+											var matches = path.match(/(^|\/)calendar(\/|$)/)
+
+											return !!matches
+										}
+					})
+					.registerSection({
+						name:			'calendar',
+						template:		'partials/ic-section-calendar.html',
+						active:			function(ic){
+											return 	ic.site.calendar
+										},
+
+						show:			function(ic){													
+
+											return 	true
+										},
+
+						tabgroup:		true				
+					})
+
+				}
+
 			}
 		])
 

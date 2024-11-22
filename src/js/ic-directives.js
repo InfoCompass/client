@@ -350,7 +350,13 @@ angular.module('icDirectives', [
 		return {
 
 			restrict: 		'AE',
-			templateUrl: 	'partials/ic-item-preview.html',
+			templateUrl: 	function(tElement, tAttrs){
+
+								if(tAttrs.icDate)			return "partials/ic-item-preview-date.html"
+
+								return "partials/ic-item-preview.html"
+
+							},
 			scope:			{
 								icItem:	"<",
 								icDate:	"<"
@@ -374,7 +380,6 @@ angular.module('icDirectives', [
 
 					scope.times = ruleset.getMatchingTimes(scope.icDate)
 
-					console.log(scope.icItem.title, scope.times, ruleset)
 				})
 
 			}
