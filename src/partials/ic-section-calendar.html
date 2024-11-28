@@ -1,0 +1,67 @@
+<article
+	ic-settle-scrollbar					= "true"
+	ic-scroll-snap-anchor 				= "header"
+	ic-scroll-repeat-limit-container 	= "true"
+	class								= "padding"
+>
+	<header 
+		class ="padding bg-0"
+	>
+	
+		<ic-taxonomy-filter-tag-list 
+			class = "bg-0 padding"
+			ng-if = "!ic.site.visibleSections.filter"
+		>
+		</ic-taxonomy-filter-tag-list>
+
+
+		<div 
+			ng-if = "!ic.site.visibleSections.filter"
+			class = "bg-0 padding active flex"
+		>
+			<button
+				class 		= "block margin-right flex-grow bg-3 padding tac"
+				ng-click 	= "ic.overlays.toggle('taxonomyFilter')"
+				ic-touch-me 
+			>
+				{{'INTERFACE.FILTER' | translate}}
+			</button>
+
+			<button 
+				class 		= "block margin-left flex-grow bg-3 padding tac"
+				ng-click 	= "ic.site.expandMap = true"
+				ic-touch-me 
+			>
+				{{'INTERFACE.MAP' | translate}}
+			</button>
+			
+		</div>
+
+		<ic-taxonomy-filter-tag-list 
+			class = "bg-0 padding"
+			ng-if = "!ic.site.visibleSections.filter"
+		>
+		</ic-taxonomy-filter-tag-list>
+
+		<div
+			ng-hide = "calendarView"
+			class 	= "bg-0 padding"
+		>
+			<button 
+				ng-click 	= "calendarView = !calendarView"
+				class 		= "icon left icon-type-service"
+			> 
+				&nbsp;Kalenderansicht 
+			</button>
+		</div>
+
+	</header>
+
+	<div class ="padding bg-0">
+
+		<ic-search-result-calendar class = "padding">
+		</ic-search-result-calendar>
+
+	</div>
+	
+</article>

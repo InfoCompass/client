@@ -1,0 +1,97 @@
+<div 
+	class 		= "backdrop {{(item|icCategory) && 'ic-bg-cat-'+(icItem|icCategory).name}} white {{'icon-category-'+(icItem | icCategory).name}}"
+>	
+
+	<ic-calendar-sheet ic-date = "icDate"></ic-calendar-sheet>
+
+	<div 
+		class 		= "content"
+		title 		= "{{icItem | icFullTitle }}"
+	>
+			<div 
+				class = "category"
+			>
+				{{'CATEGORIES.%s' | fill : (icItem | icCategory).name | translate}} 
+			</div>
+
+
+			<div class ="title">
+				<span 
+					class	= "remote"
+					ng-if	= "icItem.remoteItem"
+				>
+					{{'INTERFACE.REMOTE_ITEM_TAG' | translate }}
+				</span>
+
+				<span 
+					class	= "round mini white icon icon-interface-proposals bg-3 fright"
+					ng-if	= "ic.user.can('edit_items') && icItem.proposals.length > 0"
+					title	= "{{'INTERFACE.PROPOSALS' | translate }}"
+				></span>
+
+				{{icItem | icFullTitle}}	
+
+			</div>
+
+
+			<div class = "brief">
+				
+				<span class = "date heavy" ng-if = "icItem.startDate">
+					{{icItem.startDate | icDate}}
+			 		{{icItem.endDate ? " – "+ (icItem.endDate | icDate) : ''}}
+			 	</span> 
+
+					{{icItem.brief[ic.site.currentLanguage] | clearTranslator}}
+			 	<span class = "lang-{{ic.site.currentLanguage}}">
+				</span>
+
+
+			</div>
+
+
+			<div 
+				class	= "stats"
+			>
+				<div class = "time">
+					<div class = "icon icon-section-hours"></div>
+					<time
+						ng-repeat-start	= "timeRange in times"
+						class 			= "start-time"
+						date-time 		= "{{ ( timeRange[0] | isValidDate) && (timeRange[0]	| date : 'HH:mm') || '' }}"
+						title			= "{{'ITEMS.RECUR_START_TIME' | translate}}"
+					>
+					{{ ( timeRange[0] | isValidDate) && ( timeRange[0] | date : 'HH:mm') || '' }}
+					</time><!--
+				 --><span class = "link">
+						{{ 
+							    ( timeRange[0] | isValidDate) 	&& ( timeRange[1] | isValidDate ) && '&ndash;' 
+							|| !( timeRange[0] | isValidDate ) 	&& ( timeRange[1] | isValidDate ) && ('ITEMS.RECUR_UNTIL'|translate)+'&nbsp;' 
+							|| ''
+						}}
+					</span><!--
+				 --><time	
+				 		ng-repeat-end
+						class 			= "end-time"
+						date-time 		= "{{ (timeRange[1] | isValidDate) && (timeRange[1]	| date : 'HH:mm') || '' }}"
+						title			= "{{'ITEMS.RECUR_END_TIME' | translate}}"
+					>
+						{{ ( timeRange[1] | isValidDate) && (timeRange[1] | date : 'HH:mm') || ''}}
+
+					</time>
+				</div>
+				<div class = "location">
+					<div class = "icon icon-section-location"></div>
+					<span> {{ (icItem | project : 'location') }} </span>
+					<span> {{ (icItem | project : 'address') }} </span>
+				</div>
+			</div>
+
+	</div>
+
+	<div 
+		ng-if	= "icItem.brief[ic.site.currentLanguage] | autoTranslator"
+		class 	= "auto-translation-indicator plain icon-interface-translate_robot"
+		title	= "{{'INTERFACE.AUTO_TRANSLATED_BY' | translate}} {{icItem.brief[ic.site.currentLanguage] | autoTranslator}}"
+	>
+	</div>
+</div>
