@@ -17,7 +17,7 @@
 	<li class = "bg-3">
 		<a 
 			ic-touch-me
-			ng-href = "{{ {expandMap: true, list: true, activeItem : null} | icLink }}"
+			ng-href = "{{ {expandMap: true, list: true, activeItem : null, calendar: false} | icLink }}"
 		>
 			{{'INTERFACE.MAP' | translate}}
 		</a>	
@@ -37,9 +37,20 @@
 
 		<a 
 			ic-touch-me
-			ng-href = "/list"
+			ng-href = "{{ {expandMap: false, list: true, activeItem : null, calendar: false} | icLink }}"
 		>
 			{{'INTERFACE.FULL_LIST' | translate}}
+		</a>	
+
+	</li>
+
+	<li class = "bg-3" , calendar: false>
+
+		<a 
+			ic-touch-me
+			ng-href = "{{ {expandMap: false, list: false, activeItem : null, calendar: true} | icLink }}"
+		>
+			{{'INTERFACE.CALENDAR' | translate}}
 		</a>	
 
 	</li>

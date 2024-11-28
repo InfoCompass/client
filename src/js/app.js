@@ -234,7 +234,9 @@
 					name:			'filter',
 					template:		'partials/ic-section-filter.html',
 					active:			function(ic){
-										return 	ic.site.list || (ic.site.expandMap && !ic.site.editItem)
+										return 		ic.site.list 
+												||	(ic.site.expandMap && !ic.site.editItem)
+												||	ic.site.calendar
 									},
 
 					show:			function(ic){		
@@ -250,8 +252,7 @@
 										if(ic.layout.mode.name == 'XS') 	return false
 										if(ic.layout.mode.name == 'S')		return ic.site.activeSections.item ? false : true
 										if(ic.layout.mode.name == 'M')		return ic.site.activeSections.item ? false : true
-
-										if(ic.layout.mode.name == 'XL')		return ic.site.activeSections.item ? false : true
+										if(ic.layout.mode.name == 'L')		return ic.site.activeSections.item ? false : true
 
 										return 	true
 									},
@@ -317,16 +318,15 @@
 									},
 					show:			function(ic){
 
-										if(ic.site.page == 'calendar')		return false
-
 										if(ic.site.pickCoordinates)			return true
 
 										if(ic.site.expandMap)				return true
 
 										if(ic.layout.mode.name == 'XS')		return false
-										if(ic.layout.mode.name == 'S')		return !ic.site.activeSections.page &&  !ic.site.activeSections.item
+										if(ic.layout.mode.name == 'S')		return !ic.site.activeSections.page &&  !ic.site.activeSections.item && !ic.site.activeSections.calendar
 										if(ic.layout.mode.name == 'M')		return !ic.site.activeSections.page &&  !ic.site.activeSections.item
-										if(ic.layout.mode.name == 'L')		return !ic.site.activeSections.page &&  !(ic.site.activeSections.item && ic.site.activeSections.list)
+										if(ic.layout.mode.name == 'L')		return !ic.site.activeSections.page &&  !(ic.site.activeSections.item && (ic.site.activeSections.list || ic.site.activeSections.calendar))
+										if(ic.layout.mode.name == 'XL')		return !ic.site.activeSections.page &&  !(ic.site.activeSections.item && (ic.site.activeSections.list || ic.site.activeSections.calendar))
 
 										return	true
 									}				
@@ -360,7 +360,6 @@
 
 
 				if(icConfig.calendar){
-					console.log('CALENDAR CONFIG')
 
 					icSiteProvider
 					.registerParameter({
@@ -384,6 +383,19 @@
 										},
 
 						show:			function(ic){													
+
+											if(ic.site.pickCoordinates){
+												if(ic.layout.mode.name == 'XS')		return false
+												if(ic.layout.mode.name == 'S')		return false
+												if(ic.layout.mode.name == 'M')		return false
+												if(ic.layout.mode.name == 'L')		return false
+											}
+
+
+											if(ic.site.expandMap) 				return false		
+											if(ic.layout.mode.name == 'XS') 	return 	ic.site.activeSections.item ? false : true
+											if(ic.layout.mode.name == 'S') 		return 	ic.site.activeSections.item ? false : true
+
 
 											return 	true
 										},
