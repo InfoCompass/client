@@ -34,7 +34,7 @@
 }
 */
 
-.icon.round {
+.icon.round:not(.left):not(.right) {
 	width:					2em;
 	height:					2em;
 }

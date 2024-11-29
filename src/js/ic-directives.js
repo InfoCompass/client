@@ -251,6 +251,140 @@ angular.module('icDirectives', [
 	}	
 ])
 
+.directive('icCalendarControls',[
+	'ic',
+
+	function(ic){
+
+		return 	{
+			restrict:		'AE',
+			
+			link: function(scope){
+
+				console.log('LINKEDDD')
+
+				scope.ic = ic
+
+				scope.dope = 'iwukezhr'
+
+				scope.startDate 	= undefined
+				scope.endDate		= undefined
+				scope.customDate	= undefined
+
+				function sameDay(d1, d2){
+					if(!d1) return false
+					if(!d2)	return false
+
+					return		d1.getFullYear()	=== d2.getFullYear()
+							&&	d1.getMonth() 		=== d2.getMonth() 
+							&&	d1.getDate() 		=== d2.getDate()
+
+				}
+
+				scope.selectDay	= function(d){
+					scope.startDate 	= new Date(d.getTime())
+					scope.endDate		= new Date(d.getTime())
+					
+					if(!sameDay(scope.customDate, d) )	scope.customDate = new Date(d.getTime())
+				}
+
+				scope.selectToday = function(){
+					scope.selectDay(new Date())					
+				}
+
+				scope.selectTomorrow = function(){
+
+					const d	= new Date()
+
+					d.setDate(d.getDate()+1)
+
+					scope.selectDay(d)
+				}
+
+				scope.selectWeekend = function(){
+
+					const today		= 	new Date()
+
+					const dayOfWeek = 	today.getDay()
+					const offsetSat	= 	[-1,5,4,3,2,1,0][dayOfWeek]
+
+					const saturday	= 	new Date()
+					const sunday	= 	new Date()
+
+					saturday.setDate(today.getDate() + offsetSat)
+					sunday.setDate(today.getDate() + offsetSat+1)
+
+					scope.startDate		= saturday
+					scope.endDate		= sunday
+					scope.customDate	= undefined
+					
+				}
+
+				scope.isToday = function(){
+
+					if(!scope.startDate)	return false
+					if(!scope.endDate)		return false
+
+					return		sameDay(scope.startDate, scope.endDate)
+							&&	sameDay(scope.startDate, new Date())
+				}
+
+				scope.isTomorrow = function(){
+
+
+					if(!scope.startDate)	return false
+					if(!scope.endDate)		return false
+
+					if(!sameDay(scope.startDate, scope.endDate)) return false
+
+					const tomorrow = new Date()
+					tomorrow.setDate(tomorrow.getDate()+1)
+
+					return	sameDay(tomorrow, scope.startDate)
+				}
+
+				scope.isWeekend = function(){
+
+					console.log('isWeekend')
+
+					if(!scope.startDate)	return false
+					if(!scope.endDate)		return false
+
+					console.log(1)	
+
+					if(scope.startDate.getDay() != 6) return false
+					if(scope.endDate.getDay() 	!= 0) return false
+
+					console.log(2)
+
+					if(scope.endDate < scope.startDate)	return false
+
+					if(scope.endDate.getTime()-scope.startDate.getTime() > 1000*60*60*64) return false
+
+					console.log(3)	
+
+					return true	
+				}
+
+				scope.unset = function(){
+
+					scope.startDate 	= new Date()
+					scope.endDate		= undefined
+					scope.customDate	= undefined
+
+				}
+
+				scope.unset()
+
+				scope.$watch( () => scope.customDate, () => {
+					if(scope.customDate instanceof Date) scope.selectDay(scope.customDate)
+				})
+
+			}
+		}
+	}	
+])
+
 .directive('icSearchResultCalendar', [
 
 	'ic',
@@ -261,9 +395,15 @@ angular.module('icDirectives', [
 		return 	{
 			restrict:		'E',
 			templateUrl:	'partials/ic-search-result-calendar.html',
-			scope:			{},
+			scope:			{
+								icStartDate: 	"<?",
+								icEndDate:		"<?"
+							},
 
 			link: function(scope){
+
+				const limit = 31 // days
+
 				scope.ic 			= ic
 
 				scope.date 			= new Date()
@@ -274,12 +414,39 @@ angular.module('icDirectives', [
 
 					const timesByDate		= 	new Map()
 
-					const dates 			= 	new Array(7).fill().map( (_, index) => {
-													const d = new Date()
-													d.setDate(d.getDate()+index)
-													return d
-												})
+					const startDate			=	scope.icStartDate || new Date()
+					let   endDate			=	scope.icEndDate 
 
+					console.log({startDate, endDate})
+
+					if(!endDate){
+						endDate = new Date(startDate.getTime())
+					 	endDate.setDate(startDate.getDate()+6)
+					}
+
+					const dates 			= 	[ startDate ]
+
+					while( 
+							dates[dates.length-1] < endDate
+						&&	dates.length <= limit
+					) {
+
+						const previousDate 	= dates[dates.length-1]
+						const d				= new Date(previousDate.getTime())
+
+						d.setDate(d.getDate() + 1)
+
+						// If the end date's time is later than the start date's time plus n days,
+						// the days after the end date will end up in the array, prevent this:
+						if( 	d > endDate 
+							&&	d.getDate() > endDate.getDate()
+						) break
+
+						dates.push(d)	
+
+					}
+
+					console.log('DATES for icSearchResultCalendar', startDate, endDate, dates.length, dates)
 
 					scope.headingsByDate	=	new Map(dates.map(date => {
 													return [date, date.toLocaleString(icLanguages.currentLanguage,{ weekday:'long', day: '2-digit', month: 'long' })]
@@ -316,10 +483,10 @@ angular.module('icDirectives', [
 
 					})
 
-					scope.dates 		= 	Array.from(timesByDate.keys()).sort()
+					scope.dates 		= 	dates.sort( (d1, d2) => d1>d2)//Array.from(timesByDate.keys()).sort( (d1, d2) => d1>d2)
 					scope.itemsByDate	= 	new Map(scope.dates.map( date =>  {
 
-												const itemsByTime 	= 	timesByDate.get(date)
+												const itemsByTime 	= 	timesByDate.get(date)||[]
 												const times			= 	Array.from(itemsByTime.keys()).sort()
 
 												const items			= 	times
@@ -333,6 +500,8 @@ angular.module('icDirectives', [
 				}						
 
 				scope.$watchCollection( () => ic.itemStorage.filteredList, () => scope.updateItemGroups() )
+
+				scope.$watchCollection( () => [scope.icStartDate, scope.icEndDate],	() => scope.updateItemGroups() )
 			}
 		}
 	}	

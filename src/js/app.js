@@ -398,9 +398,7 @@
 
 
 											return 	true
-										},
-
-						tabgroup:		true				
+										},	
 					})
 
 				}

@@ -20,7 +20,7 @@
 
 
 	<a
-		ng-repeat		= "item in itemsByDate.get(date)"
+		ng-repeat		= "item in items = itemsByDate.get(date)"
 		ng-href			= "{{ {activeItem: item} | icLink }}"
 		ic-touch-me
 	>
@@ -32,6 +32,10 @@
 			ic-date		= "date"
 		></ic-item-preview>
 	</a>
+
+	<span ng-if = "items.length == 0" >
+		– 
+	</span>
 	<!-- <a 
 		ng-if		= "noScroll && !noMoreItems" 
 		class 		= "bg-0 padding more tac active" 

@@ -3,24 +3,45 @@
 	ic-scroll-snap-anchor 				= "header"
 	ic-scroll-repeat-limit-container 	= "true"
 	class								= "padding"
+	ic-calendar-controls
 >
 	<header 
 		class ="padding bg-0"
 	>
 
-		<ic-taxonomy-filter-tag-list 
-			class = "bg-0 padding"
-			ng-if = "!ic.site.visibleSections.filter"
-		>
-		</ic-taxonomy-filter-tag-list>
+		<div class = "controls padding">
 
+			<input type = "date" ng-model = "customDate" title = "{{'INTERFACE.PICK_DAY' | translate}}"> 					
 
-		<div 
-			ng-if = "!ic.site.visibleSections.filter"
-			class = "bg-0 padding active flex"
-		>
+			<div class ="spacer"></div>
+
 			<button
-				class 		= "block margin-right flex-grow bg-3 padding tac"
+				class 		= "round border-3 {{ isToday() ? 'bg-3' : 'active'}}"
+				ng-click 	= "selectToday()"
+				ic-touch-me 
+			>
+				{{'INTERFACE.TODAY' | translate}}
+			</button>
+
+			<button
+				class 		= "round border-3 {{ isTomorrow() ? 'bg-3' : 'active'}}"
+				ng-click 	= "selectTomorrow()"
+				ic-touch-me 
+			>
+				{{'INTERFACE.TOMORROW' | translate}}
+			</button>
+
+			<button
+				class 		= "round border-3  {{ isWeekend() ? 'bg-3' : 'active'}}"
+				ng-click 	= "selectWeekend()"
+				ic-touch-me 
+			>
+				{{'INTERFACE.WEEKEND' | translate}}
+			</button>
+
+			<button
+				ng-if = "!ic.site.visibleSections.filter"
+				class 		= "round bg-3"
 				ng-click 	= "ic.overlays.toggle('taxonomyFilter')"
 				ic-touch-me 
 			>
@@ -28,12 +49,14 @@
 			</button>
 
 			<button 
-				class 		= "block margin-left flex-grow bg-3 padding tac"
+				ng-if = "!ic.site.visibleSections.filter"
+				class 		= "round bg-3"
 				ng-click 	= "ic.site.expandMap = true"
 				ic-touch-me 
 			>
 				{{'INTERFACE.MAP' | translate}}
 			</button>
+
 			
 		</div>
 
@@ -47,7 +70,11 @@
 
 	<div class ="padding bg-0">
 
-		<ic-search-result-calendar class = "padding">
+		<ic-search-result-calendar 			
+			class 			= "padding"
+			ic-start-date 	= "startDate"
+			ic-end-date		= "endDate" 
+		>
 		</ic-search-result-calendar>
 
 	</div>
