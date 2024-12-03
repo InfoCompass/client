@@ -3,7 +3,7 @@ ic-calendar-sheet {
 	z-index:			2;
 	display:			flex;
 	flex-direction:		column;
-	border:				max(0.2rem, 1px) solid rgba(0,0,0,0.5);
+	border:				2px solid rgba(0,0,0,1);
 	border-radius:		0.5rem;
 	height:				3rem;
 	width:				3rem;

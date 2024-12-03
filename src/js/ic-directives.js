@@ -292,6 +292,13 @@ angular.module('icDirectives', [
 					scope.selectDay(new Date())					
 				}
 
+				scope.toggleToday= function(){		
+					scope.isToday()
+					?	scope.unset()
+					:	scope.selectToday()
+						
+				}
+
 				scope.selectTomorrow = function(){
 
 					const d	= new Date()
@@ -299,6 +306,12 @@ angular.module('icDirectives', [
 					d.setDate(d.getDate()+1)
 
 					scope.selectDay(d)
+				}
+
+				scope.toggleTomorrow = function(){
+					scope.isTomorrow()
+					?	scope.unset()
+					:	scope.selectTomorrow()
 				}
 
 				scope.selectWeekend = function(){
@@ -318,6 +331,12 @@ angular.module('icDirectives', [
 					scope.endDate		= sunday
 					scope.customDate	= undefined
 					
+				}
+
+				scope.toggleWeekend = function() {
+					scope.isWeekend()
+					?	scope.unset()
+					:	scope.selectWeekend()
 				}
 
 				scope.isToday = function(){
@@ -345,23 +364,19 @@ angular.module('icDirectives', [
 
 				scope.isWeekend = function(){
 
-					console.log('isWeekend')
 
 					if(!scope.startDate)	return false
 					if(!scope.endDate)		return false
 
-					console.log(1)	
 
 					if(scope.startDate.getDay() != 6) return false
 					if(scope.endDate.getDay() 	!= 0) return false
 
-					console.log(2)
 
 					if(scope.endDate < scope.startDate)	return false
 
 					if(scope.endDate.getTime()-scope.startDate.getTime() > 1000*60*60*64) return false
 
-					console.log(3)	
 
 					return true	
 				}
@@ -417,7 +432,6 @@ angular.module('icDirectives', [
 					const startDate			=	scope.icStartDate || new Date()
 					let   endDate			=	scope.icEndDate 
 
-					console.log({startDate, endDate})
 
 					if(!endDate){
 						endDate = new Date(startDate.getTime())
@@ -446,7 +460,6 @@ angular.module('icDirectives', [
 
 					}
 
-					console.log('DATES for icSearchResultCalendar', startDate, endDate, dates.length, dates)
 
 					scope.headingsByDate	=	new Map(dates.map(date => {
 													return [date, date.toLocaleString(icLanguages.currentLanguage,{ weekday:'long', day: '2-digit', month: 'long' })]

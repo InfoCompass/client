@@ -281,7 +281,7 @@
 										if(ic.layout.mode.name == 'XS') 	return 	ic.site.activeSections.item ? false : true
 										if(ic.layout.mode.name == 'S') 		return 	ic.site.activeSections.item ? false : true
 
-
+										if(ic.site.activeSections.calendar)	return false
 												
 
 										return 	true

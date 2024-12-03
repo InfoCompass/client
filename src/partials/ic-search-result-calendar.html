@@ -13,35 +13,37 @@
 	ic-scroll-repeat-limit-as 			= "displayLimit"
 	ic-scroll-repeat-limit-step-size 	= "5" -->
 
-<h2 ng-repeat-start = "date in dates">
-	{{headingsByDate.get(date) }}
-</h2>
-<div ng-repeat-end>
+<div ng-repeat= "date in dates">
+	<h2 >
+		{{headingsByDate.get(date) }}
+	</h2>
+	<div>
 
 
-	<a
-		ng-repeat		= "item in items = itemsByDate.get(date)"
-		ng-href			= "{{ {activeItem: item} | icLink }}"
-		ic-touch-me
-	>
-		<ic-item-preview
-			class		= "bg-0"
-			ng-class 	= "{'active-item': item == ic.site.activeItem}"
-			ic-item 	= "item"
-			ng-if		= "!item.internal.failed"
-			ic-date		= "date"
-		></ic-item-preview>
-	</a>
+		<a
+			ng-repeat		= "item in items = itemsByDate.get(date)"
+			ng-href			= "{{ {activeItem: item} | icLink }}"
+			ic-touch-me
+		>
+			<ic-item-preview
+				class		= "bg-0"
+				ng-class 	= "{'active-item': item == ic.site.activeItem}"
+				ic-item 	= "item"
+				ng-if		= "!item.internal.failed"
+				ic-date		= "date"
+			></ic-item-preview>
+		</a>
 
-	<span ng-if = "items.length == 0" >
-		– 
-	</span>
-	<!-- <a 
-		ng-if		= "noScroll && !noMoreItems" 
-		class 		= "bg-0 padding more tac active" 
-		ng-click 	= "icScrollRepeatLimitIncrease()"
-		ic-touch-me
-	>
-		...
-	</a> -->
+		<span ng-if = "items.length == 0" >
+			– 
+		</span>
+		<!-- <a 
+			ng-if		= "noScroll && !noMoreItems" 
+			class 		= "bg-0 padding more tac active" 
+			ng-click 	= "icScrollRepeatLimitIncrease()"
+			ic-touch-me
+		>
+			...
+		</a> -->
+	</div>
 </div>

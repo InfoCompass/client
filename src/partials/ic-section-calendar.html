@@ -11,13 +11,16 @@
 
 		<div class = "controls padding">
 
-			<input type = "date" ng-model = "customDate" title = "{{'INTERFACE.PICK_DAY' | translate}}"> 					
+			<label class ="icon icon-type-service left" title = "{{'INTERFACE.PICK_DAY' | translate}}">
+				&nbsp;
+				<input type = "date" ng-model = "customDate" > 					
+			</label>
 
 			<div class ="spacer"></div>
 
 			<button
 				class 		= "round border-3 {{ isToday() ? 'bg-3' : 'active'}}"
-				ng-click 	= "selectToday()"
+				ng-click 	= "toggleToday()"
 				ic-touch-me 
 			>
 				{{'INTERFACE.TODAY' | translate}}
@@ -25,7 +28,7 @@
 
 			<button
 				class 		= "round border-3 {{ isTomorrow() ? 'bg-3' : 'active'}}"
-				ng-click 	= "selectTomorrow()"
+				ng-click 	= "toggleTomorrow()"
 				ic-touch-me 
 			>
 				{{'INTERFACE.TOMORROW' | translate}}
@@ -33,7 +36,7 @@
 
 			<button
 				class 		= "round border-3  {{ isWeekend() ? 'bg-3' : 'active'}}"
-				ng-click 	= "selectWeekend()"
+				ng-click 	= "toggleWeekend()"
 				ic-touch-me 
 			>
 				{{'INTERFACE.WEEKEND' | translate}}

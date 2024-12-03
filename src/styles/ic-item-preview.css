@@ -52,7 +52,7 @@ ic-item-preview .content {
 
 ic-item-preview .content .title {
 	flex:					1 1 auto;
-	line-height:			1.2rem;	
+	line-height:			1.2;	
 	overflow:				hidden;
 	font-weight:			600;
 } 
