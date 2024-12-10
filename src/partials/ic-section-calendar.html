@@ -11,9 +11,9 @@
 
 		<div class = "controls padding">
 
-			<label class ="icon icon-type-service left" title = "{{'INTERFACE.PICK_DAY' | translate}}">
+			<label class ="icon icon-interface-date_picker left" title = "{{'INTERFACE.PICK_DAY' | translate}}">
 				&nbsp;
-				<input type = "date" ng-model = "customDate" > 					
+				<input type = "date" ng-model = "customDate" min = "{{today}}" > 					
 			</label>
 
 			<div class ="spacer"></div>
@@ -77,6 +77,7 @@
 			class 			= "padding"
 			ic-start-date 	= "startDate"
 			ic-end-date		= "endDate" 
+			ic-exclude-tags	= "'location'"
 		>
 		</ic-search-result-calendar>
 

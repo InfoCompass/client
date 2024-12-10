@@ -264,12 +264,57 @@ ic-item-property-edit[ic-recurring-event] .recurring-rules {
 	grid-template-columns:		max-content max-content 1fr max-content max-content max-content;
 }
 
+ic-item-property-edit[ic-recurring-event] .recurring-rules > .start-date {
+	display:					flex;
+	grid-column:				1 / span 5;
+	justify-content:			flex-end;
+	align-items:				center;
+	gap:						1rem;
+}
+
+.XS ic-item-property-edit[ic-recurring-event] .recurring-rules > .start-date {
+	flex-direction:				column;
+	align-items:				stretch;
+}
+
+ic-item-property-edit[ic-recurring-event] .recurring-rules > .start-date > *{
+	flex:						0 0 auto;
+	width:						auto;
+
+}
+
+ic-item-property-edit[ic-recurring-event] .recurring-rules > .action {
+	display:					flex;
+	align-items:				center;
+}
+
+ic-item-property-edit[ic-recurring-event] .recurring-rules > .action.before.with-example-date{
+	grid-row-end:				span 2;
+
+}
+
+ic-item-property-edit[ic-recurring-event] .recurring-rules > .action.after {
+	display:					none;
+}
+
+.XS ic-item-property-edit[ic-recurring-event] .recurring-rules > .action.before{
+	display:					none;
+}
+
+.XS ic-item-property-edit[ic-recurring-event] .recurring-rules > .action.after{
+	display:					flex;
+}
+
+
+
+
 ic-item-property-edit[ic-recurring-event] .recurring-rules + button {
 	display:					block;
 	margin:						auto;
 	padding-left:				1rem;
 	padding-right:				1rem;
 }
+
 
 ic-item-property-edit[ic-recurring-event] input[type="time"] {
 	font-family:				mono;

@@ -124,6 +124,17 @@ angular.module('icServices', [
 				})
 
 				return	promise
+			},
+
+			stringifyDate(dateOrString){
+				if(typeof dateOrString == 'string') return dateOrString
+
+				const date 	= dateOrString
+				const year	= dateOrString.getFullYear()
+				const month	= (dateOrString.getMonth()+1+'').padStart(2,'0')
+				const day	= (dateOrString.getDate()+'').padStart(2,'0')
+
+				return `${year}-${month}-${day}`
 			}
 
 		}
@@ -3509,8 +3520,9 @@ angular.module('icServices', [
 .service('icRecurring', [
 
 	'icConfig',
+	'icUtils',
 
-	function(icConfig){
+	function(icConfig, icUtils){
 
 
 		// TODO: change startTime to strings, no need for Date objects, right?
@@ -3518,7 +3530,7 @@ angular.module('icServices', [
 		class RecurringRule {
 
 
-			static availableIntervals = ['daily', 'mon-fri', 'weekly', 'bi-weekly', 'three-weekly', 'four-weekly']
+			static availableIntervals = ['daily', 'mon-fri', 'weekly', 'bi-weekly', 'three-weekly', 'four-weekly', 'first_of_month', 'second_of_month', 'third_of_month', 'fourth_of_month']
 
 			_iteration	= undefined
 			_weekday	= undefined
@@ -3562,8 +3574,18 @@ angular.module('icServices', [
 				return (""+this.endTime.getHours()).padStart(2, '0') + ':' + (""+this.endTime.getMinutes()).padStart(2,'0')
 			}
 
+			get requiresExampleDate(){
+				return ['bi-weekly', 'three-weekly', 'four-weekly'].includes(this.iteration)
+			}
+
+			get requiresWeekday(){
+				return !['daily', 'mon-fri'].includes(this.iteration)
+			}
 
 
+			/**
+			 * [iteration, weekday, startTime, endTime, exampleDate]
+			 */
 			static from(flatRule){
 
 				flatRule 			= 	typeof flatRule === 'string'
@@ -3574,20 +3596,47 @@ angular.module('icServices', [
 
 				const params 		= 	{}
 
-				params.iteration 	= 	flatRule[0]
-				params.weekday		= 	flatRule[1]
-				params.startTime	= 	new Date(1970,0,1,...(flatRule[2]||'xx:xx').split(':')) 
-				params.endTime		= 	new Date(1970,0,1,...(flatRule[3]||'xx:xx').split(':'))
+				const iteration 	= 	flatRule[0]
+				const weekday		= 	flatRule[1]
+				const startTime		= 	flatRule[2] && new Date(1970,0,1,...flatRule[2].split(':').map(x => parseInt(x) )) 
+				const endTime		= 	flatRule[3] && new Date(1970,0,1,...flatRule[3].split(':').map(x => parseInt(x) ))
 
-				return new RecurringRule(params)
+
+				const [YYYY, MM, DD]=	(flatRule[4]||'XXXX-XX-XX').split('-')
+				const year			=	parseInt(YYYY)
+				const month			=	parseInt(MM)-1
+				const day			=	parseInt(DD)
+				const date			=	new Date(year, month, day)
+
+				const exampleDate	=	isNaN(date.getTime())
+										? 	undefined
+										:	date
+
+
+				return new RecurringRule({iteration, weekday, startTime, endTime, exampleDate})
 			}
 
-			constructor({iteration, weekday, startTime, endTime}) {
+			constructor({iteration, weekday, startTime, endTime, exampleDate}) {
 
-				this.iteration 	= iteration
-				this.weekday	= weekday
-				this.startTime	= startTime
-				this.endTime	= endTime
+				this.iteration 		= iteration
+				this.weekday		= weekday
+				this.startTime		= startTime
+				this.endTime		= endTime
+				this.exampleDate	= exampleDate
+
+			}
+
+
+			getErrors() {
+
+				if(!this.iteration) 						return "MISSING_ITERATION"
+				if(this.requiresWeekday && !this.weekday)	return "MISSING_WEEKDAY"
+
+				//availableIntervals = ['daily', 'mon-fri', 'weekly', 'bi-weekly', 'three-weekly', 'four-weekly']
+
+				if(!RecurringRule.availableIntervals.includes(this.iteration)) return "UNKNOWN_ITERATION"
+
+				if(this.requiresExampleDate && !this.exampleDate ) return "MISSING_EXAMPLE_DATE"
 
 			}
 
@@ -3605,6 +3654,12 @@ angular.module('icServices', [
 					flatRule[2]		=	this.startTimeString
 					flatRule[3]		=	this.endTimeString
 
+					
+					flatRule[4] 	= 	this.exampleDate
+										?	icUtils.stringifyDate(this.exampleDate)
+										:	undefined
+
+
 				}
 
 				return flatRule					
@@ -3614,23 +3669,38 @@ angular.module('icServices', [
 
 			getRRule(){
 				const freq			=	{
-											'daily':		'FREQ=DAILY',
-											'weekly': 		'FREQ=WEEKLY',
-											'mon-fri':		'FREQ=WEEKLY',
-											'bi-weekly':	'FREQ=WEEKLY',
-											'three-weekly':	'FREQ=WEEKLY',
-											'four-weekly':	'FREQ=WEEKLY'
+											'daily':			'FREQ=DAILY',
+											'weekly': 			'FREQ=WEEKLY',
+											'mon-fri':			'FREQ=WEEKLY',
+											'bi-weekly':		'FREQ=WEEKLY',
+											'three-weekly':		'FREQ=WEEKLY',
+											'four-weekly':		'FREQ=WEEKLY',
+											'first_of_month':	'FREQ=MONTHLY',
+											'second_of_month':	'FREQ=MONTHLY',
+											'third_of_month':	'FREQ=MONTHLY',
+											'fourth_of_month':	'FREQ=MONTHLY',
 
 										}[this.iteration]
 
 				const interval		=	{
-											'daily':		'INTERVAL=1',
-											'weekly': 		'INTERVAL=1',
-											'mon-fri':		'INTERVAL=1',
-											'bi-weekly':	'INTERVAL=2',
-											'three-weekly':	'INTERVAL=3',
-											'four-weekly':	'INTERVAL=4',
+											'daily':			'INTERVAL=1',
+											'weekly': 			'INTERVAL=1',
+											'mon-fri':			'INTERVAL=1',
+											'bi-weekly':		'INTERVAL=2',
+											'three-weekly':		'INTERVAL=3',
+											'four-weekly':		'INTERVAL=4',
+											'first_of_month':	'INTERVAL=1',
+											'second_of_month':	'INTERVAL=1',
+											'third_of_month':	'INTERVAL=1',
+											'fourth_of_month':	'INTERVAL=1',
 
+										}[this.iteration]
+
+				const bysetpos		=	{
+											'first_of_month':	'BYSETPOS=1',
+											'second_of_month':	'BYSETPOS=2',
+											'third_of_month':	'BYSETPOS=3',
+											'fourth_of_month':	'BYSETPOS=4',											
 										}[this.iteration]
 
 				const day			=	{
@@ -3645,15 +3715,19 @@ angular.module('icServices', [
 
 				const byday			=	{
 											'daily':		'',
-											'weekly': 		`BYDAY=${day}`,
-											'mon-fri':		'BYDAY=MO,TU,WE,TH,FR',
-											'bi-weekly':	`BYDAY=${day}`,
-											'three-weekly':	`BYDAY=${day}`,
-											'four-weekly':	`BYDAY=${day}`
+											'weekly': 			`BYDAY=${day}`,
+											'mon-fri':			'BYDAY=MO,TU,WE,TH,FR',
+											'bi-weekly':		`BYDAY=${day}`,
+											'three-weekly':		`BYDAY=${day}`,
+											'four-weekly':		`BYDAY=${day}`,
+											'first_of_month':	`BYDAY=${day}`,
+											'second_of_month':	`BYDAY=${day}`,
+											'third_of_month':	`BYDAY=${day}`,
+											'fourth_of_month':	`BYDAY=${day}`,
 
 										}[this.iteration]		
 
-				const rrule			=	[freq, interval, byday]
+				const rrule			=	[freq, bysetpos, interval, byday]
 										.filter( x => !!x)					
 										.join(';')
 
@@ -3661,26 +3735,35 @@ angular.module('icServices', [
 			}
 
 
-			toVEVENT({title, description, location, startDate, endDate, url} = {}){
+			toVEVENT({title, description, location, startDate, endDate, url} = {}){				
+
+				if(this.getErrors()){
+					console.warn('Recurring Rule has Errors!', this)	
+					return ""
+				} 
+
 
 				let fakeStartStr 	= undefined
 
+				startDate 			= this.exampleDate || startDate
+
 				if(!startDate){
 
-					const fakeStart = new Date()
+					const fakeDate = new Date()
 
-					fakeStart.setDate(fakeStart.getDate()-2)
-					fakeStartStr	=	fakeStart.toISOString().split('T')[0].replaceAll('-','')
+					fakeDate.setDate(fakeDate.getDate()-2)	
+					
+					fakeStartStr	=	icUtils.stringifyDate(fakeDate)
 					startDate		=	fakeStartStr
 
 				}
 
-				const startDateStr 	= 	(startDate || '').replaceAll('-', '') 					// assumming YYYY-MM-DD
+				const startDateStr 	= 	icUtils.stringifyDate(startDate).replaceAll('-', '')
 
 				const startTimeStr 	= 	this.startTimeString
 										?	'T'+this.startTimeString.replaceAll(':', '')+'00' 	// assumming HH:mm
 										:	''
-				const endDateStr	= 	(endDate || '').replaceAll('-', '') 					// assumming YYYY-MM-DD
+				const endDateStr	= 	icUtils.stringifyDate(endDate||'').replaceAll('-', '')
 
 				const endTimeStr 	= 	this.endTimeString
 										?	'T'+this.endTimeString.replaceAll(':', '')+'00' 	// assumming HH:mm
@@ -3693,7 +3776,7 @@ angular.module('icServices', [
 				const rrule			=	this.getRRule()
 
 				const exDate		=	fakeStartStr
-										?	`EXDATE;TZID=Europe/Berlin:${fakeStartStr}`
+										?	`EXDATE;TZID=Europe/Berlin:${fakeStartStr.replaceAll('-','')}`
 										:	''
 
 				const dtstamp		=	new Date().toISOString().replaceAll(/(\:)|(\-)|(\.\d\d\d)/g,'')
@@ -3728,18 +3811,19 @@ angular.module('icServices', [
 			}
 
 
-			getErrors() {
-
-			}
 
 			match(d = new Date()) {
 
-				const date		= new Date(d.getTime())
+				const errors	= this.getErrors()
+
+				if(errors) return false
+
+				const date		= new Date(d)
 
 				date.setHours(0)
 				date.setMinutes(0)
 
-				const next		= new Date(date.getTime())
+				const next		= new Date(date)
 
 				next.setDate(date.getDate()+1)
 
@@ -3756,6 +3840,38 @@ angular.module('icServices', [
 				const isMatch	= RRule.fromString(rule).between(date,next).length != 0
 				
 				return isMatch
+			}
+
+			nextOccurence(d = new Date() ){
+
+				const errors	= this.getErrors()
+
+				if(errors){
+					console.log({errors})
+					return null
+				}
+
+				const date		=	new Date(d)
+				const startDate	=	this.exampleDate || date
+
+				const rrule 	= 	this.getRRule()
+
+				const year		= 	startDate.getFullYear()
+				const month		= 	(startDate.getMonth()+1+'').padStart(2, '0')
+				const day		= 	(startDate.getDate()+'').padStart(2, '0')
+
+				const dtstart 	= 	`DTSTART:${year}${month}${day}T000000`
+
+				const rule		= 	`${dtstart};\n${rrule}`
+
+				const threshold	=	this.exampleDate && (this.exampleDate > date)
+									?	this.exampleDate
+									:	date
+
+				const nextDate	= 	RRule.fromString(rule).after(threshold, true)
+				
+				return nextDate || null
+
 			}
 
 		}

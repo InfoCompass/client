@@ -12,7 +12,7 @@
 		<span
 			ng-if = "rule.iteration && (!sortedRules[$index-1] || sortedRules[$index-1].iteration != rule.iteration)"
 		>
-			{{ ('ITEMS.RECUR_%s' | fill: rule.iteration | translate) }}:
+			{{ ('ITEMS.RECUR_%s' | fill: rule.iteration | translate) }}
 		</span>
 	</span>
 
@@ -28,7 +28,6 @@
 	<span 
 		class 				= "time-range"
 		ng-class			= "{ leading: !sortedRules[$index-1] || sortedRules[$index-1].iteration != rule.iteration, first: $first}" 	
-		ng-repeat-end
 	>
 		<time
 			class 			= "start-time"
@@ -53,6 +52,17 @@
 
 		</time>
 	</span>
+
+	<span 
+		class 			= "next-date"
+		ng-repeat-end
+
+	>
+		<span ng-if = "rule.requiresExampleDate">
+			&nbsp;({{ (rule.nextOccurence() | icDate) || '??' }})
+		</span>
+	</span>
+
 </div>
 <a 
 	ng-if		= "sortedRules && sortedRules.length > 0 && icIncludeIcalLink"

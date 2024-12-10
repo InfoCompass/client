@@ -27,15 +27,15 @@
 		</div>
 
 
-		<div class = "brief">
+		<div class = "brief">			
 			
 			<span class = "date heavy" ng-if = "icItem.startDate">
 				{{icItem.startDate | icDate}}
 		 		{{icItem.endDate ? " – "+ (icItem.endDate | icDate) : ''}}
 		 	</span> 
 
-				{{icItem.brief[ic.site.currentLanguage] | clearTranslator}}
 		 	<span class = "lang-{{ic.site.currentLanguage}}">
+				{{icItem.brief[ic.site.currentLanguage] | clearTranslator}}
 			</span>
 
 

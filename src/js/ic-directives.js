@@ -261,11 +261,7 @@ angular.module('icDirectives', [
 			
 			link: function(scope){
 
-				console.log('LINKEDDD')
-
 				scope.ic = ic
-
-				scope.dope = 'iwukezhr'
 
 				scope.startDate 	= undefined
 				scope.endDate		= undefined
@@ -280,6 +276,15 @@ angular.module('icDirectives', [
 							&&	d1.getDate() 		=== d2.getDate()
 
 				}
+
+
+
+				let today		= new Date()
+					year		= today.getFullYear()
+					month		= (today.getMonth()+1+'').padStart(2, '0')
+					day			= (today.getDate()+'').padStart(2, '0')						
+
+				scope.today 	= `${year}-${month}-${day}`
 
 				scope.selectDay	= function(d){
 					scope.startDate 	= new Date(d.getTime())
@@ -403,21 +408,22 @@ angular.module('icDirectives', [
 .directive('icSearchResultCalendar', [
 
 	'ic',
+	'icConfig',
 	'icRecurring',
 	'icLanguages',
 
-	function(ic,icRecurring, icLanguages){
+	function(ic, icConfig, icRecurring, icLanguages){
 		return 	{
 			restrict:		'E',
 			templateUrl:	'partials/ic-search-result-calendar.html',
 			scope:			{
 								icStartDate: 	"<?",
-								icEndDate:		"<?"
+								icEndDate:		"<?",
+								icExcludeTags:	"<?",
+								icLimit:		"<?"
 							},
 
-			link: function(scope){
-
-				const limit = 31 // days
+			link: function(scope, element){
 
 				scope.ic 			= ic
 
@@ -425,24 +431,25 @@ angular.module('icDirectives', [
 
 				scope.groupedItems 	= 	{}
 
+				scope.icLimit		= scope.icLimit || 100
+
 				scope.updateItemGroups = function(){
 
 					const timesByDate		= 	new Map()
 
 					const startDate			=	scope.icStartDate || new Date()
-					let   endDate			=	scope.icEndDate 
+					let   endDate			=	scope.icEndDate
+												?	new Date(scope.icEndDate)
+												:	new Date(startDate)
 
 
-					if(!endDate){
-						endDate = new Date(startDate.getTime())
-					 	endDate.setDate(startDate.getDate()+6)
-					}
+					endDate.setDate(endDate.getDate() + scope.icLimit + (scope.icEndDate ? 0 : 6) )
 
 					const dates 			= 	[ startDate ]
 
+
 					while( 
 							dates[dates.length-1] < endDate
-						&&	dates.length <= limit
 					) {
 
 						const previousDate 	= dates[dates.length-1]
@@ -460,14 +467,34 @@ angular.module('icDirectives', [
 
 					}
 
+					scope.headingsByDate		=	new Map(dates.map(date => {
+														return [date, date.toLocaleString(icLanguages.currentLanguage,{ weekday:'long', day: '2-digit', month: 'long' })]
+													}))
 
-					scope.headingsByDate	=	new Map(dates.map(date => {
-													return [date, date.toLocaleString(icLanguages.currentLanguage,{ weekday:'long', day: '2-digit', month: 'long' })]
-												}))
+					const excludedTags 			=  	typeof scope.icExcludeTags == 'string'
+													?	[scope.icExcludeTags]
+													:	Array.isArray(scope.icExcludeTags)
+													?	scope.icExcludeTags
+													:	[]
+
+					const calendarExclusionTag	= icConfig.calendar.exclusionTag
+
+					excludedTags.push(calendarExclusionTag)
+
 
 					ic.itemStorage.filteredList.forEach( item => {
 
-						ruleset = icRecurring.guessFromTextDe(item.hours.de)
+
+
+						const hasExcludedTag 	= excludedTags.some(x => item.tags.includes(x))
+
+						if(hasExcludedTag) return
+
+						const flatRulesString	= item[icConfig.calendar.recurringRulesKey]
+
+						ruleset = 	flatRulesString
+									?	icRecurring.createRecurringRuleset(flatRulesString)
+									:	icRecurring.guessFromTextDe(item.hours.de) //REMOVE ME as soon as guessing is no longer needed		
 
 						if(!ruleset) return 
 
@@ -555,8 +582,11 @@ angular.module('icDirectives', [
 				scope.$watch( () => scope.icItem, () => {
 					scope.times = []
 
-					//TODO use actual values!!
-					ruleset = icRecurring.guessFromTextDe(scope.icItem.hours.de)
+					const flatRuleString = scope.icItem[icConfig.calendar.recurringRulesKey]
+
+					ruleset =	flatRuleString
+								?	icRecurring.createRecurringRuleset(flatRuleString)
+								:	icRecurring.guessFromTextDe(scope.icItem.hours.de) // REMOVE ME when prod
 
 					if(!ruleset) return 
 
@@ -1758,8 +1788,10 @@ angular.module('icDirectives', [
 					if(!(scope.date.date instanceof Date) || isNaN(scope.date.date)) return null
 
 
-					var date_portion_match 	= scope.date.date.toISOString().match(/^(\d\d\d\d\-\d\d\-\d\d)/),
-						date_portion 		= date_portion_match && date_portion_match[1] || ''
+					var year			= scope.date.date.getFullYear()
+						month			= (scope.date.date.getMonth()+1+'').padStart(2, '0')
+						day				= (scope.date.date.getDate()+'').padStart(2, '0')
+						date_portion 	= `${year}-${month}-${day}`
 
 
 					scope.value.edit = 	date_portion
@@ -1770,8 +1802,9 @@ angular.module('icDirectives', [
 
 
 
-					var time_portion_match 	= scope.date.time && scope.date.time.toISOString().match(/T(\d\d\:\d\d)/),
-						time_portion 		= time_portion_match && time_portion_match[1] || ''	
+					var hours 			= scope.date.time && scope.date.time.getHours(),
+						minutes 		= scope.date.time && scope.date.time.getMinutes()
+						time_portion 	= scope.date.time && `${hours}:${minutes}` || ''	
 					
 					scope.value.edit +=	'T' + time_portion
 
@@ -2160,13 +2193,14 @@ angular.module('icDirectives', [
 
 			link: function(scope, element){
 
-				scope.$watch('icRecurringRules', () => {
+				scope.$watch("icRecurringRules", () => {
 
 					scope.recurringRuleset		= 	typeof scope.icRecurringRules == 'string'
 													?	icRecurring.createRecurringRuleset(scope.icRecurringRules)
 													:	undefined
 
 					scope.currentRulesByMode	=	{}
+
 
 					if(!scope.recurringRuleset){
 						scope.sortedRules		= []	
@@ -2198,11 +2232,11 @@ angular.module('icDirectives', [
 					}
 
 					const calendar	=	scope.recurringRuleset
-													.toVCALENDAR({
-														title:			scope.icTitle,
-														description:	scope.icDescription,
-														url:			scope.icUrl
-													})
+										.toVCALENDAR({
+											title:			scope.icTitle,
+											description:	scope.icDescription,
+											url:			scope.icUrl
+										})
 
 					const filename	=	scope.icTitle
 										.toLowerCase()
@@ -2267,8 +2301,6 @@ angular.module('icDirectives', [
 							const link		= `<a class = "active" href = "tel:${number}">${match}</a>`
 							html = html.replace(match, link)
 						})
-
-						console.log(scope.icContent, html)
 
 						scope.phoneNumbers = html
 					}
@@ -3398,6 +3430,8 @@ angular.module('icDirectives', [
 	}
 ])
 
+// NOT USED, RIGHT? REMOVE ME THEN
+
 .directive('icCalendar', [
 
 	'$rootScope',
@@ -3439,10 +3473,6 @@ angular.module('icDirectives', [
 																},
 											}
 									)
-				
-				console.log({calendar})
-
-				window.setTimeout( () => calendar.render(), 10) 
 
 				// replace the following with icRecurring service
 
@@ -3475,7 +3505,6 @@ angular.module('icDirectives', [
 
 
 												if(matches){
-													console.log('MATCH 1', line, matches)
 													return 	{
 																title: 		item.title,
 																start: 		`${normalizeDate(matches[2])}T${matches[3]}`,
@@ -3595,7 +3624,6 @@ angular.module('icDirectives', [
 										.flat()
 										.filter( event => !!event)
 									
-					console.log(events)					
 
 					calendar.setOption('events', events)
 				}

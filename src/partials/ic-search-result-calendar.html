@@ -5,45 +5,47 @@
 </header>
  -->
 
-<p ng-if="ic.itemStorage.filteredList.length === 0">
-    {{'INTERFACE.SEARCH_NOTE' | translate}}
-</p>
+<div 
+	ic-scroll-repeat-limit 				= "100"
+	ic-scroll-repeat-limit-as 			= "icDaysAhead"
+	ic-scroll-repeat-limit-step-size 	= "1"
+	ic-scroll-repeat-limit-no-decrease
+>
+	<div
+		class		= "date" 
+		ng-repeat	= "date in dates | limitTo: icDaysAhead"
+	>
+		<h2 >
+			{{headingsByDate.get(date) }}
+		</h2>
+		<div>
 
-	<!-- ic-scroll-repeat-limit 				= "ic.itemStorage.filteredList.length"
-	ic-scroll-repeat-limit-as 			= "displayLimit"
-	ic-scroll-repeat-limit-step-size 	= "5" -->
+			<a
+				ng-repeat		= "item in items = itemsByDate.get(date)"
+				ng-href			= "{{ {activeItem: item} | icLink }}"
+				ic-touch-me
+			>
+				<ic-item-preview
+					class		= "bg-0"
+					ng-class 	= "{'active-item': item == ic.site.activeItem}"
+					ic-item 	= "item"
+					ng-if		= "!item.internal.failed"
+					ic-date		= "date"
+				></ic-item-preview>
+			</a>
 
-<div ng-repeat= "date in dates">
-	<h2 >
-		{{headingsByDate.get(date) }}
-	</h2>
-	<div>
+			<span ng-if = "items.length == 0" >
+				– 
+			</span>
 
-
-		<a
-			ng-repeat		= "item in items = itemsByDate.get(date)"
-			ng-href			= "{{ {activeItem: item} | icLink }}"
-			ic-touch-me
-		>
-			<ic-item-preview
-				class		= "bg-0"
-				ng-class 	= "{'active-item': item == ic.site.activeItem}"
-				ic-item 	= "item"
-				ng-if		= "!item.internal.failed"
-				ic-date		= "date"
-			></ic-item-preview>
-		</a>
-
-		<span ng-if = "items.length == 0" >
-			– 
-		</span>
-		<!-- <a 
-			ng-if		= "noScroll && !noMoreItems" 
-			class 		= "bg-0 padding more tac active" 
-			ng-click 	= "icScrollRepeatLimitIncrease()"
-			ic-touch-me
-		>
-			...
-		</a> -->
+			<a 
+				ng-if		= "noScroll && !noMoreItems" 
+				class 		= "bg-0 padding more tac active" 
+				ng-click 	= "icScrollRepeatLimitIncrease()"
+				ic-touch-me
+			>
+				...
+			</a>
+		</div>
 	</div>
 </div>

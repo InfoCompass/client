@@ -171,7 +171,6 @@ ic-main-content 	> *:nth-child(5),
 
 #section-page {
 	width:						80rem;
-	max-width:					100%;
 	order:						2;
 	z-index:					48; /* = 50-order */
 

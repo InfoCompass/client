@@ -400,8 +400,10 @@ angular.module('icUiDirectives', [
 
 					if(surplus == last_surplus && !scope.noMoreItems) return false
 
-					if(surplus < container[0].clientHeight)		scope[l] += step_size
-					if(surplus > 2*container[0].clientHeight)	scope[l] -= step_size
+					const noDecrease = 'icScrollRepeatLimitNoDecrease' in attrs
+
+					if(surplus < container[0].clientHeight)						scope[l] += step_size						
+					if(surplus > 2*container[0].clientHeight && !noDecrease)	scope[l] -= step_size
 
 					return true
 				}
