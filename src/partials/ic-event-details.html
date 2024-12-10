@@ -14,15 +14,23 @@
 		>
 			{{ ('ITEMS.RECUR_%s' | fill: rule.iteration | translate) }}
 		</span>
+
 	</span>
 
+
 	<span 
-		class 				= "weekday"
-		ng-class			= "{ leading: !sortedRules[$index-1] || sortedRules[$index-1].iteration != rule.iteration, first: $first  }"
-		title				= "{{'ITEMS.RECUR_WEEKDAY' | translate}}"
+		class 		= "weekday"
+		ng-class	= "{ leading: !sortedRules[$index-1] || sortedRules[$index-1].iteration != rule.iteration, first: $first  }"
+		title		= "{{'ITEMS.RECUR_WEEKDAY' | translate}}"
 
 	>
-		{{rule.weekday && ('ITEMS.RECUR_%s' | fill: rule.weekday | translate) }}
+		<span ng-if = "rule.iteration === 'fixed'">
+			{{ (rule.exampleDate | icDate) || '??' }}
+		</span>
+		<span ng-if = "rule.iteration != 'fixed'">
+			{{rule.weekday && ('ITEMS.RECUR_%s' | fill: rule.weekday | translate) }}
+		</span>
+		
 	</span>
 
 	<span 
@@ -58,7 +66,7 @@
 		ng-repeat-end
 
 	>
-		<span ng-if = "rule.requiresExampleDate">
+		<span ng-if = "rule.requiresExampleDate && rule.iteration != 'fixed'">
 			&nbsp;({{ (rule.nextOccurence() | icDate) || '??' }})
 		</span>
 	</span>

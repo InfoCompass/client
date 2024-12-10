@@ -286,6 +286,25 @@ ic-item-property-edit[ic-recurring-event] .recurring-rules > .start-date > *{
 ic-item-property-edit[ic-recurring-event] .recurring-rules > .action {
 	display:					flex;
 	align-items:				center;
+	border-left:				solid 2px var(--primary-color);
+	height:						100%;
+	padding-left:				0.5rem;
+}
+
+ic-item-property-edit[ic-recurring-event].invalid .recurring-rules > .action.with-error {
+	border-color:				var(--error-color)!important;	
+}
+
+
+
+.XS ic-item-property-edit[ic-recurring-event] .recurring-rules > .action {
+	display:					flex;
+	align-items:				center;
+	border-left:				none;
+	border-bottom:				solid 2px var(--primary-color);;
+	height:						auto;
+	padding-left:				0;
+	padding-bottom:				0.5rem;
 }
 
 ic-item-property-edit[ic-recurring-event] .recurring-rules > .action.before.with-example-date{
@@ -305,7 +324,16 @@ ic-item-property-edit[ic-recurring-event] .recurring-rules > .action.after {
 	display:					flex;
 }
 
+ic-item-property-edit[ic-recurring-event] .recurring-rules > .error {
+	display:					none;
+	grid-column:				1 / span 6;
+	color:						var(--primary-color);
+}
 
+
+ic-item-property-edit[ic-recurring-event].invalid .error {
+	display:					block;
+}
 
 
 ic-item-property-edit[ic-recurring-event] .recurring-rules + button {

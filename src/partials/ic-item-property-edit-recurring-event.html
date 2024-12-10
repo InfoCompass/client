@@ -95,39 +95,14 @@
 			ng-model			= "rule.iteration"
 			title				= "{{'ITEMS.RECUR_INTERVAL' | translate}}"
 		>
-			<option value = "daily">
-				{{'ITEMS.RECUR_DAILY' | translate}}
+			<option 
+				ng-repeat	= "iteration in ic.recurring.availableIterations"
+				value 		= "{{iteration}}"
+			>
+				{{'ITEMS.RECUR_%s' | fill: iteration | translate}}
 			</option>
-			<option value = "mon-fri">
-				{{'ITEMS.RECUR_MON-FRI' | translate}}
-			</option>
-			<option value = "weekly">
-				{{'ITEMS.RECUR_WEEKLY' | translate}}
-			</option>
-			<option value = "bi-weekly">
-				{{'ITEMS.RECUR_BI-WEEKLY' | translate}}
-			</option>
-			<option value = "three-weekly">
-				{{'ITEMS.RECUR_THREE-WEEKLY' | translate}}
-			</option>
-			<option value = "four-weekly">
-				{{'ITEMS.RECUR_FOUR-WEEKLY' | translate}}
-			</option>
-			<option value = "first_of_month">
-				{{'ITEMS.RECUR_FIRST_OF_MONTH' | translate}}
-			</option>
-			<option value = "second_of_month">
-				{{'ITEMS.RECUR_SECOND_OF_MONTH' | translate}}
-			</option>
-			<option value = "third_of_month">
-				{{'ITEMS.RECUR_THIRD_OF_MONTH' | translate}}
-			</option>
-			<option value = "fourth_of_month">
-				{{'ITEMS.RECUR_FOURTH_OF_MONTH' | translate}}
-			</option>
-			<!-- <option value = "fixed_date">
-				{{'ITEMS.RECUR_FIXED_DATE' | translate}}
-			</option> -->
+
+	
 		</select>
 
 		<div>
@@ -191,7 +166,7 @@
 
 		<div 
 			class				= "action before "
-			ng-class			= "{'with-example-date': rule.requiresExampleDate}"
+			ng-class			= "{'with-example-date': rule.requiresExampleDate, 'with-error': rule.getErrors()}"
 
 		>
 			<button 
@@ -221,10 +196,17 @@
 			>
 		</div>
 
+		<div			
+			ng-if = "rule.getErrors()"
+			class = "error"
+		>
+			{{ 'ITEMS.RECUR_ERROR_%s' | fill: rule.getErrors() | translate }}
+		</div>
+
 		<div 
 			ng-repeat-end
 			class				= "action after"
-			ng-class			= "{ 'with-example-date': rule.requiresExampleDate}"
+			ng-class			= "{ 'with-example-date': rule.requiresExampleDate, 'with-error': rule.getErrors()}"
 		>
 			<button 
 				ng-click 	= "editRecurringRuleset.removeRule(rule)"

@@ -3530,7 +3530,7 @@ angular.module('icServices', [
 		class RecurringRule {
 
 
-			static availableIntervals = ['daily', 'mon-fri', 'weekly', 'bi-weekly', 'three-weekly', 'four-weekly', 'first_of_month', 'second_of_month', 'third_of_month', 'fourth_of_month']
+			static availableIterations = ['fixed', 'daily', 'mon-fri', 'weekly', 'bi-weekly', 'three-weekly', 'four-weekly', 'first_of_month', 'second_of_month', 'third_of_month', 'fourth_of_month']
 
 			_iteration	= undefined
 			_weekday	= undefined
@@ -3538,12 +3538,12 @@ angular.module('icServices', [
 			endTime		= undefined
 
 			set iteration(x) {
-				if(!RecurringRule.availableIntervals.includes(x)) throw new Error(`Unavailable iteration: ${x}`, { cause:x })
+				if(!RecurringRule.availableIterations.includes(x)) throw new Error(`Unavailable iteration: ${x}`, { cause:x })
 				this._iteration = x
 			}
 
 			get iteration() {
-				return 	RecurringRule.availableIntervals.includes(this._iteration)
+				return 	RecurringRule.availableIterations.includes(this._iteration)
 						?	this._iteration
 						:	undefined
 			}
@@ -3553,7 +3553,7 @@ angular.module('icServices', [
 			}
 
 			get weekday(){
-				return	['daily', 'mon-fri'].includes(this.iteration)
+				return	['fixed', 'daily', 'mon-fri'].includes(this.iteration)
 						?	undefined
 						:	this._weekday
 			}
@@ -3575,11 +3575,11 @@ angular.module('icServices', [
 			}
 
 			get requiresExampleDate(){
-				return ['bi-weekly', 'three-weekly', 'four-weekly'].includes(this.iteration)
+				return ['fixed', 'bi-weekly', 'three-weekly', 'four-weekly'].includes(this.iteration)
 			}
 
 			get requiresWeekday(){
-				return !['daily', 'mon-fri'].includes(this.iteration)
+				return !['fixed', 'daily', 'mon-fri'].includes(this.iteration)
 			}
 
 
@@ -3632,11 +3632,23 @@ angular.module('icServices', [
 				if(!this.iteration) 						return "MISSING_ITERATION"
 				if(this.requiresWeekday && !this.weekday)	return "MISSING_WEEKDAY"
 
-				//availableIntervals = ['daily', 'mon-fri', 'weekly', 'bi-weekly', 'three-weekly', 'four-weekly']
+				if(!RecurringRule.availableIterations.includes(this.iteration)) return "UNKNOWN_ITERATION"
 
-				if(!RecurringRule.availableIntervals.includes(this.iteration)) return "UNKNOWN_ITERATION"
+				if(this.requiresExampleDate){
 
-				if(this.requiresExampleDate && !this.exampleDate ) return "MISSING_EXAMPLE_DATE"
+					if(!this.exampleDate) return "MISSING_EXAMPLE_DATE"
+
+					if(
+						! (this.exampleDate instanceof Date) 
+						||
+						isNaN(this.exampleDate.getTime())
+
+					) return "INVALID_EXAMPLE_DATE"
+
+				}
+
+				if(!this.startTime) 					return "MISSING_START_TIME"
+				if(isNaN(this.startTime.getTime() ) ) 	return "INVALID_START_TIME"
 
 			}
 
@@ -3731,7 +3743,9 @@ angular.module('icServices', [
 										.filter( x => !!x)					
 										.join(';')
 
-				return 'RRULE:'+rrule
+				return 	rrule
+						?	'RRULE:'+rrule
+						:	''
 			}
 
 
@@ -3924,6 +3938,13 @@ angular.module('icServices', [
 						.map( 		rule => [ rule.startTime, rule.endTime ] )
 			}
 
+			getErrors(){
+				return	this.rules
+						.map( rule => rule.getErrors() )
+						.filter( x => !!x)
+
+			}
+
 			toVCALENDAR({title, description, location, startDate, startTime, endDate, endTime, url} = {}){
 
 				const prodId	=	icConfig.title.toLowerCase().replaceAll(/\W/g,'-')
@@ -3965,7 +3986,7 @@ angular.module('icServices', [
 
 		class IcRecurring {
 
-			get availableIntervals(){ return RecurringRule.availableIntervals }
+			get availableIterations(){ return RecurringRule.availableIterations }
 
 			createRecurringRuleset(str){
 				return RecurringRuleset.from(str||[])

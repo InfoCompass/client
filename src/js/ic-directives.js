@@ -1580,7 +1580,7 @@ angular.module('icDirectives', [
 
 
 					// check coherence:
-					if(scope.icEdit && !scope.icKey in scope.icEdit ){
+					if(scope.icEdit && !(scope.icKey in scope.icEdit) ){
 						console.warn('icItemPropertyEdit: unknown property: ', scope.icKey)
 						return null
 					}
@@ -1870,6 +1870,14 @@ angular.module('icDirectives', [
 										?	{ code: "SELECT_AT_LEAST_ONE_OPTION"	}
 										:	scope.icEdit.getErrors(scope.icKey)
 
+					if(!scope.error && scope.icRecurringEvent){
+
+						const recur_errors = scope.editRecurringRuleset.getErrors()
+
+						if(recur_errors && recur_errors.length) scope.error = { code: "INVALID_RULESET" }
+
+					}
+
 					element.toggleClass('invalid', scope.error)
 					return scope.error
 				}
@@ -2065,7 +2073,7 @@ angular.module('icDirectives', [
 
 				// recurring events:
 
-	
+			
 				if(scope.icRecurringEvent) {
 
 					scope.editRecurringRuleset 		= icRecurring.createRecurringRuleset()
@@ -2215,7 +2223,7 @@ angular.module('icDirectives', [
 					})
 
 					scope.currentRuleModes 		= 	Object.keys(scope.currentRulesByMode)
-					scope.sortedRules 			= 	icRecurring.availableIntervals
+					scope.sortedRules 			= 	icRecurring.availableIterations
 													.map( key => scope.currentRulesByMode[key] || [])
 													.flat()
 
