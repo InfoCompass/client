@@ -292,7 +292,6 @@ angular.module('icServices', [
 .service('icInit', [
 
 	'$q',
-	'ic',
 	'icUser',
 	'icItemStorage',
 	'icLists',
@@ -310,7 +309,7 @@ angular.module('icServices', [
 	'$timeout',
 	'$rootScope', 
 
-	function($q, ic, icUser, icItemStorage, icLists, icLanguages, icTiles, icOptions, icMainMap, icUtils, icWebfonts, icConsent, icRemotePages, plImages, plStyles, plTemplates, $timeout, $rootScope){
+	function($q, icUser, icItemStorage, icLists, icLanguages, icTiles, icOptions, icMainMap, icUtils, icWebfonts, icConsent, icRemotePages, plImages, plStyles, plTemplates, $timeout, $rootScope){
 
 		var icInit 			= 	{},
 			promises 		= 	{
@@ -1071,6 +1070,7 @@ angular.module('icServices', [
 				return param.encode(value, ic)
 			}
 
+
 			icSite.getNewPath = function(config){
 				var path = ''
 
@@ -1379,6 +1379,154 @@ angular.module('icServices', [
 })
 
 
+
+.service('icMatomo', [
+
+	'$rootScope',
+	'icConfig',
+	'icInit',
+	'icSite',
+	'icItemStorage',
+
+	function($rootScope, icConfig, icInit, icSite, icItemStorage){
+
+		if(
+				!icConfig.matomo 
+			||	typeof icConfig.matomo.url 		!= 'string' 
+			||	typeof icConfig.matomo.siteId	!= 'string'
+
+		) return { matomo: 'not enabled or invalid config'}
+
+		class IcMatomo {
+
+			url				=	icConfig.matomo.url+'/matomo.php'
+			siteId			=	icConfig.matomo.siteId
+			defaultParams	=	{
+									idsite: 		this.siteId,
+									rec:			1,
+									rand:			String(Math.random()).replace('0.',''),
+									apiv:			1,
+								}
+
+			visitPage(page){
+
+				const params = 	{
+									lang:			icSite.currentLanguage,
+									url:			`${window.location.origin}/p/${page}`,
+									action_name:	`page/${page}`
+								}
+
+				console.log('VISIT PAGE', page, params)
+
+				fetch(
+					this.url +'?'+ new URLSearchParams({
+						...this.defaultParams,
+						...params
+					}),
+					{ method: 'POST' }
+				)
+			}
+
+			viewItem(item){
+
+				const params = 	{
+									lang:			icSite.currentLanguage,
+									url:			`${window.location.origin}/item/${item.id}`,
+									action_name:	`item/${item.title}`
+								}
+
+				console.log('VIEW ITEM', item, params)
+
+				fetch(
+					this.url +'?'+ new URLSearchParams({
+						...this.defaultParams,
+						...params
+					}),
+					{ method: 'POST' }
+				)
+			}
+
+			search(term, count){
+
+				const params = 	{
+									lang:			icSite.currentLanguage,
+									url:			`${window.location.origin}/s/${term}`,
+									// action_name:	`item/${item.title}`,
+									search:			term,									
+								}
+
+				if(count !== undefined) params.search_count = count
+
+				fetch(
+					this.url +'?'+ new URLSearchParams({
+						...this.defaultParams,
+						...params
+					}),
+					{ method: 'POST' }
+				)
+			}
+
+			filter(){
+				
+			}
+
+			startTracking(){
+				console.log('START TRACKING!!')
+
+				$rootScope.$watch( () => icSite.page, () => {
+
+					const page		= icSite.page
+
+					if(!page) return
+					if(!icSite.visibleSections.page) return
+
+					this.visitPage(page)
+				})
+
+				$rootScope.$watch( () => icSite.activeItem, () => {
+
+					if(!icSite.activeItem) return
+					if(!icSite.visibleSections.item) return
+
+					this.viewItem(icSite.activeItem)
+				})
+
+				$rootScope.$watch( () => icSite.searchTerm, () => {
+
+					const searchTerm = icSite.searchTerm 
+
+					if(!searchTerm) return 
+
+					setTimeout(
+						() => {							
+							const count = 	searchTerm == icSite.searchTerm
+											?	icItemStorage.filteredList.length
+											:	undefined
+
+							this.search(searchTerm, count)
+						},
+						500
+					)	
+
+				})
+
+			}
+
+		}
+
+		icMatomo = new IcMatomo()
+
+		const stopWatching =	$rootScope.$watch( () => icInit.done, () => {
+									if(icInit.done){
+										stopWatching()
+										icMatomo.startTracking()
+									}
+								})
+
+
+		return IcMatomo
+	}
+])
 
 
 
@@ -4194,9 +4342,10 @@ angular.module('icServices', [
 	'icGeo',
 	'icRemotePages',
 	'icRecurring',
+	'icMatomo',
 	'$rootScope',
 
-	function(ic, icInit, icSite, icItemStorage, icLayout, icItemConfig, icTaxonomy, icFilterConfig, icLanguages, icFavourites, icOverlays, icAdmin, icUser, icStats, icConfig, icUtils, icConsent, icTiles, icOptions, icLists, icMainMap, icWebfonts, icItemRef, icKeyboard, icAutoFill, icExport, icGeo, icRemotePages, icRecurring, $rootScope ){
+	function(ic, icInit, icSite, icItemStorage, icLayout, icItemConfig, icTaxonomy, icFilterConfig, icLanguages, icFavourites, icOverlays, icAdmin, icUser, icStats, icConfig, icUtils, icConsent, icTiles, icOptions, icLists, icMainMap, icWebfonts, icItemRef, icKeyboard, icAutoFill, icExport, icGeo, icRemotePages, icRecurring, icMatomo, $rootScope ){
 
 		ic.admin		= icAdmin
 		ic.autoFill		= icAutoFill
@@ -4226,6 +4375,7 @@ angular.module('icServices', [
 		ic.geo			= icGeo
 		ic.remotePages	= icRemotePages
 		ic.recurring	= icRecurring
+		ic.matomo		= icMatomo
 
 		var stop 		= 	$rootScope.$watch(function(){
 								if(icInit.ready){
@@ -4237,6 +4387,8 @@ angular.module('icServices', [
 									stop()
 								} 
 							})
+
+		window.icServices = ic
 
 	}
 ])
