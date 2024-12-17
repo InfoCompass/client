@@ -1387,8 +1387,9 @@ angular.module('icServices', [
 	'icInit',
 	'icSite',
 	'icItemStorage',
+	'icUtils',
 
-	function($rootScope, icConfig, icInit, icSite, icItemStorage){
+	function($rootScope, icConfig, icInit, icSite, icItemStorage, icUtils){
 
 		if(
 				!icConfig.matomo 
@@ -1397,40 +1398,135 @@ angular.module('icServices', [
 
 		) return { matomo: 'not enabled or invalid config'}
 
+
+
 		class IcMatomo {
 
+			localStorageKey	=	"ic-matomo-daily-id"
 			url				=	icConfig.matomo.url+'/matomo.php'
 			siteId			=	icConfig.matomo.siteId
 			defaultParams	=	{
 									idsite: 		this.siteId,
 									rec:			1,
 									rand:			String(Math.random()).replace('0.',''),
-									apiv:			1,
+									apiv:			1,									
 								}
 
-			visitPage(page){
+			async getDefaultParams(config = {}){
+
+				const dailyId = config.noId
+								?	undefined
+								:	await this.getDailyId()
+
+
+
+				return 	{	
+							...this.defaultParams,
+							lang:	icSite.currentLanguage,
+							_id:	dailyId
+						}
+			}								
+
+			async calculateDailyId(baseId){				
+
+				const today			= 	new Date()
+				const salt			= 	icUtils.stringifyDate(today)
+				const encoder		= 	new TextEncoder()
+				const encodedId		= 	encoder.encode(baseId+salt)
+
+				const hashBuffer	= 	await crypto.subtle.digest('SHA-256', encodedId)
+				const hashArray 	= 	Array.from(new Uint8Array(hashBuffer))
+				const hashHex		= 	hashArray
+										.map((b) => b.toString(16).padStart(2, "0"))
+										.join("")
+				const hashHex16		=	hashHex.slice(0,16)						
+
+				console.log('calculateDailyId', hashHex16)
+
+				return hashHex16
+
+			}
+
+			async resetUserId(){
+
+				const random		= 	new Uint8Array(8)
+
+				crypto.getRandomValues(random)
+
+				const randomArray	= 	Array.from(random)
+				const randomHex		= 	randomArray
+										.map((b) => b.toString(16).padStart(2, "0"))
+										.join("")
+
+				const dateStr		=	icUtils.stringifyDate( new Date() )
+				
+				const data			=	[randomHex, dateStr, "This id will never be transmitted (only a hash with a daily changing salt), it will also be replaced whenever the date changes."]						
+
+				localStorage.setItem(this.localStorageKey, JSON.stringify(data))
+
+				console.log('RESET daily baseid to:', data)
+
+				return this.calculateDailyId(randomHex)
+			}
+
+			async loadBaseId(){
+
+				const today			= new Date()
+
+				const lsRawData 	= localStorage.getItem(this.localStorageKey)
+
+				if(!lsRawData) 			throw new Error("no data in localStorage")
+
+				const data			= JSON.parse(lsRawData)
+				const baseId		= data[0]
+				const dateStr		= data[1]
+
+				if(!baseId) 			throw new Error("no baseId in localStorage")
+				if(!dateStr)			throw new Error("no dateStr in localStorage")
+
+				const todayStr		= icUtils.stringifyDate(today)
+
+				if(dateStr != todayStr) throw new Error("date changed")
+
+				return baseId	
+			}	
+
+			async getDailyId(){
+
+				try{
+
+					const baseId = await this.loadBaseId()
+					return this.calculateDailyId(baseId)
+
+				} catch(e) {
+					console.log('Resetting dailyId due to:', e)
+					return await this.resetUserId()
+				}
+
+			}
+		
+
+			async visitPage(page){
 
 				const params = 	{
-									lang:			icSite.currentLanguage,
+									... (await this.getDefaultParams() ),
 									url:			`${window.location.origin}/p/${page}`,
 									action_name:	`page/${page}`
 								}
 
 				console.log('VISIT PAGE', page, params)
-
 				fetch(
-					this.url +'?'+ new URLSearchParams({
-						...this.defaultParams,
-						...params
-					}),
+					this.url +'?'+ new URLSearchParams(params),
 					{ method: 'POST' }
 				)
 			}
 
-			viewItem(item){
+
+
+			async viewItem(item){
 
 				const params = 	{
-									lang:			icSite.currentLanguage,
+									... (await this.getDefaultParams() ),
 									url:			`${window.location.origin}/item/${item.id}`,
 									action_name:	`item/${item.title}`
 								}
@@ -1438,30 +1534,37 @@ angular.module('icServices', [
 				console.log('VIEW ITEM', item, params)
 
 				fetch(
-					this.url +'?'+ new URLSearchParams({
-						...this.defaultParams,
-						...params
-					}),
+					this.url +'?'+ new URLSearchParams(params),
 					{ method: 'POST' }
 				)
 			}
 
-			search(term, count){
+			async search(term, count){
 
 				const params = 	{
-									lang:			icSite.currentLanguage,
-									url:			`${window.location.origin}/s/${term}`,
-									// action_name:	`item/${item.title}`,
+									... (await this.getDefaultParams() ),
+									url:			`${window.location.origin}/s/${term}`,									
 									search:			term,									
 								}
 
-				if(count !== undefined) params.search_count = count
+				fetch(
+					this.url +'?'+ new URLSearchParams(params),
+					{ method: 'POST' }
+				)
+			}
+
+			async useLanguage(lang) {
+
+				const params = 	{
+									... (await this.getDefaultParams({ noId: true }) ),									
+									e_c:	'Settings',
+									e_a:	'Use Language',
+									e_n:	lang,
+
+								}
 
 				fetch(
-					this.url +'?'+ new URLSearchParams({
-						...this.defaultParams,
-						...params
-					}),
+					this.url +'?'+ new URLSearchParams(params),
 					{ method: 'POST' }
 				)
 			}
@@ -1470,8 +1573,9 @@ angular.module('icServices', [
 				
 			}
 
+
+
 			startTracking(){
-				console.log('START TRACKING!!')
 
 				$rootScope.$watch( () => icSite.page, () => {
 
@@ -1480,7 +1584,7 @@ angular.module('icServices', [
 					if(!page) return
 					if(!icSite.visibleSections.page) return
 
-					this.visitPage(page)
+					void this.visitPage(page)
 				})
 
 				$rootScope.$watch( () => icSite.activeItem, () => {
@@ -1488,8 +1592,13 @@ angular.module('icServices', [
 					if(!icSite.activeItem) return
 					if(!icSite.visibleSections.item) return
 
-					this.viewItem(icSite.activeItem)
+					void this.viewItem(icSite.activeItem)
 				})
+
+				$rootScope.$watch( () => icSite.currentLanguage, () => {
+					void this.useLanguage(icSite.currentLanguage)
+				})
+
 
 				$rootScope.$watch( () => icSite.searchTerm, () => {
 
@@ -1503,7 +1612,7 @@ angular.module('icServices', [
 											?	icItemStorage.filteredList.length
 											:	undefined
 
-							this.search(searchTerm, count)
+							void this.search(searchTerm, count)
 						},
 						500
 					)	
@@ -1515,6 +1624,8 @@ angular.module('icServices', [
 		}
 
 		icMatomo = new IcMatomo()
+
+		console.log({ IcMatomo })
 
 		const stopWatching =	$rootScope.$watch( () => icInit.done, () => {
 									if(icInit.done){
