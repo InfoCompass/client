@@ -389,12 +389,31 @@ function prepareRoboto(){
 			.then( css 		=> fs.writeFile('tmp/styles/roboto.css', css, 'utf8'))
 }
 
+function prepareAtkinsonHyperlegible(){
+
+		return 	Promise.all([
+				fs.readFile("node_modules/@fontsource/atkinson-hyperlegible/700.css",			"utf8"),
+				fs.readFile("node_modules/@fontsource/atkinson-hyperlegible/400.css",			"utf8"),
+				fs.readFile("node_modules/@fontsource/atkinson-hyperlegible/700-italic.css",	"utf8"),
+				fs.readFile("node_modules/@fontsource/atkinson-hyperlegible/400-italic.css",	"utf8"),
+				fs.copy("node_modules/@fontsource/atkinson-hyperlegible/files",	dst+"/fonts/atkinson-hyperlegible"),
+				fs.ensureDir('tmp/styles')
+			])
+			.then( 
+				results	=> 	results.slice(0,4)
+							.map( result => result.replace(/\.\/files/g, '/fonts/atkinson-hyperlegible'))
+							.join("\n")
+			)
+			.then( css 		=> fs.writeFile('tmp/styles/atkinson-hyperlegible.css', css, 'utf8'))
+}
+
 
 function prepareFonts(){
 	return 	Promise.all([
 				prepareRoboto(),
 				prepareFira(),
-				prepareBiyarni()
+				prepareBiyarni(),
+				prepareAtkinsonHyperlegible()
 			])
 			.then( () => console.log("\n\n#####CHECK FONTS!!\n"))
 
