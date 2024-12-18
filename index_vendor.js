@@ -12,7 +12,7 @@ var angular 					= require('angular'),
 	// for calendar:
 
 	fullcalendar				= require('fullcalendar'),
-	fullcalendarAllLocales		= require('@fullcalendar/core/locales-all.cjs')
+	fullcalendarAllLocales		= require('@fullcalendar/core/locales-all.cjs'),
 
 	// rrule
 	rrule						= require('rrule')
