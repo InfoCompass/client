@@ -1386,10 +1386,12 @@ angular.module('icServices', [
 	'icConfig',
 	'icInit',
 	'icSite',
+	'icLayout', 
 	'icItemStorage',
 	'icUtils',
+	'$translate',
 
-	function($rootScope, icConfig, icInit, icSite, icItemStorage, icUtils){
+	function($rootScope, icConfig, icInit, icSite, icLayout, icItemStorage, icUtils, $translate){
 
 		if(
 				!icConfig.matomo 
@@ -1402,32 +1404,90 @@ angular.module('icServices', [
 
 		class IcMatomo {
 
-			localStorageKey	=	"ic-matomo-daily-id"
-			url				=	icConfig.matomo.url+'/matomo.php'
-			siteId			=	icConfig.matomo.siteId
-			defaultParams	=	{
-									idsite: 		this.siteId,
-									rec:			1,
-									rand:			String(Math.random()).replace('0.',''),
-									apiv:			1,									
-								}
+			visitIdKey				=	"ic-matomo-visit-id"
+			lastInteractionKey		=	"ic-matomo-last-interaction"
+			maxInteractionGapHours	=	1
+			maxInteractionGapTime	=	1000*60*60*this.maxInteractionGapHours 
+			url						=	icConfig.matomo.url+'/matomo.php'
+			siteId					=	icConfig.matomo.siteId
+			defaultParams			=	{
+											idsite: 		this.siteId,
+											rec:			1,
+											rand:			String(Math.random()).replace('0.',''),
+											apiv:			1,									
+										}
+
+			constructor(){}							
 
 			async getDefaultParams(config = {}){
 
-				const dailyId = config.noId
+				const visitId = config.noId
 								?	undefined
-								:	await this.getDailyId()
+								:	await this.getVisitId()
 
 
 
 				return 	{	
 							...this.defaultParams,
 							lang:	icSite.currentLanguage,
-							_id:	dailyId
+							_id:	visitId,
+							cid:	visitId
 						}
-			}								
+			}			
+			
 
-			async calculateDailyId(baseId){				
+			// LAST INTERACTION						
+			
+			async clearLastInteraction(){
+				localStoarge.removeItem(this.lastInteractionKey)
+			}
+
+			async renewLastInteraction(){
+
+				const timestamp 	= Date.now()
+				const description	= `When last interaction is unknown or took place more than ${this.maxInteractionGapHours} hour(s) ago, prematurely resets the visitId.`
+
+				localStorage.setItem(this.lastInteractionKey, JSON.stringify({timestamp, description}))
+
+				console.info('Renewing last interaction', timestamp)
+
+				return timestamp
+			}			
+
+			async loadLastInteraction(){
+
+				let liData = JSON.parse(localStorage.getItem(this.lastInteractionKey))
+
+				if(!liData) 							throw new Error("No record of last interaction in localStorage.")
+
+				if(typeof liData.timestamp != 'number')	throw new Error("Last interaction timestamp is not a number.")
+
+				return liData.timestamp
+			}		
+
+			async getLastInteraction() {
+				return await this.loadLastInteraction()
+			}
+
+			async assertLastInteractionWithinThreshold() {
+
+				const lastInteraction 	= await this.getLastInteraction()
+				const now				= Date.now()
+
+				// .TODO: clear LI when all tabs are closed? Check if gap works
+				// ALSO: weekly users!
+
+				console.log({now, lastInteraction, diff: now-lastInteraction, break: now-lastInteraction > this.maxInteractionGapTime, max: this.maxInteractionGapTime})
+
+				if(now-lastInteraction > this.maxInteractionGapTime) 	throw new Error("Last interaction past threshold.")
+
+			} 
+
+
+			
+			// VISIT ID		
+
+			async calculateVisitId(baseId){				
 
 				const today			= 	new Date()
 				const salt			= 	icUtils.stringifyDate(today)
@@ -1441,13 +1501,11 @@ angular.module('icServices', [
 										.join("")
 				const hashHex16		=	hashHex.slice(0,16)						
 
-				console.log('calculateDailyId', hashHex16)
-
 				return hashHex16
 
 			}
 
-			async resetUserId(){
+			async resetVisitId(){
 
 				const random		= 	new Uint8Array(8)
 
@@ -1458,50 +1516,85 @@ angular.module('icServices', [
 										.map((b) => b.toString(16).padStart(2, "0"))
 										.join("")
 
+				const baseId		=	randomHex
 				const dateStr		=	icUtils.stringifyDate( new Date() )
+				const description	=	`This id will never be transmitted (only a hash with a daily changing salt), it will also be replaced whenever the date changes or the last interaction took place more than ${this.maxInteractionGapHours} hour(s) ago.`
 				
-				const data			=	[randomHex, dateStr, "This id will never be transmitted (only a hash with a daily changing salt), it will also be replaced whenever the date changes."]						
+				const data			=	{ baseId, dateStr, description }
 
-				localStorage.setItem(this.localStorageKey, JSON.stringify(data))
+				localStorage.setItem(this.visitIdKey, JSON.stringify(data))
 
-				console.log('RESET daily baseid to:', data)
+				console.info('Resetting visit baseId to:', data)
 
-				return this.calculateDailyId(randomHex)
+				return this.calculateVisitId(randomHex)
 			}
 
 			async loadBaseId(){
 
-				const today			= new Date()
+				const today				= new Date()
 
-				const lsRawData 	= localStorage.getItem(this.localStorageKey)
+				const liRawData 		= localStorage.getItem(this.visitIdKey)
 
-				if(!lsRawData) 			throw new Error("no data in localStorage")
+				const {baseId, dateStr}	= JSON.parse(liRawData)
 
-				const data			= JSON.parse(lsRawData)
-				const baseId		= data[0]
-				const dateStr		= data[1]
+				if(!liRawData) 			throw new Error("No baseId data in localStorage.")
 
-				if(!baseId) 			throw new Error("no baseId in localStorage")
-				if(!dateStr)			throw new Error("no dateStr in localStorage")
+				console.log({liRawData})
 
-				const todayStr		= icUtils.stringifyDate(today)
+				if(!baseId) 			throw new Error("No baseId in localStorage.")
+				if(!dateStr)			throw new Error("No dateStr in localStorage.")
+
+				const todayStr			= icUtils.stringifyDate(today)
 
 				if(dateStr != todayStr) throw new Error("date changed")
 
 				return baseId	
 			}	
 
-			async getDailyId(){
+
+			getVisitIdBuffer = {}
+
+			async getVisitId(){
+
+				const todayStr = icUtils.stringifyDate(new Date() )
+
+				if( 
+						this.getVisitIdBuffer.date == todayStr
+					&&	this.getVisitIdBuffer.promise
+
+				) return await this.getVisitIdBuffer.promise
+
+				let 	resolve, reject	
+				const 	promise 	= new Promise( (res, rej) => { resolve = res; reject = rej })	
+
+				this.getVisitIdBuffer = { date: todayStr, promise }
+
+				let visitId = undefined
 
 				try{
 
-					const baseId = await this.loadBaseId()
-					return this.calculateDailyId(baseId)
+					await this.assertLastInteractionWithinThreshold()
+
+					const baseId 	= await this.loadBaseId()
+					
+					visitId 		= await this.calculateVisitId(baseId)
+					
 
 				} catch(e) {
-					console.log('Resetting dailyId due to:', e)
-					return await this.resetUserId()
+					console.groupCollapsed('Resetting dailyId due to: '+ e.message)
+					console.error(e)
+					console.groupEnd()
+					visitId			= await this.resetVisitId()
+
 				}
+
+				this.getVisitIdBuffer = {}				
+
+				this.renewLastInteraction()
+
+				resolve(visitId)
+
+				return visitId
 
 			}
 		
@@ -1514,8 +1607,7 @@ angular.module('icServices', [
 									action_name:	`page/${page}`
 								}
 
-				console.log('VISIT PAGE', page, params)
-				fetch(
+				void fetch(
 					this.url +'?'+ new URLSearchParams(params),
 					{ method: 'POST' }
 				)
@@ -1555,11 +1647,14 @@ angular.module('icServices', [
 
 			async useLanguage(lang) {
 
+				console.log({lang})
+
 				const params = 	{
-									... (await this.getDefaultParams({ noId: true }) ),									
-									e_c:	'Settings',
-									e_a:	'Use Language',
-									e_n:	lang,
+									... (await this.getDefaultParams() ),
+									e_c:		'Settings',
+									e_a:		'Use Language',
+									e_n:		lang,
+									dimension1: lang
 
 								}
 
@@ -1569,8 +1664,87 @@ angular.module('icServices', [
 				)
 			}
 
-			filter(){
-				
+			async viewSections(sections){
+
+				if(!sections)			return
+				if(!sections.length) 	return
+
+				const params 	=	await this.getDefaultParams()
+				const requests	=	sections.map( section => 
+										'?'
+										+
+										new URLSearchParams({
+											...params,
+											e_c:		'Layout',
+											e_a:		'Section',
+											e_n:		section,
+											dimension3:	section
+										})
+										.toString()
+									)			
+				fetch(
+					this.url,
+					{
+						method: 'POST',
+						body:	JSON.stringify({ requests })
+					}
+				)				
+			}
+
+			async setLayout(mode){
+
+				if(!mode) return
+
+				const params = 	{
+									... (await this.getDefaultParams() ),
+									e_c:		'Layout',
+									e_a:		'Mode',
+									e_n:		mode,
+									dimension2: mode
+
+								}
+
+				fetch(
+					this.url +'?'+ new URLSearchParams(params),
+					{ method: 'POST' }
+				)
+			}
+
+			async setFilters([types, categories, tags]){
+
+				console.log($translate)
+
+				const tTypes 		= await Promise.all( types.map( 		t => $translate('TYPES.'+t.toUpperCase()			, null, null, null, 'de')))
+				const tCategories 	= await Promise.all( categories.map( 	t => $translate('CATEGORIES.'+t.toUpperCase()		, null, null, null, 'de')))
+				const tTags 		= await Promise.all( tags.map( 			t => $translate('UNSORTED_TAGS.'+t.toUpperCase()	, null, null, null, 'de')))
+
+				const tFilters		= [...tTypes, ...tCategories, ...tTags]
+
+					
+				if(!tFilters)			return
+				if(!tFilters.length) 	return
+
+				const params 	=	await this.getDefaultParams()
+				const requests	=	tFilters.map( filter => 
+										'?'
+										+
+										new URLSearchParams({
+											...params,
+											e_c:		'Filter',
+											e_a:		'any',
+											e_n:		filter,
+											dimension4:	filter
+										})
+										.toString()
+									)			
+				fetch(
+					this.url,
+					{
+						method: 'POST',
+						body:	JSON.stringify({ requests })
+					}
+				)
+
 			}
 
 
@@ -1596,8 +1770,24 @@ angular.module('icServices', [
 				})
 
 				$rootScope.$watch( () => icSite.currentLanguage, () => {
+
+					console.log('currentLanguage', icSite.currentLanguage)
+
+					if(!icSite.currentLanguage) return 
+
 					void this.useLanguage(icSite.currentLanguage)
 				})
+
+				$rootScope.$watch( () => icLayout && icLayout.mode.name, () => {
+
+					const mode = icLayout.mode.name
+
+					if(!mode) return 
+
+
+					void this.setLayout(mode)
+				})
+
 
 
 				$rootScope.$watch( () => icSite.searchTerm, () => {
@@ -1618,6 +1808,20 @@ angular.module('icServices', [
 					)	
 
 				})
+
+				$rootScope.$watch( () => icSite.visibleSections, (current, previous) => {					
+
+					const sections = Object.keys(icSite.visibleSections).filter( key => icSite.visibleSections[key])
+
+					void this.viewSections(sections)
+				}, true)
+
+				$rootScope.$watch( () => [icSite.filterByType, icSite.filterByCategory, icSite.filterByUnsortedTag] , (all_filters) => {					
+					void this.setFilters(all_filters)
+				}, true)
+
+
+
 
 			}
 
@@ -2701,7 +2905,7 @@ angular.module('icServices', [
 		const adHocTranslation = function(x){
 			// this is a hack
 			// it is meant to support translation of tags; especially list/option tag
-			// $translate is async, using it would require to much refactoring
+			// $translate is async, using it would require too much refactoring
 
 			if(typeof x != 'string') 			return 	[]
 
