@@ -1389,9 +1389,10 @@ angular.module('icServices', [
 	'icLayout', 
 	'icItemStorage',
 	'icUtils',
+	'icUser',
 	'$translate',
 
-	function($rootScope, icConfig, icInit, icSite, icLayout, icItemStorage, icUtils, $translate){
+	function($rootScope, icConfig, icInit, icSite, icLayout, icItemStorage, icUtils, icUser, $translate){
 
 		if(
 				!icConfig.matomo 
@@ -1417,6 +1418,9 @@ angular.module('icServices', [
 											apiv:			1,									
 										}
 
+			paramQueue				=	[] 
+			submissionBufferTime	=	1000 // milliseconds
+
 			constructor(){}							
 
 			async getDefaultParams(config = {}){
@@ -1433,8 +1437,78 @@ angular.module('icServices', [
 							_id:	visitId,
 							cid:	visitId
 						}
-			}			
+			}		
+
+			async submit(params){
+
+				
+				const visitIds	=	Array.from( new Set(params.map( p => p._id) ) )
+
+				console.groupCollapsed('Posting to Matomo with visitId(s):', ...visitIds)
+
+				params.forEach( p => console.dir(p) )
+
+				console.groupEnd()			
+					
+				const requests	=	params
+									.map( p =>`?${new URLSearchParams(p)}`)			
+
+				const method	= 	'POST'
+				const body		= 	JSON.stringify({ requests })	
+
+				return await fetch( this.url, { method, body })
+			}
+
+			deferedBulkSubmit(){
+
+				setTimeout(
+
+					() => {
+
+						if(this.paramQueue.length == 0) return
+
+						const firstVisitId 	= this.paramQueue[0]._id
+
+						const params		= this.paramQueue.filter( r => r._id == firstVisitId)
+
+						this.paramQueue	= this.paramQueue.filter( r => r._id != firstVisitId) 			
+					
+						this.submit(params)
+
+						if(this.paramQueue.length) this.deferedBulkSubmit()
+
+					},
+
+					this.submissionBufferTime
+				)		
+
+				
+			}	
 			
+			async log(params){
+
+				if(icUser.loggedIn){
+					console.info("Usage analysis disabled for logged in users")
+					return
+				}
+									
+				const defaultParams		=	 await this.getDefaultParams()
+
+				const rawParams			= 	Array.isArray(params)
+											?	params
+											:	[params]									
+
+				const suppParams		=	rawParams
+											.map( p => ({
+												...defaultParams,
+												...p
+											}))
+				
+				this.paramQueue.push(...suppParams)	
+
+				this.deferedBulkSubmit()	
+				
+			}
 
 			// LAST INTERACTION						
 			
@@ -1449,7 +1523,7 @@ angular.module('icServices', [
 
 				localStorage.setItem(this.lastInteractionKey, JSON.stringify({timestamp, description}))
 
-				console.info('Renewing last interaction', timestamp)
+				console.info('Renewing last interaction', new Date(timestamp))
 
 				return timestamp
 			}			
@@ -1476,8 +1550,6 @@ angular.module('icServices', [
 
 				// .TODO: clear LI when all tabs are closed? Check if gap works
 				// ALSO: weekly users!
-
-				console.log({now, lastInteraction, diff: now-lastInteraction, break: now-lastInteraction > this.maxInteractionGapTime, max: this.maxInteractionGapTime})
 
 				if(now-lastInteraction > this.maxInteractionGapTime) 	throw new Error("Last interaction past threshold.")
 
@@ -1539,14 +1611,12 @@ angular.module('icServices', [
 
 				if(!liRawData) 			throw new Error("No baseId data in localStorage.")
 
-				console.log({liRawData})
-
 				if(!baseId) 			throw new Error("No baseId in localStorage.")
 				if(!dateStr)			throw new Error("No dateStr in localStorage.")
 
 				const todayStr			= icUtils.stringifyDate(today)
 
-				if(dateStr != todayStr) throw new Error("date changed")
+				if(dateStr != todayStr) throw new Error("Date changed")
 
 				return baseId	
 			}	
@@ -1576,7 +1646,7 @@ angular.module('icServices', [
 					await this.assertLastInteractionWithinThreshold()
 
 					const baseId 	= await this.loadBaseId()
-					
+
 					visitId 		= await this.calculateVisitId(baseId)
 					
 
@@ -1602,15 +1672,11 @@ angular.module('icServices', [
 			async visitPage(page){
 
 				const params = 	{
-									... (await this.getDefaultParams() ),
 									url:			`${window.location.origin}/p/${page}`,
 									action_name:	`page/${page}`
 								}
 
-				void fetch(
-					this.url +'?'+ new URLSearchParams(params),
-					{ method: 'POST' }
-				)
+				await this.log(params)
 			}
 
 
@@ -1618,39 +1684,26 @@ angular.module('icServices', [
 			async viewItem(item){
 
 				const params = 	{
-									... (await this.getDefaultParams() ),
 									url:			`${window.location.origin}/item/${item.id}`,
 									action_name:	`item/${item.title}`
 								}
 
-				console.log('VIEW ITEM', item, params)
-
-				fetch(
-					this.url +'?'+ new URLSearchParams(params),
-					{ method: 'POST' }
-				)
+				await this.log(params)
 			}
 
 			async search(term, count){
 
 				const params = 	{
-									... (await this.getDefaultParams() ),
 									url:			`${window.location.origin}/s/${term}`,									
 									search:			term,									
 								}
 
-				fetch(
-					this.url +'?'+ new URLSearchParams(params),
-					{ method: 'POST' }
-				)
+				await this.log(params)
 			}
 
 			async useLanguage(lang) {
 
-				console.log({lang})
-
 				const params = 	{
-									... (await this.getDefaultParams() ),
 									e_c:		'Settings',
 									e_a:		'Use Language',
 									e_n:		lang,
@@ -1658,10 +1711,7 @@ angular.module('icServices', [
 
 								}
 
-				fetch(
-					this.url +'?'+ new URLSearchParams(params),
-					{ method: 'POST' }
-				)
+				await this.log(params)
 			}
 
 			async viewSections(sections){
@@ -1669,50 +1719,34 @@ angular.module('icServices', [
 				if(!sections)			return
 				if(!sections.length) 	return
 
-				const params 	=	await this.getDefaultParams()
-				const requests	=	sections.map( section => 
-										'?'
-										+
-										new URLSearchParams({
-											...params,
-											e_c:		'Layout',
-											e_a:		'Section',
-											e_n:		section,
-											dimension3:	section
-										})
-										.toString()
-									)			
-				fetch(
-					this.url,
-					{
-						method: 'POST',
-						body:	JSON.stringify({ requests })
-					}
-				)				
+				const params	=	sections.map( section => ({ 
+										e_c:		'Layout',
+										e_a:		'Section',
+										e_n:		section,
+										dimension3:	section
+
+									}))
+
+				await this.log(params)		
 			}
 
 			async setLayout(mode){
 
 				if(!mode) return
 
-				const params = 	{
-									... (await this.getDefaultParams() ),
-									e_c:		'Layout',
-									e_a:		'Mode',
-									e_n:		mode,
-									dimension2: mode
+				const params 	= 	{
+										e_c:		'Layout',
+										e_a:		'Mode',
+										e_n:		mode,
+										dimension2: mode
 
-								}
+									}
 
-				fetch(
-					this.url +'?'+ new URLSearchParams(params),
-					{ method: 'POST' }
-				)
+				await this.log(params)		
+
 			}
 
 			async setFilters([types, categories, tags]){
-
-				console.log($translate)
 
 				const tTypes 		= await Promise.all( types.map( 		t => $translate('TYPES.'+t.toUpperCase()			, null, null, null, 'de')))
 				const tCategories 	= await Promise.all( categories.map( 	t => $translate('CATEGORIES.'+t.toUpperCase()		, null, null, null, 'de')))
@@ -1724,26 +1758,14 @@ angular.module('icServices', [
 				if(!tFilters)			return
 				if(!tFilters.length) 	return
 
-				const params 	=	await this.getDefaultParams()
-				const requests	=	tFilters.map( filter => 
-										'?'
-										+
-										new URLSearchParams({
-											...params,
-											e_c:		'Filter',
-											e_a:		'any',
-											e_n:		filter,
-											dimension4:	filter
-										})
-										.toString()
-									)			
-				fetch(
-					this.url,
-					{
-						method: 'POST',
-						body:	JSON.stringify({ requests })
-					}
-				)
+				const params	=	tFilters.map( filter => ({
+										e_c:		'Filter',
+										e_a:		'any',
+										e_n:		filter,
+										dimension4:	filter
+									}))		
+				
+				await this.log(params)		
 
 			}
 
@@ -1770,8 +1792,6 @@ angular.module('icServices', [
 				})
 
 				$rootScope.$watch( () => icSite.currentLanguage, () => {
-
-					console.log('currentLanguage', icSite.currentLanguage)
 
 					if(!icSite.currentLanguage) return 
 
