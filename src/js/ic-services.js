@@ -1486,9 +1486,11 @@ angular.module('icServices', [
 
 			deferedBulkSubmit(forceImmediate = false){
 
+
 				setTimeout(
 
 					() => {
+
 
 						if(this.paramQueue.length == 0) return
 
@@ -1780,7 +1782,7 @@ angular.module('icServices', [
 
 				const tTypes 		= 	await Promise.all( types.map( 		t => $translate('TYPES.'+t.toUpperCase()			, null, null, null, 'de')))
 				const tCategories 	= 	await Promise.all( categories.map( 	t => $translate('CATEGORIES.'+t.toUpperCase()		, null, null, null, 'de')))
-				const tTags 		=	await Promise.all( tags.map( 			t => $translate('UNSORTED_TAGS.'+t.toUpperCase()	, null, null, null, 'de')))
+				const tTags 		=	await Promise.all( tags.map( 		t => $translate('UNSORTED_TAGS.'+t.toUpperCase()	, null, null, null, 'de')))
 
 				const tFilters		= 	[...tTypes, ...tCategories, ...tTags]
 
@@ -1861,9 +1863,8 @@ angular.module('icServices', [
 
 				this.noteReturn()
 
-				window.addEventListener('onbeforeunload', event => {
-					this.deferedBulkSubmit(true)
-					event.preventDefault()
+				window.addEventListener('visibilitychange', event => {					
+					 if (document.hidden) this.deferedBulkSubmit(true)
 				})
 
 				$rootScope.$watch( () => icSite.page, () => {
