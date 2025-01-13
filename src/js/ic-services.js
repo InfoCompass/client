@@ -126,7 +126,10 @@ angular.module('icServices', [
 				return	promise
 			},
 
-			stringifyDate(dateOrString){
+			stringifyDate: function(dateOrString){
+
+				if(!dateOrString) throw new TypeError("Invalid value for dateOrString", { cause: dateOrstring })
+
 				if(typeof dateOrString == 'string') return dateOrString
 
 				const date 	= dateOrString
@@ -135,6 +138,27 @@ angular.module('icServices', [
 				const day	= (dateOrString.getDate()+'').padStart(2,'0')
 
 				return `${year}-${month}-${day}`
+			},
+
+			parseDate: function (dateOrString){
+
+				if(!dateOrString) throw new TypeError("Invalid value for dateOrString", { cause: dateOrstring })
+
+				if(dateOrString instanceof Date) return dateOrString
+
+				const matches	= dateOrString.match(/(\d\d\d\d)-(\d\d)-(\d\d)/)
+				const year		= parseInt(matches[1])
+				const month		= parseInt(matches[2])-1
+				const day		= parseInt(matches[3])
+
+				return new Date(year, month, day)
+			},
+
+			clipDate(dateOrString){
+
+				if(!dateOrString) throw new TypeError("Invalid value for dateOrString", { cause: dateOrstring })
+
+				return icUtils.parseDate(icUtils.stringifyDate(dateOrString))
 			}
 
 		}
@@ -1407,6 +1431,7 @@ angular.module('icServices', [
 
 			visitIdKey				=	"ic-matomo-visit-id"
 			lastInteractionKey		=	"ic-matomo-last-interaction"
+			returnNoticeKey			=	"ic-matomo-return-notice"
 			maxInteractionGapHours	=	1
 			maxInteractionGapTime	=	1000*60*60*this.maxInteractionGapHours 
 			url						=	icConfig.matomo.url+'/matomo.php'
@@ -1459,7 +1484,7 @@ angular.module('icServices', [
 				return await fetch( this.url, { method, body })
 			}
 
-			deferedBulkSubmit(){
+			deferedBulkSubmit(forceImmediate = false){
 
 				setTimeout(
 
@@ -1471,15 +1496,20 @@ angular.module('icServices', [
 
 						const params		= this.paramQueue.filter( r => r._id == firstVisitId)
 
-						this.paramQueue	= this.paramQueue.filter( r => r._id != firstVisitId) 			
+						this.paramQueue		= this.paramQueue.filter( r => r._id != firstVisitId) 			
 					
 						this.submit(params)
+						.catch( e => {
+							this.paramQueue.push(...params)
+						})
 
 						if(this.paramQueue.length) this.deferedBulkSubmit()
 
 					},
 
-					this.submissionBufferTime
+					forceImmediate
+					?	0
+					:	this.submissionBufferTime
 				)		
 
 				
@@ -1748,30 +1778,93 @@ angular.module('icServices', [
 
 			async setFilters([types, categories, tags]){
 
-				const tTypes 		= await Promise.all( types.map( 		t => $translate('TYPES.'+t.toUpperCase()			, null, null, null, 'de')))
-				const tCategories 	= await Promise.all( categories.map( 	t => $translate('CATEGORIES.'+t.toUpperCase()		, null, null, null, 'de')))
-				const tTags 		= await Promise.all( tags.map( 			t => $translate('UNSORTED_TAGS.'+t.toUpperCase()	, null, null, null, 'de')))
+				const tTypes 		= 	await Promise.all( types.map( 		t => $translate('TYPES.'+t.toUpperCase()			, null, null, null, 'de')))
+				const tCategories 	= 	await Promise.all( categories.map( 	t => $translate('CATEGORIES.'+t.toUpperCase()		, null, null, null, 'de')))
+				const tTags 		=	await Promise.all( tags.map( 			t => $translate('UNSORTED_TAGS.'+t.toUpperCase()	, null, null, null, 'de')))
 
-				const tFilters		= [...tTypes, ...tCategories, ...tTags]
+				const tFilters		= 	[...tTypes, ...tCategories, ...tTags]
 
 					
 				if(!tFilters)			return
 				if(!tFilters.length) 	return
 
-				const params	=	tFilters.map( filter => ({
-										e_c:		'Filter',
-										e_a:		'any',
-										e_n:		filter,
-										dimension4:	filter
-									}))		
+				const params		=	tFilters.map( filter => ({
+											e_c:		'Filter',
+											e_a:		'any',
+											e_n:		filter,
+											dimension4:	filter
+										}))		
 				
 				await this.log(params)		
+
+			}
+
+			noteReturn(){
+
+				const returnJson	= localStorage.getItem(this.returnNoticeKey)
+				const today			= icUtils.stringifyDate(new Date())
+				const description 	= "The date will not be transmitted. Used to tell Matomo about a return visit, without Matomo actually recognizing you." 
+
+				let	lastVisit
+				let lastNotification
+
+				try { 
+
+					const returnData		= 	JSON.parse(returnJson) 
+					lastNotification		= 	returnData.lastNotification
+					lastVisit				= 	returnData.lastVisit || lastNotification
+
+				} catch(e) {}
+
+				const todaysDate			= icUtils.parseDate(today)
+				const lastNotificationDate	= lastNotification 		&& icUtils.parseDate(lastNotification) || undefined
+				const notifiedThisWeek		= lastNotificationDate 	&& (todaysDate.getTime()-lastNotificationDate.getTime() < 1000*60*60*24*7)
+
+				if(notifiedThisWeek){
+					lastVisit				= 	today
+
+					localStorage.setItem(this.returnNoticeKey, JSON.stringify({ lastVisit, lastNotification, description }) )
+
+					return					
+				}
+				
+				let returnVisitScope		= 	"first-time"
+
+				if(lastVisit){
+
+					const lastVisitDate		=	icUtils.parseDate(lastVisit)
+
+					if(todaysDate.getTime()-lastVisitDate.getTime() >  0)					returnVisitScope = "less-than-a-week"
+					if(todaysDate.getTime()-lastVisitDate.getTime() >  1000*60*60*24*7)		returnVisitScope = "over-a-week"
+					if(todaysDate.getTime()-lastVisitDate.getTime() >  1000*60*60*24*30)	returnVisitScope = "over-a-month"	
+				}
+
+				const params				=	{
+													e_c:		'Return Visit',
+													e_a:		'interval',
+													e_n:		returnVisitScope,
+													dimension5: returnVisitScope
+												}
+
+				void this.log(params)
+
+				lastVisit 					= today	
+				lastNotification			= today
+
+				localStorage.setItem(this.returnNoticeKey, JSON.stringify({ lastVisit, lastNotification, description }) )
 
 			}
 
 
 
 			startTracking(){
+
+				this.noteReturn()
+
+				window.addEventListener('onbeforeunload', event => {
+					this.deferedBulkSubmit(true)
+					event.preventDefault()
+				})
 
 				$rootScope.$watch( () => icSite.page, () => {
 
