@@ -1,8 +1,21 @@
 
+
+.padding-s {
+	padding:					.25rem .5rem;
+}
+
+.XS .padding-s {
+	padding:					.25rem .5rem !important;
+}
+
 .padding {
 	padding:					1rem;
 }
 
+
+.neg-h-margin-s{
+	margin:						0 -0.5rem;
+}
 
 .half-padding{
 	padding: 					0.5rem;

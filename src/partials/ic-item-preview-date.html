@@ -1,10 +1,40 @@
+<div
+	ng-if		= "icItem === null"
+	class		= "backdrop no-item"
+>
+	<ic-calendar-sheet ic-date = "icDate"></ic-calendar-sheet>	
+
+	<div class ="content">
+
+		<div class = "message">
+			{{ 'INTERFACE.NO_MATCHING_CALENDAR_ENTRY' | translate }}
+		</div>
+
+		<a 
+			class 	= "border-2 round padding-s"
+			href 	= "/item/new"
+			ic-touch-me
+		>
+			{{ ic.user.can('edit-items') ? 'INTERFACE.CREATE_NEW_ITEM' : 'INTERFACE.SUGGEST_NEW_ITEM' | translate }}
+		</a>
+
+	</div>
+
+
+
+</div>
+
+
 <div 
+	ng-if		= "icItem !== null"
 	class 		= "backdrop {{(item|icCategory) && 'ic-bg-cat-'+(icItem|icCategory).name}} white {{'icon-category-'+(icItem | icCategory).name}}"
+	ng-class	= "{ 'no-item': icItem === null }"
 >	
 
-	<ic-calendar-sheet ic-date = "icDate"></ic-calendar-sheet>
+	<ic-calendar-sheet ic-date = "icDate"></ic-calendar-sheet>	
 
 	<div 
+		ng-if		= "icItem !== null"
 		class 		= "content"
 		title 		= "{{icItem | icFullTitle }}"
 	>
@@ -37,10 +67,8 @@
 			<div class = "brief">
 				
 				<span class = "date heavy" ng-if = "icItem.startDate">
-					{{icItem.startDate | icDate}}
-			 		{{icItem.endDate ? " – "+ (icItem.endDate | icDate) : ''}}
-			 	</span> 
-
+					{{icItem.startDate | icDate}}{{icItem.endDate ? "–" + (icItem.endDate | icDate) : ''}}
+			 	</span>
 			 	<span class = "lang-{{ic.site.currentLanguage}}">
 					{{icItem.brief[ic.site.currentLanguage] | clearTranslator}}
 				</span>
@@ -62,13 +90,13 @@
 					>
 					{{ ( timeRange[0] | isValidDate) && ( timeRange[0] | date : 'HH:mm') || '' }}
 					</time><!--
-				 --><span class = "link">
-						{{ 
+				 --><span class = "link"><!--
+					 -->{{ 
 							    ( timeRange[0] | isValidDate) 	&& ( timeRange[1] | isValidDate ) && '&ndash;' 
 							|| !( timeRange[0] | isValidDate ) 	&& ( timeRange[1] | isValidDate ) && ('ITEMS.RECUR_UNTIL'|translate)+'&nbsp;' 
 							|| ''
-						}}
-					</span><!--
+						}}<!--
+				 --></span><!--
 				 --><time	
 				 		ng-repeat-end
 						class 			= "end-time"

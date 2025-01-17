@@ -129,6 +129,10 @@ ic-item-property-edit.long-labels .options button {
 	text-align: 				left;
 }
 
+ic-item-property-edit.short-labels .options button {
+	flex:						0 0 auto;
+}
+
 
 ic-item-property-edit .options.item-list button{
 	padding-top:				0;
@@ -184,9 +188,10 @@ ic-item-property-edit.invalid:before {
 }
 
 ic-item-property-edit .error {
-	padding:					0.5rem 1rem ;
+	padding:					0.5rem 0 1rem ;
 	line-height:				1.2rem;
 	min-height:					1.2rem;
+	color:						var(--error-color);
 }
 
 
@@ -216,8 +221,8 @@ ic-item-property-edit .time label > *{
 ic-item-property-edit[ic-recurring-event] .current-value-parent-box {
 	display:					flex;	
 	flex-wrap:					wrap;
-	margin:						1rem 0;
 	line-height:				1.5;
+	margin-bottom:				1rem;
 }
 
 ic-item-property-edit[ic-recurring-event] .current-value-parent-box > *{
@@ -259,9 +264,34 @@ ic-item-property-edit[ic-recurring-event] .recurring-rules {
 	display:					grid;
 	align-items:				center;
 	gap:						0.5rem;
-	width:						100%;
-	margin:						1rem 0;
 	grid-template-columns:		max-content max-content 1fr max-content max-content max-content;
+	margin-bottom:				1rem;
+}
+
+ic-item-property-edit[ic-recurring-event] .recurring-rules.fixed-date {
+	display:					flex;
+	flex-wrap:					wrap;
+	align-items:				center;
+	gap:						0 1rem;
+
+}
+
+ic-item-property-edit[ic-recurring-event] .recurring-rules.fixed-date  > * {
+	display:					flex;
+	flex-wrap:					wrap;
+	align-items:				center;
+	flex:						1 1 auto;
+	gap:						1rem;	
+}
+
+ic-item-property-edit[ic-recurring-event] .recurring-rules.fixed-date  > * > *{
+	display:					flex;
+	flex:						0 0 auto;
+	gap:						1rem;	
+}
+
+.XS ic-item-property-edit[ic-recurring-event] .recurring-rules.fixed-date {
+	flex-direction:				collumn;
 }
 
 ic-item-property-edit[ic-recurring-event] .recurring-rules > .start-date {
@@ -286,13 +316,14 @@ ic-item-property-edit[ic-recurring-event] .recurring-rules > .start-date > *{
 ic-item-property-edit[ic-recurring-event] .recurring-rules > .action {
 	display:					flex;
 	align-items:				center;
-	border-left:				solid 2px var(--primary-color);
+	border-left:				solid 2px var(--plain-text-color);
 	height:						100%;
 	padding-left:				0.5rem;
 }
 
 ic-item-property-edit[ic-recurring-event].invalid .recurring-rules > .action.with-error {
-	border-color:				var(--error-color)!important;	
+	border-color:				var(--error-color)!important;
+	grid-row-end:				span 2;	
 }
 
 
@@ -301,33 +332,32 @@ ic-item-property-edit[ic-recurring-event].invalid .recurring-rules > .action.wit
 	display:					flex;
 	align-items:				center;
 	border-left:				none;
-	border-bottom:				solid 2px var(--primary-color);;
+	border-bottom:				solid 2px var(--primary-color);
 	height:						auto;
 	padding-left:				0;
 	padding-bottom:				0.5rem;
 }
 
-ic-item-property-edit[ic-recurring-event] .recurring-rules > .action.before.with-example-date{
+ic-item-property-edit[ic-recurring-event] .recurring-rules > .action.with-example-date{
 	grid-row-end:				span 2;
 
 }
 
-ic-item-property-edit[ic-recurring-event] .recurring-rules > .action.after {
+ic-item-property-edit[ic-recurring-event].invalid .recurring-rules > .action.with-error.with-example-date{
+	grid-row-end:				span 3;
+
+}
+
+.XS ic-item-property-edit[ic-recurring-event] .recurring-rules > .action{
 	display:					none;
 }
 
-.XS ic-item-property-edit[ic-recurring-event] .recurring-rules > .action.before{
-	display:					none;
-}
-
-.XS ic-item-property-edit[ic-recurring-event] .recurring-rules > .action.after{
-	display:					flex;
-}
 
 ic-item-property-edit[ic-recurring-event] .recurring-rules > .error {
 	display:					none;
-	grid-column:				1 / span 6;
-	color:						var(--primary-color);
+	grid-column:				1 / span 5;
+	padding: 					0;
+	margin-top:					0.5rem;
 }
 
 
@@ -347,6 +377,41 @@ ic-item-property-edit[ic-recurring-event] .recurring-rules + button {
 ic-item-property-edit[ic-recurring-event] input[type="time"] {
 	font-family:				mono;
 }
+
+.ic-item-property-edit[ic-recurring-event].invalid:before,
+ic-item-property-edit[ic-recurring-event].invalid:before{
+	left:						100%;
+	top:						0;
+}
+
+
+ic-item-property-edit[ic-recurring-event] .buttons {
+	display:					flex;
+	flex:						0 0 100% !important;
+	gap:						1rem;
+	margin-top:					2rem;
+	flex-wrap:					wrap;
+}
+
+
+ic-item-property-edit[ic-recurring-event] .edit-box,
+ic-item-property-edit[ic-recurring-event] .preview-box {
+	border:						2px solid var(--neutral-color);
+	margin:						0 calc(-0.5rem - 2px);
+	padding:					1rem;
+	margin-bottom:				1rem;
+}
+
+ic-item-property-edit[ic-recurring-event] .edit-box {
+	border-style:				dashed;
+}
+
+
+.XS ic-item-property-edit[ic-recurring-event] .edit-box,
+.XS ic-item-property-edit[ic-recurring-event] .preview-box {
+	padding:					0.5rem !important;
+}
+
 
 .XS ic-item-property-edit[ic-recurring-event] .recurring-rules {
 	display:					flex;

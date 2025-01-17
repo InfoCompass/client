@@ -580,6 +580,9 @@ angular.module('icDirectives', [
 
 
 				scope.$watch( () => scope.icItem, () => {
+
+					if(!scope.icItem) return 
+						
 					scope.times = []
 
 					const flatRuleString = scope.icItem[icConfig.calendar.recurringRulesKey]
@@ -1456,6 +1459,7 @@ angular.module('icDirectives', [
 
 								icTranslationKey:		"@?",
 								icOptions:				"<?",
+								icKeepOrder:			"<?",
 								icOptionsItemRef:		"<?",
 								icOptionFilterKey:		"&?",
 								icOptionsFilterLimit:	"<?",
@@ -1469,11 +1473,13 @@ angular.module('icDirectives', [
 								icDate:					"<?",
 								icSkipTime:				"<?",
 								icRecurringEvent:		"<?",
+								icRecurringEventFixed:	"<?",
 								icActivate:				"@",
 								icToggleOn:				"@",
 								icToggleOff:			"@",
 								icDefaultValue:			"@",
-								icStandardValues:		"<?"
+								icStandardValues:		"<?",
+								icSideEffect:			"&?"
 							},
 
 			templateUrl: 	function(tElement, tAttrs){
@@ -1598,6 +1604,8 @@ angular.module('icDirectives', [
 				})
 
 
+				scope.$watch( () => { scope.icSideEffect && scope.icSideEffect(); return undefined } )
+
 				scope.$watch('icItem.proposals', () => scope.refreshProposals())	
 
 				scope.getValueFromItem = function( item ){
@@ -1630,6 +1638,8 @@ angular.module('icDirectives', [
 					true
 				)
 
+				scope.defaultFilled = false
+
 				// update local value, when the edit changes (most likely a different property changed the current one depends on)
 				scope.$watch(
 					function(){
@@ -1643,9 +1653,12 @@ angular.module('icDirectives', [
 
 						scope.value.edit = 	scope.getValueFromItem(scope.icEdit)
 
+						if( scope.defaultFilled) 	return
+						if( scope.icOptions )		return
 
 						if (angular.isDefined(scope.icDefaultValue) && scope.icItem.internal.new) {
-							scope.value.edit = scope.icDefaultValue
+							scope.value.edit 	= scope.icDefaultValue
+							scope.defaultFilled	= true					
 						}
 
 					},
@@ -1747,7 +1760,8 @@ angular.module('icDirectives', [
 
 					if(scope.untouched){
 						scope.untouched = false
-					} else {
+
+					} else if(!scope.icRecurringEvent){
 						scope.validate()
 					}
 
@@ -1858,6 +1872,9 @@ angular.module('icDirectives', [
 				}
 
 				scope.getOptionSortingPosition = function(option){
+
+					if(scope.icKeepOrder) return scope.icOptions.indexOf(option)
+
 					return option == 	scope.icLeadingOption
 										?	0
 										:	scope.getOptionLabel(option)
@@ -2078,17 +2095,51 @@ angular.module('icDirectives', [
 
 					scope.editRecurringRuleset 		= icRecurring.createRecurringRuleset()
 					scope.currentRecurringRuleset 	= icRecurring.createRecurringRuleset()
+
+					scope.showRecurErrors			= false
+					scope.recurEditMode				= false
+
+					scope.recurApply = function(){						
+						scope.showRecurErrors = true
+						scope.validate()
+						if(!scope.error) {
+							scope.showRecurErrors = false
+							scope.toggleEditMode(false)
+						}
+
+					}
+
+					scope.recurRevert = function(){
+						scope.showRecurError = false
+						scope.revert()
+					}
+
+					scope.toggleEditMode = function (toggle){
+						scope.recurEditMode = !!toggle
+					}
 	
+					scope.enforcedFixedRuleset = function(){
+						const fixedRule = scope.editRecurringRuleset.rules.find( rule => rule.iteration == 'fixed')						
+
+						if(fixedRule && scope.editRecurringRuleset.rules.length == 1) return
+
+
+						scope.editRecurringRuleset.clear()
+						scope.editRecurringRuleset.addRule(fixedRule || ['fixed'])
+					}
+
+					scope.$watch( () => {
+						scope.recurEditMode = !!(scope.recurEditMode || scope.error)
+					})
+
 					scope.$watch('value.edit', () => {
+
 
 						const stringFromRuleset = scope.editRecurringRuleset.toString()
 
 						if(stringFromRuleset == scope.value.edit) return
 
-
-
 						scope.editRecurringRuleset = icRecurring.createRecurringRuleset(scope.value.edit)
-
 
 					})
 
@@ -2096,27 +2147,33 @@ angular.module('icDirectives', [
 
 						const stringFromRuleset = scope.currentRecurringRuleset.toString()
 
-
 						if(stringFromRuleset === scope.value.current) return
 
 						scope.currentRecurringRuleset = icRecurring.createRecurringRuleset(scope.value.current)
-
 
 
 					})
 
 					scope.$watch( () => scope.editRecurringRuleset, () => {
 
+						// Limit ruleset to one fixed rule when icRecurringEventFixed is set
+						if(scope.icRecurringEventFixed) scope.enforcedFixedRuleset()
+
+						if(scope.editRecurringRuleset.getErrors().length > 0) scope.toggleEditMode(true)
 
 						const current_edit 	= scope.value.edit 
-						const next_edit		= scope.editRecurringRuleset.toString()					
-					
-						console.log(scope.editRecurringRuleset,{current_edit, next_edit}, current_edit !== next_edit)
+						const next_edit		= scope.editRecurringRuleset.toString()										
+						
 
 						if(current_edit !== next_edit) scope.value.edit = next_edit
 
 					}, true)
 
+					scope.$watch( () => scope.icRecurringEventFixed, () => {
+
+						// Limit ruleset to one fixed rule when icRecurringEventFixed is set
+						if(scope.icRecurringEventFixed) scope.enforcedFixedRuleset()
+					})
 
 
 				}

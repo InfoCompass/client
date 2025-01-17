@@ -93,11 +93,10 @@
 		</div>
 	</div>
 
-
 	<div class  = "note col-1">{{"ITEMS.%s_NOTE" | fill : (icTranslationKey || icKey) | translate }}</div>
-	
+
 	<div ng-if = "!error || icHideErrors" class = "error"></div>
-	<div ng-if = "error && !icHideErrors" class = "error col-3"> 
+	<div ng-if = "error && !icHideErrors" class = "error col"> 
 		{{'ITEMS.%s_%s' | fill : [(icTranslationKey || icKey), error.code] | translate}} 
 		{{error.key ? "(" + ('LANGUAGES.%s' | fill : error.key | translate) +")" : '' }}
 	</div>

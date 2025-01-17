@@ -4,6 +4,7 @@ ic-item-preview[ic-date] {
 	border-radius:			0.5rem 0 0 0.5rem;
 	overflow:				hidden;
 	padding:				0;
+	min-height:				0rem;
 }
 
 .XS ic-item-preview[ic-date] {
@@ -15,10 +16,41 @@ ic-item-preview[ic-date] .backdrop {
 	padding-left:			2rem;
 	padding-right:			3.5rem;
 	padding-top:			1rem;
-	padding-bottom:			0,5rem;
+	padding-bottom:			0.5rem;
 	background-repeat:		no-repeat;
 	background-position:	top 1rem right 0.5rem;
 	background-size:		3rem;
+}
+
+ic-item-preview[ic-date] .backdrop.no-item {
+	align-items:			center;
+	padding-bottom:			1rem;
+	padding-right:			0rem;
+	gap:					1rem;
+}
+
+ic-item-preview[ic-date] .backdrop.no-item .content {
+	flex-direction:			row;
+	display:				flex;
+	align-items:			center;
+	justify-content:		space-between;
+	gap:					2rem;
+	flex-wrap:				wrap;
+}
+
+ic-item-preview[ic-date] .backdrop.no-item .content > .message {
+	min-width:				13rem;
+	flex:					1 1 0;
+}
+
+ic-item-preview[ic-date] .backdrop.no-item .content > a {
+	flex:					0 0 auto;
+	margin-left:			auto;
+	margin-right:			1rem;
+}
+
+ic-item-preview[ic-date] .backdrop.no-item .category {
+	display:				none !important;
 }
 
 .XS ic-item-preview[ic-date] .backdrop{
@@ -29,13 +61,17 @@ ic-item-preview[ic-date] .backdrop {
 ic-item-preview[ic-date] .backdrop:before {
 	display:				block;
 	content:				'';
-	z-index:				0;
+	z-index:				0 !important;
 	background:				rgba(255,255,255,0.7);
 	position:				absolute;
 	left:					1rem;
 	right:					0;
 	top:					0;
 	bottom:					0;
+}
+
+ic-item-preview[ic-date] .backdrop > *{
+	z-index:				1;
 }
 
 
@@ -92,7 +128,7 @@ ic-item-preview[ic-date] .stats .time {
 	flex:					0 0 auto;
 	min-width:				7em;
 	display:				grid;
-	grid-template-columns:	repeat(3, auto);
+	grid-template-columns:	repeat(3, min-content);
 }
 
 ic-item-preview[ic-date] .stats .location {

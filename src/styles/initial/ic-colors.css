@@ -57,7 +57,7 @@
 .bg-2:hover,
 .bg-2:focus {
 	background-color:			var(--neutral-color);
-	color:						#000;
+	color:						var(--dark-text-color);
 }
 
 .bg-2.hover:focus,
@@ -69,7 +69,7 @@
 
 
 .border-2 {
-	box-shadow:					0 0 0 0.1rem hsla(99,48%,60%,1) inset;
+	box-shadow:					0 0 0 0.1rem var(--neutral-color) inset;
 }
 
 

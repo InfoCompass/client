@@ -26,7 +26,6 @@
 				ic-touch-me
 			>
 				<ic-item-preview
-					class		= "bg-0"
 					ng-class 	= "{'active-item': item == ic.site.activeItem}"
 					ic-item 	= "item"
 					ng-if		= "!item.internal.failed"
@@ -34,9 +33,12 @@
 				></ic-item-preview>
 			</a>
 
-			<span ng-if = "items.length == 0" >
-				– 
-			</span>
+			<ic-item-preview
+				ng-if = "items.length == 0"
+				class		= "bg-2"
+				ic-item 	= "null"
+				ic-date		= "date"
+			></ic-item-preview> 
 
 			<a 
 				ng-if		= "noScroll && !noMoreItems" 

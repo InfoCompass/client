@@ -108,6 +108,6 @@ ic-item-full-edit footer button > * {
 	overflow:					visible;
 }
 
-ic-item-full-edit ic-item-property-edit + ic-item-property-edit {
+ic-item-full-edit ic-item-property-edit:not(.no-sibling-margin) + ic-item-property-edit:not(.no-sibling-margin) {
 	margin-top:					2rem;
 }

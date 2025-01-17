@@ -154,11 +154,32 @@ angular.module('icServices', [
 				return new Date(year, month, day)
 			},
 
-			clipDate(dateOrString){
+			clipDate: function(dateOrString){
 
 				if(!dateOrString) throw new TypeError("Invalid value for dateOrString", { cause: dateOrstring })
 
 				return icUtils.parseDate(icUtils.stringifyDate(dateOrString))
+			},
+
+			toggle: function(arr, item, force = undefined){
+
+				if(force === undefined){
+					return 	arr.includes(item)
+							?	icUtils.toggle(arr, item, false)
+							:	icUtils.toggle(arr, item, true)
+				}
+
+				const index 	= arr.indexOf(item)
+				const missing 	= index == -1
+
+				if( force &&  missing) 	return void arr.push(item)
+				if( force && !missing)	return undefined	
+				if(!force &&  missing)	return undefined
+				if(!force && !missing)	return void arr.splice(index,1)
+			},
+
+			log: function(...args){
+				console.log(...args)
 			}
 
 		}
@@ -4506,6 +4527,10 @@ angular.module('icServices', [
 				if(! (rule instanceof RecurringRule ) ) rule = RecurringRule.from(rule)
 
 				this.rules.push(rule)
+			}
+
+			clear(){
+				while(this.rules.length){ this.rules.pop() }
 			}
 
 			getMatchingTimes(date = new Date() ){

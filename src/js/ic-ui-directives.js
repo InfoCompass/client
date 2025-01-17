@@ -1322,6 +1322,24 @@ angular.module('icUiDirectives', [
 	}
 ])
 
+.filter('includes',[
+	function(){
+		return function(a, ...needles){
+			return needles.every( n => Array.isArray(a) && a.includes(n) )
+		}
+	}
+])
+
+.filter('lacks',[
+	function(){
+		return function(a, ...needles){
+			return needles.every( n => Array.isArray(a) && !a.includes(n) )
+		}
+	}
+])
+
+
+
 
 .filter('section', [
 	function(){
