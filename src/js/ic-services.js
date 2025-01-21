@@ -1459,8 +1459,7 @@ angular.module('icServices', [
 			siteId					=	icConfig.matomo.siteId
 			defaultParams			=	{
 											idsite: 		this.siteId,
-											rec:			1,
-											rand:			String(Math.random()).replace('0.',''),
+											rec:			1,											
 											apiv:			1,									
 										}
 
@@ -1481,6 +1480,7 @@ angular.module('icServices', [
 							lang:	icSite.currentLanguage,
 							_id:	visitId,
 							cid:	visitId,
+							rand:	String(Math.random()).replace('0.',''),
 						}
 			}		
 
@@ -1913,40 +1913,25 @@ angular.module('icServices', [
 					 if (document.hidden) this.deferedBulkSubmit(true)
 				})
 
-				$rootScope.$watch( () => icSite.page, () => {
+				$rootScope.$watch( 
+					()			=>  icSite.visibleSections.page && icSite.page || undefined, 
+					page 		=>	void this.visitPage(page)
+				)
 
-					const page		= icSite.page
+				$rootScope.$watch( 
+					() 			=> icSite.visibleSections.item && icSite.activeItem || undefined, 
+					item		=> { if(item) void this.viewItem(icSite.activeItem) }
+				)
 
-					if(!page) return
-					if(!icSite.visibleSections.page) return
+				$rootScope.$watch( 
+					() 			=> icSite.currentLanguage, 
+					language	=> { if(icSite.currentLanguage) void this.useLanguage(icSite.currentLanguage) }
+				)
 
-					void this.visitPage(page)
-				})
-
-				$rootScope.$watch( () => icSite.activeItem, () => {
-
-					if(!icSite.activeItem) return
-					if(!icSite.visibleSections.item) return
-
-					void this.viewItem(icSite.activeItem)
-				})
-
-				$rootScope.$watch( () => icSite.currentLanguage, () => {
-
-					if(!icSite.currentLanguage) return 
-
-					void this.useLanguage(icSite.currentLanguage)
-				})
-
-				$rootScope.$watch( () => icLayout && icLayout.mode.name, () => {
-
-					const mode = icLayout.mode.name
-
-					if(!mode) return 
-
-
-					void this.setLayout(mode)
-				})
+				$rootScope.$watch( 
+					() 			=> icLayout && icLayout.mode && icLayout.mode.name || undefined, 
+					mode		=> { if(mode) void this.setLayout(mode) }
+				)
 
 
 
