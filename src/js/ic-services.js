@@ -1467,39 +1467,46 @@ angular.module('icServices', [
 			paramQueue				=	[] 
 			submissionBufferTime	=	1000 // milliseconds
 
-			lastReferrer			=	{
-											visitId:	undefined,
-											referrer:	undefined
-										}
-
-			constructor(){}							
 		
+			constructor(){}								
+
+
 			async getDefaultParams(config = {}){
 
 				const visitId 			= 	config.noId
 											?	undefined
 											:	await this.getVisitId()
-
-				const refHandledEarlier = 	visitId && this.lastReferrer && this.lastReferrer.visitId == visitId
-
-				const referrer			=	refHandledEarlier
-											?	undefined // referrer for this visit already used
-											:	document.referrer
-
-				this.lastReferrer		=	{ visitId, referrer }					
-
-				const urlref			=	typeof referrer == 'string'
-											?	{ urlref:	referrer }
-											:	{ }
-
 				return 	{	
 							...this.defaultParams,
 							lang:	icSite.currentLanguage,
 							_id:	visitId,
 							cid:	visitId,
-							...urlref	
 						}
 			}		
+
+			lastReferrer	=	{
+									visitId:	undefined,
+									referrer:	undefined
+								}
+
+			async getReferrer(){
+
+				const visitId 			= 	await this.getVisitId()
+
+				const refHandledEarlier = 	visitId && this.lastReferrer && this.lastReferrer.visitId == visitId
+
+				const referrer			=	refHandledEarlier
+											?	document.location.hostname // referrer for this visit already used
+											:	URL.canParse(document.referrer)
+											?	new URL(document.referrer).hostname
+											:	""
+
+				this.lastReferrer		=	{ visitId, referrer }
+				
+				console.log({referrer})
+
+				return referrer
+			}				
 
 			async submit(params){
 
@@ -1739,10 +1746,13 @@ angular.module('icServices', [
 
 			async visitPage(page){
 
-				const params = 	{
-									url:			`${window.location.origin}/p/${page}`,
-									action_name:	`page/${page}`
-								}
+				const referrer	=	await this.getReferrer()
+
+				const params 	= 	{
+										url:			`${window.location.origin}/p/${page}`,
+										action_name:	`page/${page}`,
+										urlref:			referrer
+									}
 
 				await this.log(params)
 			}
