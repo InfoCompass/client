@@ -1467,21 +1467,37 @@ angular.module('icServices', [
 			paramQueue				=	[] 
 			submissionBufferTime	=	1000 // milliseconds
 
-			constructor(){}							
+			lastReferrer			=	{
+											visitId:	undefined,
+											referrer:	undefined
+										}
 
+			constructor(){}							
+		
 			async getDefaultParams(config = {}){
 
-				const visitId = config.noId
-								?	undefined
-								:	await this.getVisitId()
+				const visitId 			= 	config.noId
+											?	undefined
+											:	await this.getVisitId()
 
+				const refHandledEarlier = 	visitId && this.lastReferrer && this.lastReferrer.visitId == visitId
 
+				const referrer			=	refHandledEarlier
+											?	undefined // referrer for this visit already used
+											:	document.referrer
+
+				this.lastReferrer		=	{ visitId, referrer }					
+
+				const urlref			=	typeof referrer == 'string'
+											?	{ urlref:	referrer }
+											:	{ }
 
 				return 	{	
 							...this.defaultParams,
 							lang:	icSite.currentLanguage,
 							_id:	visitId,
-							cid:	visitId
+							cid:	visitId,
+							...urlref	
 						}
 			}		
 
@@ -1545,7 +1561,7 @@ angular.module('icServices', [
 					return
 				}
 									
-				const defaultParams		=	 await this.getDefaultParams()
+				const defaultParams		=	await this.getDefaultParams()
 
 				const rawParams			= 	Array.isArray(params)
 											?	params
@@ -1675,7 +1691,7 @@ angular.module('icServices', [
 			}	
 
 
-			getVisitIdBuffer = {}
+			getVisitIdBuffer	= {}
 
 			async getVisitId(){
 
@@ -1720,7 +1736,6 @@ angular.module('icServices', [
 				return visitId
 
 			}
-		
 
 			async visitPage(page){
 
