@@ -1496,15 +1496,13 @@ angular.module('icServices', [
 				const refHandledEarlier = 	visitId && this.lastReferrer && this.lastReferrer.visitId == visitId
 
 				const referrer			=	refHandledEarlier
-											?	document.location.hostname // referrer for this visit already used
+											?	document.location.origin // referrer for this visit already used
 											:	URL.canParse(document.referrer)
-											?	new URL(document.referrer).hostname
+											?	new URL(document.referrer).origin
 											:	""
 
 				this.lastReferrer		=	{ visitId, referrer }
 				
-				console.log({referrer})
-
 				return referrer
 			}				
 
