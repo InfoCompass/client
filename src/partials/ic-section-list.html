@@ -3,7 +3,6 @@
 	ic-scroll-snap-anchor 				= "header"
 	ic-scroll-repeat-limit-container 	= "true"
 	class								= "padding"
-	ng-init								= "calendarView = false"
 >
 
 	<div 
@@ -35,42 +34,11 @@
 	</ic-taxonomy-filter-tag-list>
 
 	<ic-sorting 
-		ng-if = "!calendarView"
 		class = "padding bg-0"
 	>
 	</ic-sorting>
 
-	<h2 
-		class 		= "bg-0 padding icon right icon-interface-close"
-		ng-show 	= "calendarView"
-		ng-click 	= "calendarView = !calendarView"
-		style		= "display:block"
-
-	>
-		Wochenüberblick		
-	</h2>
-
-	<div
-		ng-hide = "calendarView"
-		class 	= "bg-0 padding"
-	>
-		<button 
-			ng-click 	= "calendarView = !calendarView"
-			class 		= "icon left icon-type-service"
-		> 
-			&nbsp;Kalenderansicht 
-		</button>
-	</div>
-
-
-	<ic-search-result-list
-		ng-if = "!calendarView"		
-	>
+	<ic-search-result-list>
 	</ic-search-result-list>
 
-	<ic-search-result-calendar
-		ng-if = "calendarView"		
-	>
-	</ic-search-result-calendar>
-	
 </article>
