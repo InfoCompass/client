@@ -3684,8 +3684,19 @@ angular.module('icServices', [
 			// Needs entry in config.json { ..., tilesUrl : '...', ...}
 			if(useExternalTileSource){
 
-				const result 	= await fetch(icConfig.tilesUrl)
-				const rawData 	= await result.json() 
+				let result
+				let rawDate
+
+				console.log('Trying', icConfig.tilesUrl)
+
+				try {
+					result 	= await fetch(icConfig.tilesUrl)
+					rawData = await result.json() 
+				} catch(e){
+					console.warn('Unable to load tiles!')
+					console.error(e)
+					return []
+				}
 
 				await icLanguages.ready
 
