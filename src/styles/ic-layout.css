@@ -184,7 +184,12 @@ ic-main-content 	> *:nth-child(5),
 	width:						80rem;
 	order:						2;
 	z-index:					48; /* = 50-order */
+	max-width:					calc(100% + 1rem);
 
+}
+
+.XS #section-page {
+	max-width:					calc(100%);
 }
 
 .print-only {

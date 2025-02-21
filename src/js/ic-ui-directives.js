@@ -1052,6 +1052,7 @@ angular.module('icUiDirectives', [
 
 				function updateImageSize(){
 					window.requestAnimationFrame(function(){
+						
 						if( width == element[0].clientWidth && height == element[0].clientHeight ) return null
 
 
