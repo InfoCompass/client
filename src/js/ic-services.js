@@ -4541,6 +4541,18 @@ angular.module('icServices', [
 				this.rules.splice(index,1)
 			}
 
+			isOneTime(){
+
+				if(this.rules.length != 1) return false
+
+
+				const iteration = this.rules[0].iteration
+
+				console.log(iteration, this.rules[0])
+
+				return iteration === 'fixed'
+			} 
+
 			addRule(rule){
 
 				if(! (rule instanceof RecurringRule ) ) rule = RecurringRule.from(rule)

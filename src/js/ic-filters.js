@@ -531,4 +531,19 @@ angular.module('icFilters', [
 	}
 ])
 
+.filter('isOneTime',[
+
+	'ic',
+	'icRecurring',
+
+	function(ic, icRecurring){
+
+		return function(x) {
+			return icRecurring.createRecurringRuleset(x).isOneTime()
+		}
+		
+	}
+])
+
+
 
