@@ -396,8 +396,8 @@ ic-item-property-edit[ic-recurring-event] .buttons {
 
 ic-item-property-edit[ic-recurring-event] .edit-box,
 ic-item-property-edit[ic-recurring-event] .preview-box {
-	border:						2px solid var(--neutral-color);
-	margin:						0 calc(-0.5rem - 2px);
+	border:						1px solid var(--neutral-color);
+	margin:						0 calc(-0.5rem - 1px);
 	padding:					1rem 0.5rem;
 	margin-bottom:				1rem;
 }
