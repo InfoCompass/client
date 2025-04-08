@@ -4548,8 +4548,6 @@ angular.module('icServices', [
 
 				const iteration = this.rules[0].iteration
 
-				console.log(iteration, this.rules[0])
-
 				return iteration === 'fixed'
 			} 
 
