@@ -379,6 +379,14 @@ ic-item-property-edit[ic-recurring-event] input[type="time"] {
 	font-family:				mono;
 }
 
+ic-item-property-edit[ic-recurring-event] input[type="time"],
+ic-item-property-edit[ic-recurring-event] input[type="date"] {
+	height:						2rem;
+	padding-top:				0.1rem;
+	padding-bottom:				0.1rem;
+	line-height:				1.5rem;
+}
+
 .ic-item-property-edit[ic-recurring-event].invalid:before,
 ic-item-property-edit[ic-recurring-event].invalid:before{
 	left:						100%;
