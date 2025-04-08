@@ -45,6 +45,7 @@ select:focus {
 	border:				none;	
 	border-style:		none;
 	color: 				unset;
+	-webkit-appearance: none;
 }
 
 label {
@@ -124,6 +125,7 @@ input {
 	background-color:		#eee;
 	font-size:				1rem;
 	line-height:			2rem;
+	height:					2rem;
 	width:					100%;
 	padding:				0 1rem;
 	margin:					0.5rem 0;
