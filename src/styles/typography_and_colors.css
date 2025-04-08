@@ -124,10 +124,10 @@ input {
 	box-sizing:				border-box;
 	background-color:		#eee;
 	font-size:				1rem;
-	line-height:			2rem;
+	line-height:			1.8rem;
 	height:					2rem;
 	width:					100%;
-	padding:				0 1rem;
+	padding:				0.1rem 1rem;
 	margin:					0.5rem 0;
 	min-width:				0;
 }
