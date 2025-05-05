@@ -1,11 +1,22 @@
-"use strict";
+// import angular from 'angular'
+// import angular_route from 'angular'
+// import angular_translate from 'angular'
+// import leaflet from 'leaflet'
+// import leaflet_marker_cluster from 'leaflet.markercluster'
+// import fullcalendar from 'fullcalendar'
+// import fullcalendarAllLocales from '@fullcalendar/core/locales-all.cjs'
+// import rrule from 'rrule'
 	
+
 var angular 					= require('angular'),
 	angular_route				= require('angular-sanitize'),
 	angular_translate			= require('angular-translate'),
 	leaflet						= require('leaflet'),
 	leaflet_marker_cluster		= require('leaflet.markercluster'),
+	// mappo_aggregato				= require('./mappo-aggregato.js')
 
+
+// console.log({mappo_aggregato})
 
 	//	leaflet_vector_grid			= require('leaflet.vectorgrid'),
 

@@ -1,0 +1,70 @@
+{
+  "version": "4",
+  "specifiers": {
+    "jsr:@luca/esbuild-deno-loader@*": "0.11.1",
+    "jsr:@std/bytes@^1.0.2": "1.0.5",
+    "jsr:@std/encoding@^1.0.5": "1.0.10",
+    "jsr:@std/path@^1.0.6": "1.0.9"
+  },
+  "jsr": {
+    "@luca/esbuild-deno-loader@0.11.1": {
+      "integrity": "dc020d16d75b591f679f6b9288b10f38bdb4f24345edb2f5732affa1d9885267",
+      "dependencies": [
+        "jsr:@std/bytes",
+        "jsr:@std/encoding",
+        "jsr:@std/path"
+      ]
+    },
+    "@std/bytes@1.0.5": {
+      "integrity": "4465dd739d7963d964c809202ebea6d5c6b8e3829ef25c6a224290fbb8a1021e"
+    },
+    "@std/encoding@1.0.10": {
+      "integrity": "8783c6384a2d13abd5e9e87a7ae0520a30e9f56aeeaa3bdf910a3eaaf5c811a1"
+    },
+    "@std/path@1.0.9": {
+      "integrity": "260a49f11edd3db93dd38350bf9cd1b4d1366afa98e81b86167b4e3dd750129e"
+    }
+  },
+  "workspace": {
+    "packageJson": {
+      "dependencies": [
+        "npm:@fontsource/atkinson-hyperlegible@^5.1.0",
+        "npm:@jsr/luca__esbuild-deno-loader@~0.11.1",
+        "npm:@jsr/mappo-aggregato__mappo-aggregato@0.1",
+        "npm:@rschedule/core@^1.5.0",
+        "npm:@rschedule/standard-date-adapter@^1.5.0",
+        "npm:angular-qrcode@^7.2.0",
+        "npm:angular-sanitize@^1.8.2",
+        "npm:angular-translate@^2.19.0",
+        "npm:angular-ui-calendar@^1.0.2",
+        "npm:angular@^1.8.2",
+        "npm:bluebird@^3.7.2",
+        "npm:browserify@17",
+        "npm:clean-css@^5.3.1",
+        "npm:copyfiles@^2.4.1",
+        "npm:dotenv@^16.0.3",
+        "npm:esbuild@~0.25.3",
+        "npm:esmify@^2.1.1",
+        "npm:fs-extra@^10.1.0",
+        "npm:fullcalendar@^6.1.15",
+        "npm:jquery@^3.7.1",
+        "npm:leaflet.markercluster@^1.5.3",
+        "npm:leaflet@^1.9.2",
+        "npm:marked@^4.2.2",
+        "npm:promiscuous@~0.7.2",
+        "npm:qrcode-generator@^1.4.4",
+        "npm:react-dom@^18.2.0",
+        "npm:react@^18.2.0",
+        "npm:rimraf@^3.0.2",
+        "npm:roboto-fontface@0.10",
+        "npm:rrule@^2.8.1",
+        "npm:sanitize-html@^2.7.3",
+        "npm:save@^2.9.0",
+        "npm:svgo@3",
+        "npm:terser@^5.15.1",
+        "npm:typeface-biryani@1.1.13",
+        "npm:typeface-fira-sans@1.1.13"
+      ]
+    }
+  }
+}
