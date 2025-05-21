@@ -7,8 +7,6 @@
 	if(!(window.ic && window.ic.itemConfig)) 	console.error('icItemStorage: missing ic.itemConfig. Please load ic-item-config.js.')
 	if(!(window.ic && window.ic.Item)) 			console.error('icItemStorage: missing ic.Item. Please load ic-item-dpd.js.')
 
-
-
 	function httpGet(url){
 
 		return new Promise(function (resolve, reject) {
@@ -435,17 +433,62 @@
 
 		//This seems to be the only place where dpd is actually used! Also on every Item-Object!
 
-		icItemStorage.downloadAll = function(url){
+		icItemStorage.downloadAll = function(source){
 
-			return 	(
-						typeof url == 'string'
-						?	httpGet(url).then( result =>  result.items )
-						:	Promise.reject('no publicItems url')
-					)
-					.catch( function() { return dpd(ic.itemConfig.collectionName).get() })
+			const mappoUrl 		= 	source && source.mappoUrl
+			const publicItems 	= 	source && source.publicItems
+
+			const getMappo		= 	async () => {
+										if(!mappoUrl) throw new Error(".mappoUrl not configured.")
+										if(!mappo) 		throw new Error(".mappoUrl configured, but MappoClient not present.")
+
+										if(performance) performance.mark("mappo")
+											
+										const mappoClient 	= 	new mappo.MappoClient({
+																	backendUrl: mappoUrl, 
+																	differ: 	new mappo.NaiveMappoDiffer(), 
+																	storage:  	new mappo.IndexedDbStorage("mappo-ic-items")
+																})	
+
+										console.log('after new', performance.measure("after new", "mappo").duration)
+
+
+										console.info("MappoAggregato: updating local database.")
+										try		{ await mappoClient.updateLocalAdapterData() } //TODO
+										catch(e){  e => console.error(e) }
+
+										console.log('after update', performance.measure("after update", "mappo").duration)
+
+										console.info("MappoAggregato: retrieving items from local database.")
+										const itemWrappers = await mappoClient.getLocalItemData()
+										const duration = performance ? performance.measure("load", "mappo").duration+'ms' : ''
+										console.info(`MappoAggregato: retrieved ${itemWrappers.length} items, ${duration}`)
+
+										return itemWrappers.map( ({item, remote}) => item)
+
+									}
+
+
+			const getPublic		= 	() => httpGet(publicItems).then( result =>  result.items )
+			const getDpd		= 	() => dpd(ic.itemConfig.collectionName).get()
+			
+			const itemPromise	= 	(async () => {
+
+										if(mappoUrl) 
+											try{ 		return await getMappo() } 
+											catch(e) {	console.error(e) }
+
+										if(publicItems)
+											try{ 		return await getPublic() } 
+											catch(e) {	console.error(e) }
+
+										return await getDpd()
+
+									})()
+
+			return 	itemPromise
 					.then(
 						function(data){
-
 
 							/* 
 							 * start proposals

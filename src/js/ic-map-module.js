@@ -507,7 +507,6 @@
 				'icConsent',
 				'plTemplates',
 
-
 				function($rootScope, $q ,icMapItemMarker, icItemStorage, icSite, icItemRef, icConsent, plTemplates){
 
 
@@ -631,11 +630,9 @@
 						icSite.pickCoordinates 	= false
 					}
 
-
-
 					$q.all([
 						icItemStorage.ready,
-						plTemplates.ready
+						plTemplates.ready,						
 					])
 					.then(function(){
 						icItemStorage.data.forEach(function(item){
@@ -647,6 +644,7 @@
 						})
 						markersReady.resolve()
 					})
+
 
 					return icMainMap
 				}
@@ -785,7 +783,6 @@
 
 
 					function addTiles(){
-						console.log('ADD TILES')
 
 						$q.resolve( !icMainMap.consent || icConsent.when(icMainMap.consent.key) )
 						.then( 

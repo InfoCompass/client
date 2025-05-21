@@ -20,7 +20,7 @@ ic-spinner,
 	display:				block;
 	width:					1em;
 	height:					1em;
-	margin:					0 auto;
+	margin:					auto;
 	overflow:				hidden;
 	opacity:				0;
 	transition:				opacity 600ms ease-in;
