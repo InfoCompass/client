@@ -356,7 +356,6 @@ angular.module('icServices', [
 
 	function($q, icUser, icItemStorage, icLists, icLanguages, icTiles, icOptions, icMainMap, icUtils, icWebfonts, icConsent, icRemotePages, plImages, plStyles, plTemplates, $timeout, $rootScope){
 
-
 		var icInit 				= 	{},
 			blockingPromises 	= 	{
 										icUser: 			icUser.ready,
@@ -379,6 +378,7 @@ angular.module('icServices', [
 
 		icInit.ready			= undefined
 		icInit.done				= undefined
+		icInit.preloadDone		= undefined
 		icInit.readyCount 		= 0
 		icInit.readyMax			= Object.keys(blockingPromises).length
 		icInit.errors 			= []
@@ -398,16 +398,17 @@ angular.module('icServices', [
 			return promise.then(
 
 				function(){
-					if(key in blockingPromises) icInit.readyCount ++
 
 					console.info( (key+'...').padEnd(25,' ')+'[ok] '+(performance ? performance.measure("ready").duration : '') + 'ms')
 
 					icInit[key] = true
 
-					if(!icInit.ready && icInit.readyCount == icInit.readyMax){
+					if( !(key in blockingPromises)) return  
 
+					icInit.readyCount ++
+					if(!icInit.ready && icInit.readyCount == icInit.readyMax){
 						icInit.ready = true; 
-						console.info(`Ready after: ${performance.measure("startup").duration}ms`)
+						console.info(`Ready after: ${performance.measure("startup").duration}ms`)						
 					}
 				},
 				
@@ -421,15 +422,21 @@ angular.module('icServices', [
 
 		//icInit.done is used by the loading screen, i.e. it gets removed when icInit.done == true
 		$q.when(Promise.all(Object.values(blockingPromises)))
-		//icUtils.waitWhileBusy(20))
-		.then( () => icConsent.ready)
-		.then( () => icInit.done = true )
+		// .then( () => icUtils.waitWhileBusy(20))
 		.then( () => {
 			plImages.start()
 			icRemotePages.start()
 			icTiles.start()
+			return icConsent.ready
 		})
-		.then( () => console.info(`Done after: ${performance.measure("startup").duration}ms`) )
+		.then( () => {
+			icInit.done = true
+			console.info(`Done after: ${performance.measure("startup").duration}ms`)			
+		})
+		.then( () => Promise.all(Object.values(deferredPromises)))
+		.then( () => icInit.preloadDone = true)
+		.then( () => console.info(`Preload done after: ${performance.measure("startup").duration}ms`) )
+
 
 		return icInit
 	}
@@ -726,7 +733,6 @@ angular.module('icServices', [
 					pageTranslations[page] 	= translations
 				})
 
-				await icLanguages.ready
 
 				Object.entries(pageTranslations).forEach( ([page, translations]) => {
 
@@ -3219,9 +3225,8 @@ angular.module('icServices', [
 	'icSite',
 	'icUser',
 	'icConfig',
-	'onScreenFilter',
 
-	function($window, $rootScope, $q, $http, $translate, icSite, icUser, icConfig, onScreenFilter){
+	function($window, $rootScope, $q, $http, $translate, icSite, icUser, icConfig){
 
 		var icLanguages 				= 	this
 
@@ -3251,6 +3256,8 @@ angular.module('icServices', [
 													icLanguages.availableLanguages = ['de', 'en', 'none']
 													console.warn('icLanguages: config does not provide available languages!')
 												}
+
+												$translate.fallbackLanguage(icLanguages.availableLanguages)
 
 											})
 											.then( () => {
@@ -3359,6 +3366,8 @@ angular.module('icServices', [
 
 				if(!icSite.currentLanguage) return null
 
+				$translate.useFallbackLanguage(icSite.currentLanguage == 'none' ? 'none' : false)
+
 				$translate.use(icSite.currentLanguage)
 				icLanguages.setStoredLanguage(icSite.currentLanguage)
 			}
@@ -3378,6 +3387,7 @@ angular.module('icServices', [
 
 	function(icLanguages){
 		return 	function(options){
+
 					if(!options || !options.key) throw new Error('Couldn\'t use icInterfaceTranslationLoader since no language key is given!')
 					return 	icLanguages.ready
 							.then( function(){ return icLanguages.translationTable[options.key.toUpperCase()] })

@@ -1,19 +1,21 @@
-<h2>{{'INTERFACE.MAP_CONSENT_HEADING' | translate}}</h2>
+<div ng-if = "consent && !consent.isGiven">
+	<h2>{{'INTERFACE.MAP_CONSENT_HEADING' | translate}}</h2>
 
-<p>	
-	{{'CONTENT.CONSENT_%s_DESCRIPTION' | fill : consentCase.key | translate }}
-</p>
+	<p>	
+		{{'CONTENT.CONSENT_%s_DESCRIPTION' | fill : consentCase.key | translate }}
+	</p>
 
-<p 
-	ng-if = "consentCase.server" 
-	class = "tac"
->
-	({{consentCase.server}})
-</p>
+	<p 
+		ng-if = "consentCase.server" 
+		class = "tac"
+	>
+		({{consentCase.server}})
+	</p>
 
-<button 
-	ng-click 	= "consent()"
-	class		= "bg-3 half-padding"
->
-	{{'INTERFACE.MAP_CONSENT_AND_SHOW' | translate}}
-</button>
+	<button 
+		ng-click 	= "confirmConsent()"
+		class		= "bg-3 half-padding"
+	>
+		{{'INTERFACE.MAP_CONSENT_AND_SHOW' | translate}}
+	</button>
+</div>

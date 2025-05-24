@@ -295,14 +295,13 @@
 
 				link: function(scope){
 
-					scope.consent = function(){
-						icConsent.set('map_tiles', true)
+					scope.confirmConsent = function(){
+						icConsent.set(icMainMap.consent.key, true)
 					}
 
-
-					scope.consentKey 	= icMainMap.consent.key
-					scope.consentCase 	= icConsent.cases.find( consent_case => consent_case.key == scope.consentKey)
-
+					scope.consent		= icMainMap.consent
+					scope.consentKey 	= icMainMap.consent && icMainMap.consent.key
+					scope.consentCase 	= icMainMap.consent && icConsent.cases.find( consent_case => consent_case.key == scope.consentKey)
 				}
 			}
 		}
@@ -632,7 +631,7 @@
 
 					$q.all([
 						icItemStorage.ready,
-						plTemplates.ready,						
+						plTemplates.ready				
 					])
 					.then(function(){
 						icItemStorage.data.forEach(function(item){
