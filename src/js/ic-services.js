@@ -356,28 +356,32 @@ angular.module('icServices', [
 
 	function($q, icUser, icItemStorage, icLists, icLanguages, icTiles, icOptions, icMainMap, icUtils, icWebfonts, icConsent, icRemotePages, plImages, plStyles, plTemplates, $timeout, $rootScope){
 
-		var icInit 			= 	{},
-			promises 		= 	{
-									icUser: 			icUser.ready,
-									icItemStorage:		icItemStorage.ready,
-									icTiles:			icTiles.ready,
-									icOptions:			icOptions.ready,	
-									icLanguages:		icLanguages.ready,
-									icLists:			icLists.ready,
-									icWebfonts:			icWebfonts.ready,
-									icMainMap:			icMainMap.markersReady,
-									icRemotePages:		icRemotePages.ready,
-									plImages:			plImages.ready,
-									plStyles:			plStyles.ready,
-									plTemplates:		plTemplates.ready,
-								}
-	
+		var icInit 				= 	{},
+			blockingPromises 	= 	{
+										icUser: 			icUser.ready,
+										icItemStorage:		icItemStorage.ready,
+										icOptions:			icOptions.ready,	
+										icLanguages:		icLanguages.ready,
+										icLists:			icLists.ready,
+										icWebfonts:			icWebfonts.ready,
+										// icRemotePages:	icRemotePages.ready,
+										// icTiles:			icTiles.ready,
+										plStyles:			plStyles.ready,
+										plTemplates:		plTemplates.ready,
+									}
+			deferredPromises	=	{
+										plImages:			plImages.ready,
+										icMainMap:			icMainMap.markersReady,
+										icRemotePages:		icRemotePages.ready,
+										icTiles:			icTiles.ready,
+									}
 
-		icInit.ready		= undefined
-		icInit.done			= undefined
-		icInit.readyCount 	= 0
-		icInit.readyMax		= Object.keys(promises).length
-		icInit.errors 		= []
+		icInit.ready			= undefined
+		icInit.done				= undefined
+		icInit.preloadDone		= undefined
+		icInit.readyCount 		= 0
+		icInit.readyMax			= Object.keys(blockingPromises).length
+		icInit.errors 			= []
 	
 		Object.defineProperty(icInit, 'progress', {
 			get: 	() => { 
@@ -389,25 +393,22 @@ angular.module('icServices', [
 					}	
 		})
 
-		Object.entries(promises).forEach( ([key, promise]) => {
+		Object.entries({...blockingPromises, ...deferredPromises}).forEach( ([key, promise]) => {
 
 			return promise.then(
 
 				function(){
-					icInit.readyCount ++
 
-					console.info( (key+'...').padEnd(25,' ')+'[ok]')
+					console.info( (key+'...').padEnd(25,' ')+'[ok] '+(performance ? performance.measure("ready").duration : '') + 'ms')
 
 					icInit[key] = true
 
-					if(icInit.readyCount == icInit.readyMax){
+					if( !(key in blockingPromises)) return  
 
+					icInit.readyCount ++
+					if(!icInit.ready && icInit.readyCount == icInit.readyMax){
 						icInit.ready = true; 
-
-						//icInit.done is used by the loading screen, i.e. it gets removed when icInit.done == true
-						$q.when(icUtils.waitWhileBusy(20))
-						.then( () => icConsent.ready)
-						.then( () => icInit.done = true )
+						console.info(`Ready after: ${performance.measure("startup").duration}ms`)						
 					}
 				},
 				
@@ -418,6 +419,23 @@ angular.module('icServices', [
 				}
 			)
 		})
+
+		//icInit.done is used by the loading screen, i.e. it gets removed when icInit.done == true
+		$q.when(Promise.all(Object.values(blockingPromises)))
+		// .then( () => icUtils.waitWhileBusy(20))
+		.then( () => {
+			plImages.start()
+			icRemotePages.start()
+			icTiles.start()
+			return icConsent.ready
+		})
+		.then( () => {
+			icInit.done = true
+			console.info(`Done after: ${performance.measure("startup").duration}ms`)			
+		})
+		.then( () => Promise.all(Object.values(deferredPromises)))
+		.then( () => icInit.preloadDone = true)
+		.then( () => console.info(`Preload done after: ${performance.measure("startup").duration}ms`) )
 
 
 		return icInit
@@ -653,13 +671,13 @@ angular.module('icServices', [
 		class IcRemotePages {
 
 			ready
+			deferredStart = $q.defer()
 
 			constructor(){
 				this.ready	= 	icConfig.remotePages
-								?	$q.resolve(
-										this.setup()
-										.catch(e =>  console.warn(e) )
-									)
+								?	this.deferredStart.promise
+									.then(() => this.setup())
+									.catch(e =>  console.warn(e) )
 								:	$q.resolve() 
 
 			}
@@ -674,6 +692,8 @@ angular.module('icServices', [
 
 			}
 
+			start(){ this.deferredStart.resolve() }
+
 			async setup(){
 
 				await icLanguages.ready
@@ -682,9 +702,9 @@ angular.module('icServices', [
 
 				if(typeof config.url !== 'string') throw new Error('icRemotePages.setup() icConfig.remotePages.url must be a string')
 
-				if(!config.pages) throw new Error('icRemotePages.setup() icConfig.remotePages.pages must be an dictionary')
+				if(!config.pages) throw new Error('icRemotePages.setup() icConfig.remotePages.pages must be a dictionary')
 
-				if(!config.map) throw new Error('icRemotePages.setup() icConfig.remotePages.map must be an dictionary')
+				if(!config.map) throw new Error('icRemotePages.setup() icConfig.remotePages.map must be a dictionary')
 
 				const {url, pages} = config
 
@@ -703,7 +723,7 @@ angular.module('icServices', [
 
 				const pageTranslations = {}
 
-				Object.entries(config.pages).forEach( ([page, id]) => {
+				Object.entries(pages).forEach( ([page, id]) => {
 					const idPath			= map.id
 					const remotePage		= remoteData.find( entry => this.deflate(entry, idPath) === id)
 					
@@ -713,7 +733,6 @@ angular.module('icServices', [
 					pageTranslations[page] 	= translations
 				})
 
-				await icLanguages.ready
 
 				Object.entries(pageTranslations).forEach( ([page, translations]) => {
 
@@ -2143,9 +2162,10 @@ angular.module('icServices', [
 			icItemStorage.ready 		= 	icUser.ready
 											.then(function(){
 
-												const publicItems = icConfig.publicItems || icConfig.publicItems+'/items' || undefined 		
+												const publicItems 	= icConfig.publicItems || icConfig.publicItems+'/items' || undefined 	
+												const mappoUrl		= icConfig.mappo || undefined	
 
-												return 	$q.when(icItemStorage.downloadAll( icUser.can('edit_items') ? null : publicItems) )
+												return 	$q.when(icItemStorage.downloadAll( icUser.can('edit_items') ? null : { publicItems, mappoUrl }) )
 											})
 											.then(function(){
 												return icItemStorage.updateFilteredList()
@@ -3205,9 +3225,8 @@ angular.module('icServices', [
 	'icSite',
 	'icUser',
 	'icConfig',
-	'onScreenFilter',
 
-	function($window, $rootScope, $q, $http, $translate, icSite, icUser, icConfig, onScreenFilter){
+	function($window, $rootScope, $q, $http, $translate, icSite, icUser, icConfig){
 
 		var icLanguages 				= 	this
 
@@ -3237,6 +3256,8 @@ angular.module('icServices', [
 													icLanguages.availableLanguages = ['de', 'en', 'none']
 													console.warn('icLanguages: config does not provide available languages!')
 												}
+
+												$translate.fallbackLanguage(icLanguages.availableLanguages)
 
 											})
 											.then( () => {
@@ -3345,6 +3366,8 @@ angular.module('icServices', [
 
 				if(!icSite.currentLanguage) return null
 
+				$translate.useFallbackLanguage(icSite.currentLanguage == 'none' ? 'none' : false)
+
 				$translate.use(icSite.currentLanguage)
 				icLanguages.setStoredLanguage(icSite.currentLanguage)
 			}
@@ -3364,6 +3387,7 @@ angular.module('icServices', [
 
 	function(icLanguages){
 		return 	function(options){
+
 					if(!options || !options.key) throw new Error('Couldn\'t use icInterfaceTranslationLoader since no language key is given!')
 					return 	icLanguages.ready
 							.then( function(){ return icLanguages.translationTable[options.key.toUpperCase()] })
@@ -3629,8 +3653,8 @@ angular.module('icServices', [
 
 	function($q, icConfig, icLanguages){
 
-		var icTiles 	= 	[]
-
+		var icTiles 		= []
+		let deferredStart 	= $q.defer()
 
 		function addTileTranslation(id, translations){
 			
@@ -3777,9 +3801,9 @@ angular.module('icServices', [
 			
 		}
 
-		icTiles.ready = dpd.tiles
-						?	icTiles.setup()
-						:	$q.resolve()
+		icTiles.start = function(){ deferredStart.resolve() }
+		icTiles.ready = deferredStart.promise
+						.then( () => icTiles.setup() )
 
 		return 	icTiles
 				

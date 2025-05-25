@@ -117,7 +117,7 @@ async function bundleScriptsToDst(){
 	let files = {
 
 		"vendor.js": 				await fs.readFile('vendor.js', 							'utf8'),
-		"mappo-aggregato.js":		await fs.readFile('mappo-aggregato.js', 				'utf8'),
+		// "mappo-aggregato.js":		await fs.readFile('mappo-aggregato.js', 				'utf8'),
 		"marked.js":				await fs.readFile('node_modules/marked/marked.min.js', 	'utf8'),
 		//"Leaflet.VectorGrid.min.js":await fs.readFile('node_modules/leaflet.vectorgrid/dist/Leaflet.VectorGrid.bundled.js', 	'utf8'),
 		"taxonomy.js": 				await fs.readFile(src+'/js/taxonomy.js', 				'utf8'),

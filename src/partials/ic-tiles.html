@@ -1,4 +1,5 @@
 <a 
+	ng-if		= "tilesReady"
 	ng-repeat 	= "tile in ic.tiles | orderBy : 'order'"
 	ng-href		= "{{tile.link}}"
 	ng-style	= "{ width: tile.stretch ? '100%' : null}"
@@ -18,4 +19,7 @@
 	</div>
 </a>
 
-
+<div  ng-if ="!tilesReady" class = "bg-0">
+	<ic-spinner active = "true" class = "large">
+	</ic-spinner>
+</div>

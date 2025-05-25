@@ -1,3 +1,4 @@
+
 "use strict";
 
 (function(){
@@ -17,8 +18,11 @@
 
 			function($q, $http){
 
+				let deferStart	= $q.defer()
 
-				let ready = 	Promise.resolve()
+				this.start = deferStart.resolve
+
+				let ready = 	deferStart.promise//deferStart.promise
 								.then(function()		{ return 	$http.get(jsonFile) } )
 								.then(function(result)	{ return 	result.data })
 								.then(function(images)	{ return 	Promise.all(images.map(function(url){

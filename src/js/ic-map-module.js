@@ -295,14 +295,13 @@
 
 				link: function(scope){
 
-					scope.consent = function(){
-						icConsent.set('map_tiles', true)
+					scope.confirmConsent = function(){
+						icConsent.set(icMainMap.consent.key, true)
 					}
 
-
-					scope.consentKey 	= icMainMap.consent.key
-					scope.consentCase 	= icConsent.cases.find( consent_case => consent_case.key == scope.consentKey)
-
+					scope.consent		= icMainMap.consent
+					scope.consentKey 	= icMainMap.consent && icMainMap.consent.key
+					scope.consentCase 	= icMainMap.consent && icConsent.cases.find( consent_case => consent_case.key == scope.consentKey)
 				}
 			}
 		}
@@ -507,7 +506,6 @@
 				'icConsent',
 				'plTemplates',
 
-
 				function($rootScope, $q ,icMapItemMarker, icItemStorage, icSite, icItemRef, icConsent, plTemplates){
 
 
@@ -631,11 +629,9 @@
 						icSite.pickCoordinates 	= false
 					}
 
-
-
 					$q.all([
 						icItemStorage.ready,
-						plTemplates.ready
+						plTemplates.ready				
 					])
 					.then(function(){
 						icItemStorage.data.forEach(function(item){
@@ -647,6 +643,7 @@
 						})
 						markersReady.resolve()
 					})
+
 
 					return icMainMap
 				}
@@ -785,7 +782,6 @@
 
 
 					function addTiles(){
-						console.log('ADD TILES')
 
 						$q.resolve( !icMainMap.consent || icConsent.when(icMainMap.consent.key) )
 						.then( 

@@ -3367,13 +3367,19 @@ angular.module('icDirectives', [
 
 .directive('icTiles',[
 	
-	function(){
+	"ic",
+	"icTiles",
+
+	function(ic, icTiles){
 		return {
 			restrict:		'E',
 			templateUrl:	'partials/ic-tiles.html',
 
 			link: function(scope, element){
+				scope.ic = ic
+				scope.tilesReady = false
 
+				icTiles.ready.then( () => scope.tilesReady = true )
 			}
 		}
 	}
