@@ -19,7 +19,6 @@
     "clean-css": "^5.3.1",
     "copyfiles": "^2.4.1",
     "dotenv": "^16.0.3",
-    "esbuild": "^0.25.3",
     "fs-extra": "^10.1.0",
     "fullcalendar": "^6.1.15",
     "jquery": "^3.7.1",
@@ -42,7 +41,7 @@
   },
   "scripts": {
     "build": "node build.js",
-    "prebuild": "browserify -p esmify index_vendor.js > vendor.js",
+    "prebuild": "browserify -p esmify index_vendor.js > vendor.js; deno --allow-all esbuild.mjs",
     "crawl_tiles": "node crawl_tiles.js"
   },
   "repository": {
@@ -56,6 +55,7 @@
   },
   "homepage": "https://github.com/InfoCompass/client#readme",
   "devDependencies": {
+    "esbuild": "^0.25.4",
     "esmify": "^2.1.1"
   }
 }

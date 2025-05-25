@@ -43,7 +43,7 @@
         "npm:clean-css@^5.3.1",
         "npm:copyfiles@^2.4.1",
         "npm:dotenv@^16.0.3",
-        "npm:esbuild@~0.25.3",
+        "npm:esbuild@~0.25.4",
         "npm:esmify@^2.1.1",
         "npm:fs-extra@^10.1.0",
         "npm:fullcalendar@^6.1.15",

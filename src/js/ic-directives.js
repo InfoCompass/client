@@ -3788,7 +3788,7 @@ angular.module('icDirectives', [
 			}
 
 		}
-1
+
 	}
 
 ])

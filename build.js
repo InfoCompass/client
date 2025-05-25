@@ -441,8 +441,9 @@ async function copyReadyFilesToDst(){
 	} catch(e){
 		console.warn('[skipping assets]')
 	}
-	await	fs.copy(src+"/images/large", 	dst+"/images/large")
-	await	fs.copy(src+"/js/worker", 		dst+'/worker')
+	await	fs.copy(src+"/images/large", 			dst+"/images/large")
+	await	fs.copy(src+"/js/worker", 				dst+'/worker')
+	await	fs.copy(src+"/js/ic-service-worker.js", dst+'/ic-service-worker.js')
 	//await	fs.copy("vendor.js", 		dst+"/js/vendor.js")
 
 
