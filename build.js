@@ -71,7 +71,7 @@ async function setup(){
 
 
 	await fs.writeFile(dst+'/build', String(build), 'utf8')
-	await fs.copy('src',  	'tmp/src')
+	await fs.copy('src', 'tmp/src')
 
 	if(!cst) return;
 
@@ -443,14 +443,14 @@ async function copyReadyFilesToDst(){
 	}
 	await	fs.copy(src+"/images/large", 			dst+"/images/large")
 	await	fs.copy(src+"/js/worker", 				dst+'/worker')
-	await	fs.copy(src+"/js/ic-service-worker.js", dst+'/ic-service-worker.js')
-	//await	fs.copy("vendor.js", 		dst+"/js/vendor.js")
+	await	fs.copy(src+"/ic-service-worker.js", 	dst+'/ic-service-worker.js')
 
 
 
 	//tmp
-	await	fs.copy("tmp/images", 			dst+"/images")
-	await	fs.copy("tmp/json",				dst)
+	await	fs.copy("tmp/images", 				dst+"/images")
+	await	fs.copy("tmp/json",					dst)
+
 	
 }
 
@@ -532,6 +532,19 @@ function compileIndex(){
 }
 
 
+function prepareServiceWorkerTmp(){
+	return 	fs.readFile(src+'/js/ic-service-worker.js', 'utf8')
+			.then( 
+				content => 	content
+							.replace(/\{config:\s.+REPLACE_CONFIG.+\}/,  	JSON.stringify(config) )
+							.replace(/\[.+#REPLACE_STATIC_PRE_CACHE.+\]/, 	JSON.stringify(preloadImg))
+							.replace(/#REPLACE_BUILD/, 						build)
+
+			)
+			.then( content => fs.writeFile(src+"/ic-service-worker.js", content, 'utf8') )
+
+}
+
 
 function minimizeSvgIconsTmp(){
 	return svgMinimize('tmp/images/icons', 'tmp/images/icons')
@@ -609,10 +622,13 @@ setup()
 .then( () => done() )
 
 
-.then( () => process.stdout.write('\ncreating config.json in /tmp...'))
+.then( () => process.stdout.write('\nCreating config.json in /tmp...'))
 .then(createConfigJson)
 .then( () => done() )
 
+.then( () => process.stdout.write('\nPreparing ic-service-worker.js...'))
+.then(prepareServiceWorkerTmp)
+.then( () => done() )
 
 .then( () => process.stdout.write('\nCopying ready files to '+dst+'...'))
 .then(copyReadyFilesToDst)

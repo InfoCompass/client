@@ -4,8 +4,17 @@
 
 
 	try{
-		const registration = await navigator.serviceWorker.register("/ic-service.worjer.js.js")
-		console.info("Service worker registration succeeded:", registration);
+		const registration = await navigator.serviceWorker.register("/ic-service-worker.js")
+		console.info("Service worker registered.")
+		
+		const swUpdateItems = () => {
+			navigator.serviceWorker.ready.then( registration => registration.active.postMessage('update-items') )	
+		}			
+		
+		window.addEventListener("beforeunload",	swUpdateItems)
+		window.addEventListener("blur", 		swUpdateItems)
+		window.addEventListener("online", 		swUpdateItems)
+
 
 	} catch(cause) {
 		console.error(new Error('Failed to register service worker.', { cause }))
