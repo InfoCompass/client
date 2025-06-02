@@ -19,8 +19,8 @@ var angular 					= require('angular'),
 
 	// for calendar:
 
-	fullcalendar				= require('fullcalendar'),
-	fullcalendarAllLocales		= require('@fullcalendar/core/locales-all.cjs'),
+	// fullcalendar				= require('fullcalendar'),
+	// fullcalendarAllLocales		= require('@fullcalendar/core/locales-all.cjs'),
 
 	// rrule
 	rrule						= require('rrule')
@@ -29,7 +29,7 @@ var angular 					= require('angular'),
 	// jquery						= require('jquery')
 
 
-window.fullcalendar 	= fullcalendar
+// window.fullcalendar 	= fullcalendar
 window.rrule			= rrule
 window.RRule			= rrule.RRule
 window.mappo			= mappo

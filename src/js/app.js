@@ -4,11 +4,16 @@
 
 
 	try{
+
+		//TODO create service t manage updates and refreshes
+
 		const registration = await navigator.serviceWorker.register("/ic-service-worker.js")
 		console.info("Service worker registered.")
 		
-		const swUpdateItems = () => {
-			navigator.serviceWorker.ready.then( registration => registration.active.postMessage('update-items') )	
+		const swUpdateItems = async () => {
+			const registration = await navigator.serviceWorker.ready
+			if(!registration || ! registration.active) return
+			registration.active.postMessage('update-items')
 		}			
 		
 		window.addEventListener("beforeunload",	swUpdateItems)

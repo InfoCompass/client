@@ -455,7 +455,12 @@ angular.module('icServices', [
 
 		if(!dpd.users) console.error('icUser: missing dpd.users')
 
+		console.log('##################', localStorage.getItem('block-managed-data-cache'))
+
 		icUser.clear = function(){
+			// Allow service worker to cache most calls:
+			localStorage.setItem('block-managed-data-cache', false)
+
 			icUser.loggedIn			= false
 			icUser.displayName 		= undefined
 			icUser.privileges 		= ['suggest_new_items', 'suggest_item_changes']
@@ -488,14 +493,22 @@ angular.module('icServices', [
 						username: username,
 						password: password
 					}))
-					.then(function(){ location.reload()	})
+					.then(function(){ 
+						// Block Service Worker from cache data, that can be edited,
+						// to prevent outdated cached data to be posted.
+						localStorage.setItem('block-managed-data-cache', true)
+						location.reload()	
+					})
 		}
 
 
 		icUser.logout = function(){
 			return 	$q.when(dpd.users.logout())
 					.then(
-						function(){ location.reload() },
+						function(){ 
+							localStorage.setItem('block-managed-data-cache', false)
+							location.reload() 
+						},
 						function(e){
 							console.warn('icUser: logout failed:', e)
 							return $q.reject(e)

@@ -1,13 +1,13 @@
 <ic-item-full-header
 	ic-scroll-watch 		= "item"
-	ng-if 					= "!ic.site.activeItem.internal.failed"
+	ng-if 					= "ic.site.activeItem && !ic.site.activeItem.internal.failed"
 	ic-watch				= "{'ic.site.activeItem.id': 'scrollTop()'}"
 >
 </ic-item-full-header>
 
 
 <ic-item-full 
-	ng-if 					= "!ic.site.activeItem.internal.downloading && !ic.site.activeItem.internal.failed && !ic.site.editItem" 
+	ng-if 					= "ic.site.activeItem && !ic.site.activeItem.internal.downloading && !ic.site.activeItem.internal.failed && !ic.site.editItem" 
 	ic-scroll-top			= "true"
 	ic-settle-scrollbar		= "true"
 	ic-scroll-source	 	= "item"
@@ -16,7 +16,7 @@
 </ic-item-full>
 
 <ic-item-full-edit 
-	ng-if 					= "!ic.site.activeItem.internal.downloading && !ic.site.activeItem.internal.failed && ic.site.editItem" 
+	ng-if 					= "ic.site.activeItem && !ic.site.activeItem.internal.downloading && !ic.site.activeItem.internal.failed && ic.site.editItem" 
 	ic-scroll-top			= "true"
 	ic-settle-scrollbar		= "true"
 	ic-scroll-source		= "item"
@@ -26,7 +26,7 @@
 
 <div
 	class 					= "bg-1 padding"
-	ng-if 					= "ic.site.activeItem.internal.failed"
+	ng-if 					= "ic.site.activeItem && ic.site.activeItem.internal.failed"
 	ic-settle-scrollbar		= "true"
 	ic-scroll-source 		= "item"
 >

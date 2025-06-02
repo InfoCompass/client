@@ -439,7 +439,7 @@
 			const publicItems 	= 	source && source.publicItems
 
 			const getMappo		= 	async () => {
-										if(!mappoUrl) throw new Error(".mappoUrl not configured.")
+										if(!mappoUrl) 	throw new Error(".mappoUrl not configured.")
 										if(!mappo) 		throw new Error(".mappoUrl configured, but MappoClient not present.")
 
 										if(performance) performance.mark("mappo")

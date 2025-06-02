@@ -29,11 +29,17 @@ var config		=	(() => {
 								...(process.env.PUBLIC_ITEMS_URL 	? {publicItems: 		process.env.PUBLIC_ITEMS_URL} : {}),
 							}
 
-							return {
-								...JSON.parse(fs.readFileSync(cst+'/config.json', 'utf8')),
-								// Cannot do this ATM, needs review
-								//...envConfig, // This overwrites whatever is in the JSON files for those keys in envConfig
-							}
+							const c = JSON.parse(fs.readFileSync(cst+'/config.json', 'utf8'))
+
+							if(!c.frontendLocation) throw new Error("Missing .frontendLocation in config.")
+
+							return c
+
+							// return {
+							// 	...JSON.parse(fs.readFileSync(cst+'/config.json', 'utf8')),
+							// 	// Cannot do this ATM, needs review
+							// 	//...envConfig, // This overwrites whatever is in the JSON files for those keys in envConfig
+							// }
 						} else {
 							console.log('\n\nmissing '+ cst+'/config.json Copy default/config_example.json to '+cst+'/config.json') && process.exit(1)
 							return undefined
@@ -41,6 +47,9 @@ var config		=	(() => {
 					})()
 
 var preloadImg	=	[]
+var preloadStatic = []
+
+
 
 var build 		= 	Date.now()
 
@@ -422,7 +431,7 @@ function prepareFonts(){
 
 function copyFilesSrcToTmp(){
 	return 	Promise.all([
-				fs.copy(src+'/images/icons', 	"tmp/images/icons")
+				fs.copy(src+'/images/icons', 	"tmp/images/icons"),
 			])
 }
 
@@ -441,15 +450,12 @@ async function copyReadyFilesToDst(){
 	} catch(e){
 		console.warn('[skipping assets]')
 	}
-	await	fs.copy(src+"/images/large", 			dst+"/images/large")
-	await	fs.copy(src+"/js/worker", 				dst+'/worker')
-	await	fs.copy(src+"/ic-service-worker.js", 	dst+'/ic-service-worker.js')
-
-
+	await	fs.copy(src+"/js/worker", 			dst+'/worker')
+	await	fs.copy(src+"/images/large", 		dst+"/images/large")
+	await	fs.copy(src+"/images/icons", 		dst+"/images/icons")
 
 	//tmp
-	await	fs.copy("tmp/images", 				dst+"/images")
-	await	fs.copy("tmp/json",					dst)
+	await	fs.copy("tmp/json",						dst)
 
 	
 }
@@ -532,16 +538,40 @@ function compileIndex(){
 }
 
 
-function prepareServiceWorkerTmp(){
-	return 	fs.readFile(src+'/js/ic-service-worker.js', 'utf8')
-			.then( 
-				content => 	content
-							.replace(/\{config:\s.+REPLACE_CONFIG.+\}/,  	JSON.stringify(config) )
-							.replace(/\[.+#REPLACE_STATIC_PRE_CACHE.+\]/, 	JSON.stringify(preloadImg))
-							.replace(/#REPLACE_BUILD/, 						build)
+async function prepareServiceWorkerStaticFilesDst(){
 
-			)
-			.then( content => fs.writeFile(src+"/ic-service-worker.js", content, 'utf8') )
+	const filenames			=	(await fs.readdir(dst, { recursive: true }))
+								.filter( filename => fs.lstatSync(dst+'/'+filename).isFile() )
+								.map( filename => '/'+filename)
+
+	const select			=	[
+									/^\/images\//,
+									/scripts\.js$/,
+									/worker.js$/,	
+									/initial\.css$/,
+									/styles\.css$/,
+									/^\/config\.json$/,
+									/^\/build$/,
+									/preload/,
+									/sort\.js/
+								]
+
+	const precacheStatic 	= 	filenames
+								.filter( filename => select.some(prefix => filename.match(prefix)))
+
+	console.log({precacheStatic})
+
+	const skipped			=	filenames.filter( filename => !precacheStatic.includes(filename))
+	console.log({skipped})
+
+	let content				= 	await fs.readFile(src+'/js/ic-service-worker.js', 'utf8')
+	
+	content 				=	content				
+								.replace(/\{config:\s.#REPLACE_CONFIG.\}/,  	JSON.stringify(config) )
+								.replace(/\[.#REPLACE_STATIC_PRE_CACHE.\]/, 	JSON.stringify(precacheStatic))
+								.replace(/#REPLACE_BUILD/, 						build)
+
+	return fs.writeFile(dst+"/ic-service-worker.js", content, 'utf8')
 
 }
 
@@ -626,9 +656,6 @@ setup()
 .then(createConfigJson)
 .then( () => done() )
 
-.then( () => process.stdout.write('\nPreparing ic-service-worker.js...'))
-.then(prepareServiceWorkerTmp)
-.then( () => done() )
 
 .then( () => process.stdout.write('\nCopying ready files to '+dst+'...'))
 .then(copyReadyFilesToDst)
@@ -663,10 +690,14 @@ setup()
 .then( () => done() )
 
 
+.then( () => process.stdout.write('\nPreparing ic-service-worker.js...'))
+.then(prepareServiceWorkerStaticFilesDst)
+.then( () => done() )
+
 
 
 .then( () => process.stdout.write('\nCleaninng up...'))
-.then(cleanUp)
+// .then(cleanUp)
 .then( () => process.stdout.write('\x1b[32m Done.'))
 
 

@@ -82,7 +82,6 @@
 											l.setAttribute('href',	url)
 											l.addEventListener('load', resolve )
 											document.head.appendChild(l)
-
 									})
 								}))
 				}
