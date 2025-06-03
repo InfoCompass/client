@@ -13,7 +13,6 @@ var angular 					= require('angular'),
 	angular_translate			= require('angular-translate'),
 	leaflet						= require('leaflet'),
 	leaflet_marker_cluster		= require('leaflet.markercluster'),
-	mappo						= require('@mappo-aggregato/client')
 
 	//	leaflet_vector_grid			= require('leaflet.vectorgrid'),
 
@@ -32,4 +31,3 @@ var angular 					= require('angular'),
 // window.fullcalendar 	= fullcalendar
 window.rrule			= rrule
 window.RRule			= rrule.RRule
-window.mappo			= mappo

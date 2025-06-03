@@ -440,31 +440,19 @@
 
 			const getMappo		= 	async () => {
 										if(!mappoUrl) 	throw new Error(".mappoUrl not configured.")
-										if(!mappo) 		throw new Error(".mappoUrl configured, but MappoClient not present.")
 
-										if(performance) performance.mark("mappo")
-											
-										const mappoClient 	= 	new mappo.MappoClient({
-																	backendUrl: mappoUrl, 
-																	differ: 	new mappo.NaiveMappoDiffer(), 
-																	storage:  	new mappo.IndexedDbStorage("mappo-ic-items")
-																})	
+										if(performance) performance.mark("mappo")																	
+										
+										const response 		= 	await fetch(mappoUrl+"/latest")	
+										const adapterData 	= 	await response.json()
+										const items			= 	adapterData
+																.map(ad => Object.values(ad.itemsRecord))
+																.flat()
+										const duration		=	performance.measure("mappo").duration
 
-										console.log('after new', performance.measure("after new", "mappo").duration)
+										console.info(`MappoAggregato: retrieved ${items.length} items, ${duration}`)
 
-
-										console.info("MappoAggregato: updating local database.")
-										try		{ await mappoClient.updateLocalAdapterData() } //TODO
-										catch(e){  e => console.error(e) }
-
-										console.log('after update', performance.measure("after update", "mappo").duration)
-
-										console.info("MappoAggregato: retrieving items from local database.")
-										const itemWrappers = await mappoClient.getLocalItemData()
-										const duration = performance ? performance.measure("load", "mappo").duration+'ms' : ''
-										console.info(`MappoAggregato: retrieved ${itemWrappers.length} items, ${duration}`)
-
-										return itemWrappers.map( ({item, remote}) => item)
+										return items
 
 									}
 

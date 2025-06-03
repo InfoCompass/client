@@ -1,9 +1,16 @@
+
 const CONFIG				=	{config: "#REPLACE_CONFIG"} 	// replaced by build script
 const STATIC_FILES			=	["#REPLACE_STATIC_PRE_CACHE"]	// replaced by build script
 const CACHE_VERSION			= 	1
 const BUILD					=	"#REPLACE_BUILD"  				// replaced by build script
 const USER_CHECK_URL		=	CONFIG.backendLocation +"/users/me"
 
+
+if(CONFIG.mappo) importScripts("./mappo-service-worker-cache.js")
+
+const MappoServiceWorkerCache = Mappo.MappoServiceWorkerCache
+
+console.log({MappoServiceWorkerCache})
 
 async function getUserLoginState(){
 	const result = await fetch(USER_CHECK_URL)
@@ -20,13 +27,15 @@ class PreventCache {
 
 		const origins		=	[
 									CONFIG.statsLocation,
+									CONFIG.backendLocation,
 									CONFIG.map.tiles.split('?')[0]
 								]
 
 		const select		= 	[
 									/ic-service-worker\.js/,
 									/manifest\.json/,
-									/socket\.io/
+									/socket\.io/,
+
 								]
 
 		const originMatch	=	origins.some( origin => request.url.startsWith(origin) )
@@ -93,8 +102,15 @@ class IndexCache {
 		const path		=	'/'+(request.url.split(indexResponse.url)[1])
 
 		const ignore	=	[
-								/^\/fonts/,
 								/^\/assets/,
+								/^\/fonts/,
+								/^\/images/,
+								/^\/js/,
+								/^\/styles/,
+								/^\/worker/,
+								/\.js$/,
+								/\.json$/,
+								/build$/
 							]
 
 		if(ignore.some( regex => path.match(regex))) return					
@@ -119,7 +135,7 @@ class FallbackCache {
 		const freshResponse 	= 	await preloadResponse || await fetch(request.clone())
 		const cache				= 	await caches.open(this.name)
 
-		if(freshResponse.ok){
+		if(freshResponse.status < 200){
 			console.log(`Using ${this.name}, got successful fresh response for: `, request.url)
 			cache.put(request, freshResponse.clone())
 			return freshResponse
@@ -145,9 +161,12 @@ class FallbackCache {
 }
 
 
-const CURRENT_CACHES	= 	[
+const CURRENT_CACHES	= 	[						
 								new PreventCache(CACHE_VERSION), // must be first!
 								new StaticPreCacheControl(CACHE_VERSION),
+								...	(CONFIG.mappo
+									?	[new MappoServiceWorkerCache(CONFIG.mappo, CACHE_VERSION)]
+									: 	[]),
 								new IndexCache(CACHE_VERSION),
 								new FallbackCache(CACHE_VERSION) // must be last!
 							]
@@ -195,10 +214,6 @@ self.addEventListener("activate", activateEvent => {
 
 })
 
-async function getCacheReponse(){
-	
-
-}
 
 self.addEventListener("fetch", fetchEvent => {
 
@@ -230,7 +245,7 @@ self.addEventListener("fetch", fetchEvent => {
 })
 
 
-self.addEventListener("message", messageEvent => {
-	
+self.addEventListener("message", messageEvent => {	
 	if(messageEvent.data === "update-items") updateItems()
 })
+

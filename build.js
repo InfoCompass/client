@@ -454,6 +454,12 @@ async function copyReadyFilesToDst(){
 	await	fs.copy(src+"/images/large", 		dst+"/images/large")
 	await	fs.copy(src+"/images/icons", 		dst+"/images/icons")
 
+
+	// mappo service worker cache:
+	console.log(111)
+	await fs.copy('./node_modules/@mappo-aggregato/client/dist/service-worker.min.js', dst+"/mappo-service-worker-cache.js")
+	console.log(222)
+
 	//tmp
 	await	fs.copy("tmp/json",						dst)
 
@@ -559,10 +565,7 @@ async function prepareServiceWorkerStaticFilesDst(){
 	const precacheStatic 	= 	filenames
 								.filter( filename => select.some(prefix => filename.match(prefix)))
 
-	console.log({precacheStatic})
-
-	const skipped			=	filenames.filter( filename => !precacheStatic.includes(filename))
-	console.log({skipped})
+	// const skipped			=	filenames.filter( filename => !precacheStatic.includes(filename))
 
 	let content				= 	await fs.readFile(src+'/js/ic-service-worker.js', 'utf8')
 	
@@ -697,8 +700,8 @@ setup()
 
 
 .then( () => process.stdout.write('\nCleaninng up...'))
-// .then(cleanUp)
-.then( () => process.stdout.write('\x1b[32m Done.'))
+.then(cleanUp)
+.then( () => process.stdout.write('\x1b[32m Done.\n\n'))
 
 
 .then(

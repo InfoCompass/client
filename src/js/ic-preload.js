@@ -25,7 +25,7 @@
 				let ready = 	deferStart.promise//deferStart.promise
 								.then(function()		{ return 	$http.get(jsonFile) } )
 								.then(function(result)	{ return 	result.data })
-								.then(function(images)	{ return 	Promise.all(images.map(function(url){
+								.then(function(images)	{ return 	Promise.all((images||[]).map(function(url){
 																		return new Promise(function(resolve, reject){
 
 																			var img = new Image()
