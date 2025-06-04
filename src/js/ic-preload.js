@@ -18,35 +18,40 @@
 
 			function($q, $http){
 
-				let deferStart	= $q.defer()
+				let deferStart	= 	$q.defer()
 
-				this.start = deferStart.resolve
+				this.start 		= 	deferStart.resolve
+				
+				const ready 	= 	(async () => {
+										await deferStart.promise
+										const response 	= await fetch(jsonFile)
+										const images	= await response.json()
 
-				let ready = 	deferStart.promise//deferStart.promise
-								.then(function()		{ return 	$http.get(jsonFile) } )
-								.then(function(result)	{ return 	result.data })
-								.then(function(images)	{ return 	Promise.all((images||[]).map(function(url){
-																		return new Promise(function(resolve, reject){
+										if(!Array.isArray(images)){
+											console.warn("Unable to preload images. Image data is not an Array.")
+											return
+										}
+									
+										await 	Promise.all(images.map(url => new Promise(function(resolve, reject){
 
-																			var img = new Image()
+													var img = new Image()
 
-																			img.addEventListener('load', function(){
-																				resolve()
-																				img = null
-																			})
+													img.addEventListener('load', function(){
+														resolve()
+														img = null
+													})
 
-																			img.addEventListener('error', function(event){
-																				console.error('icPreload:', url, event)
-																				reject()
-																				img = null
-																			})
+													img.addEventListener('error', function(event){
+														console.error('icPreload:', url, event)
+														reject()
+														img = null
+													})
 
-																			img.src = url
+													img.src = url
 
-																		})
-																	}))
-														}
-								)
+												})))
+															
+									})()
 
 				this.ready = $q.resolve(ready)
 

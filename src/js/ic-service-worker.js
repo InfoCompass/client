@@ -12,10 +12,12 @@ const MappoServiceWorkerCache = Mappo.MappoServiceWorkerCache
 
 console.log({MappoServiceWorkerCache})
 
-async function getUserLoginState(){
-	const result = await fetch(USER_CHECK_URL)
-	return 	result.status === 200			
-}
+// needs testing:
+// async function getUserLoginState(){
+// 	const result = await fetch(USER_CHECK_URL)
+// 	console.log('User loggin in?', result.status === 200)
+// 	return 	result.status === 200			
+// }
 
 class PreventCache {
 
@@ -23,13 +25,18 @@ class PreventCache {
 
 	async setup(){}
 
-	async fetch({request, preloadResponse}){
+	match(request){
 
 		const origins		=	[
 									CONFIG.statsLocation,
 									CONFIG.backendLocation,
-									CONFIG.map.tiles.split('?')[0]
+									...(
+										CONFIG.map && CONFIG.map.tiles
+										?	[new URL(CONFIG.map.tiles).origin]
+										:	[]
+									)
 								]
+
 
 		const select		= 	[
 									/ic-service-worker\.js/,
@@ -41,10 +48,15 @@ class PreventCache {
 		const originMatch	=	origins.some( origin => request.url.startsWith(origin) )
 		const genericMatch	=	select.some( regex => request.url.match(regex) )
 
-		if(!originMatch && !genericMatch) return
+		return originMatch || genericMatch
+	}
+
+	async fetch({request, preloadResponse}){
+
+		if(!this.match(request)) throw Error(`Request does not .match(), ${this.name}.`)
 
 		console.log(`Using ${this.name}, getting fresh response for:`, request.url)	
-		return await preloadResponse || await fetch(request)
+		return await preloadResponse || await fetch(request.clone())
 	}
 }
 
@@ -56,7 +68,12 @@ class StaticPreCacheControl {
 		this.name = `static-pre-cache-v${version}`
 	}
 
+	match(request){
+		return STATIC_FILES.some( url => request.url.includes(url))
+	}
+
 	async setup(){
+
 		const cache			=	await caches.open(this.name)
 		const currentKeys 	=	await cache.keys()
 		const currentUrls	=	currentKeys.map( request => request.url)
@@ -64,13 +81,16 @@ class StaticPreCacheControl {
 
 		outdatedUrls.forEach( url => void cache.delete(url) )
 
-		await cache.addAll(STATIC_FILES).catch( e => console.log('ERROR', e))
+		await cache.addAll(STATIC_FILES)
 
 	}
 
-	async fetch({request}){
+	async fetch({ request }){
+
+		if(!this.match(request)) throw Error(`Request does not .match(), ${this.name}.`)		
+
 		const cache 	= await caches.open(this.name)
-		const response	= await cache.match(request)
+		const response	= await cache.match(request.clone())
 
 		if(!response) return 
 
@@ -84,36 +104,50 @@ class StaticPreCacheControl {
 class IndexCache {
 
 	name
+
 	constructor(CACHE_VERSION){
 		this.name = `index-v${CACHE_VERSION}`
 	}
 
 	async setup(){
-		const cache	=	await caches.open(this.name)
-		cache.add("/")
+		const cache			=	await caches.open(this.name)
+
+		await cache.add("/")
+
+		const indexResponse	=	await cache.match("/")	
+
+		this.indexUrl	
+
+	}
+
+	match(request){
+		if(!request.url.startsWith(location.origin)) return false
+		
+		const path			=	new URL(request.url).pathname
+		const ignore		=	[
+									/^\/assets/,
+									/^\/fonts/,
+									/^\/images/,
+									/^\/js/,
+									/^\/styles/,
+									/^\/worker/,
+									/\.js$/,
+									/\.json$/,
+									/build$/
+								]
+
+		if(ignore.some( regex => path.match(regex))) return	false				
+
+		return true	
+
 	}
 
 	async fetch({request}) {
+
+		if(!this.match(request)) throw Error(`Request does not .match(), ${this.name}.`)		
+
 		const cache			=	await caches.open(this.name)
 		const indexResponse	=	await cache.match("/")
-
-		if(!request.url.startsWith(indexResponse.url)) return
-
-		const path		=	'/'+(request.url.split(indexResponse.url)[1])
-
-		const ignore	=	[
-								/^\/assets/,
-								/^\/fonts/,
-								/^\/images/,
-								/^\/js/,
-								/^\/styles/,
-								/^\/worker/,
-								/\.js$/,
-								/\.json$/,
-								/build$/
-							]
-
-		if(ignore.some( regex => path.match(regex))) return					
 
 		console.log(`Using ${this.name} for:`, request.url)
 
@@ -121,54 +155,58 @@ class IndexCache {
 	}
 }
 
-class FallbackCache {
-	name 
+// class FallbackCache {
+// 	name 
 
-	constructor(version){
-		this.name = `fallback-v${version}`
-	}
+// 	constructor(version){
+// 		this.name = `fallback-v${version}`
+// 	}
 
-	async setup(){}
+// 	async setup(){}
 
-	async fetch({request, preloadResponse}){
+// 	match(){
 
-		const freshResponse 	= 	await preloadResponse || await fetch(request.clone())
-		const cache				= 	await caches.open(this.name)
+// 	}
 
-		if(freshResponse.status < 200){
-			console.log(`Using ${this.name}, got successful fresh response for: `, request.url)
-			cache.put(request, freshResponse.clone())
-			return freshResponse
-		}
+// 	async fetch({request, preloadResponse}){
+
+// 		const freshResponse 	= 	await preloadResponse || await fetch(request.clone())
+// 		const cache				= 	await caches.open(this.name)
+
+// 		if(freshResponse.status < 200){
+// 			console.log(`Using ${this.name}, got successful fresh response for: `, request.url)
+// 			cache.put(request, freshResponse.clone())
+// 			return freshResponse
+// 		}
 		
-		const userLoggedIn		=	await getUserLoginState()
+// 		const userLoggedIn		=	await getUserLoginState()
 
-		if(userLoggedIn){
-			console.log(`Using ${this.name}, user logged in , sending failed fresh response for: `, request.url)				
-			return freshResponse
-		}
+// 		if(userLoggedIn){
+// 			console.log(`Using ${this.name}, user logged in , sending failed fresh response for: `, request.url)				
+// 			return freshResponse
+// 		}
 
-		const cachedResponse	= 	await cache.match(request)
+// 		const cachedResponse	= 	await cache.match(request)
 
-		if(cachedResponse){
-			console.log(`Using ${this.name}, got cached response for: `, request.url)
-			return cachedResponse	
-		}
+// 		if(cachedResponse){
+// 			console.log(`Using ${this.name}, got cached response for: `, request.url)
+// 			return cachedResponse	
+// 		}
 
-		console.log(`Using ${this.name}, no cache, only failed fresh response for: `, request.url)			
-		return freshResponse
-	}
-}
+// 		console.log(`Using ${this.name}, no cache, only failed fresh response for: `, request.url)			
+// 		return freshResponse
+// 	}
+// }
 
 
 const CURRENT_CACHES	= 	[						
-								new PreventCache(CACHE_VERSION), // must be first!
+								// new PreventCache(CACHE_VERSION), // must be first!
 								new StaticPreCacheControl(CACHE_VERSION),
 								...	(CONFIG.mappo
 									?	[new MappoServiceWorkerCache(CONFIG.mappo, CACHE_VERSION)]
 									: 	[]),
 								new IndexCache(CACHE_VERSION),
-								new FallbackCache(CACHE_VERSION) // must be last!
+								//new FallbackCache(CACHE_VERSION) // must be last!
 							]
 
 async function cleanCaches(){
@@ -217,31 +255,11 @@ self.addEventListener("activate", activateEvent => {
 
 self.addEventListener("fetch", fetchEvent => {
 
-	fetchEvent.respondWith( (async ()=> {
-	
-		const request 			=	fetchEvent.request
-		const preloadResponse 	=	await fetchEvent.preloadResponse
+	const request 			=	fetchEvent.request		
 
-		let cachedResponse	
-
-		for( cacheControl of CURRENT_CACHES ){
-			try {
-				cachedResponse = await cacheControl.fetch(fetchEvent)
-			} catch(e){
-				console.error(e)
-			}
-
-			if(cachedResponse) break
-		}
-		
-		if(cachedResponse) return cachedResponse
-
-		console.log("No cache control for: ", request.url)
-
-		if(preloadResponse) return await preloadResponse
-
-		return await fetch(request)
-	})())
+	for( const cacheControl of CURRENT_CACHES ){
+		if(cacheControl.match && cacheControl.match(request)) fetchEvent.respondWith( cacheControl.fetch(fetchEvent) )			
+	}
 })
 
 

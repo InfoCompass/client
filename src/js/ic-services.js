@@ -448,87 +448,91 @@ angular.module('icServices', [
 .service('icUser', [
 
 	'$q',
+	'icConfig',
 
-	function($q){
+	function($q, icConfig){
 
-		var icUser = this
 
-		if(!dpd.users) console.error('icUser: missing dpd.users')
+		class icUser{
 
-		console.log('##################', localStorage.getItem('block-managed-data-cache'))
+			ready
+			privileges
+			loggedIn
 
-		icUser.clear = function(){
-			// Allow service worker to cache most calls:
-			localStorage.setItem('block-managed-data-cache', false)
+			constructor(){
+				this.ready = $q.when(this.setup())
+			}
 
-			icUser.loggedIn			= false
-			icUser.displayName 		= undefined
-			icUser.privileges 		= ['suggest_new_items', 'suggest_item_changes']
+			async setup(){
+
+				try {
+					const credentials	= 	'include'
+					const response 		= 	await fetch(icConfig.backendLocation+'/users/me', { credentials })
+
+					if(response.status=== 204) throw new Error('User is not logged in.')
+					if(!response.ok) throw new Error('Unable to retrieve user status.', {cause: response} )
+
+					const userData	= await response.json()
+
+					if(!userData || !userData.id) throw new Error('Unable to get user data including id.')
+
+					this.loggedIn		= true
+					this.displayName 	= userData.displayName
+					this.privileges		= userData.privileges 		
+					this.id				= userData.id	
+
+					console.info('User logged in as:', this.displayName)
+
+				} catch(cause) {
+					this.clear()
+					console.error('icUser: unable to setup user.')
+					console.groupCollapsed('icUser: reason for failed user setup.')
+					console.error(cause)						
+					console.groupEnd()
+				}
+
+			}
+
+			clear() {
+				this.loggedIn			= false
+				this.displayName 		= undefined
+				this.privileges 		= ['suggest_new_items', 'suggest_item_changes']
+			}
+
+			async login(username, password){
+				const body 			= 	JSON.stringify({username, password})
+				const method 		= 	"POST"
+				const credentials	= 	'include'
+
+				const headers		=	{
+											'Accept': 		'application/json',
+											'Content-Type':	'application/json',
+										}
+
+				const response = await fetch(icConfig.backendLocation+'/users/login', { method, body, credentials, headers })
+
+				location.reload()					
+			}
+
+			async logout(){
+				const credentials	= 	'include'
+				const response 		= await fetch(icConfig.backendLocation+'/users/logout', { method:'POST', credentials })
+				location.reload() 
+			}
+
+
+			can(task){
+				return 	this.privileges && this.privileges.indexOf(task) != -1
+			}
+
+			cannot(task){
+				return !this.can(task)
+			}
 		}
 
+		icUserInstance = new icUser()
 
-		icUser.setup = function(){
-			return	$q.when(dpd.users.me())
-					.then(
-						function(user_data){
-							if(user_data && user_data.id){
-								icUser.loggedIn		= true
-								icUser.displayName 	= user_data.displayName
-								icUser.privileges	= user_data.privileges 		
-								icUser.id			= user_data.id
-								return icUser								
-							} else {
-								icUser.clear()
-							}
-						},
-						function(){
-							console.error('icUser: unable to setup user.')							
-						}
-					)
-		}
-
-
-		icUser.login = function(username, password){
-			return 	$q.when(dpd.users.login({
-						username: username,
-						password: password
-					}))
-					.then(function(){ 
-						// Block Service Worker from cache data, that can be edited,
-						// to prevent outdated cached data to be posted.
-						localStorage.setItem('block-managed-data-cache', true)
-						location.reload()	
-					})
-		}
-
-
-		icUser.logout = function(){
-			return 	$q.when(dpd.users.logout())
-					.then(
-						function(){ 
-							localStorage.setItem('block-managed-data-cache', false)
-							location.reload() 
-						},
-						function(e){
-							console.warn('icUser: logout failed:', e)
-							return $q.reject(e)
-						}
-					)
-
-		}
-
-		icUser.can = function(task){
-			return 	icUser.privileges && icUser.privileges.indexOf(task) != -1
-		}
-
-		icUser.cannot = function(task){
-			return !icUser.can(task)
-		}
-
-
-		icUser.ready = icUser.setup()
-
-		return icUser
+		return icUserInstance
 	}
 ])
 
