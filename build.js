@@ -126,7 +126,6 @@ async function bundleScriptsToDst(){
 	let files = {
 
 		"vendor.js": 				await fs.readFile('vendor.js', 							'utf8'),
-		// "mappo-aggregato.js":		await fs.readFile('mappo-aggregato.js', 				'utf8'),
 		"marked.js":				await fs.readFile('node_modules/marked/marked.min.js', 	'utf8'),
 		//"Leaflet.VectorGrid.min.js":await fs.readFile('node_modules/leaflet.vectorgrid/dist/Leaflet.VectorGrid.bundled.js', 	'utf8'),
 		"taxonomy.js": 				await fs.readFile(src+'/js/taxonomy.js', 				'utf8'),
@@ -456,9 +455,9 @@ async function copyReadyFilesToDst(){
 
 
 	// mappo service worker cache:
-	console.log(111)
-	await fs.copy('./node_modules/@mappo-aggregato/client/dist/service-worker.min.js', dst+"/mappo-service-worker-cache.js")
-	console.log(222)
+	if(config.mapo){
+		await fs.copy('./node_modules/@mappo-aggregato/client/dist/service-worker.min.js', dst+"/mappo-service-worker-cache.js")
+	}
 
 	//tmp
 	await	fs.copy("tmp/json",						dst)
