@@ -6,11 +6,14 @@ const BUILD					=	"#REPLACE_BUILD"  				// replaced by build script
 const USER_CHECK_URL		=	CONFIG.backendLocation +"/users/me"
 
 
-if(CONFIG.mappo) importScripts("./mappo-service-worker-cache.js")
+let MappoServiceWorkerCache
+if(CONFIG.mappo){
+	console.log("Found Mappo config, importing mappo caching script...")
+	importScripts("./mappo-service-worker-cache.js")
+	MappoServiceWorkerCache = Mappo.MappoServiceWorkerCache
+	console.log({MappoServiceWorkerCache})
+}
 
-const MappoServiceWorkerCache = Mappo.MappoServiceWorkerCache
-
-console.log({MappoServiceWorkerCache})
 
 // needs testing:
 // async function getUserLoginState(){
