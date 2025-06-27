@@ -5,7 +5,7 @@
 
 	try{
 
-		//TODO create service t manage updates and refreshes
+		//TODO create service to manage updates and refreshes
 
 		const registration = await navigator.serviceWorker.register("/ic-service-worker.js")
 		console.info("Service worker registered.")
@@ -63,18 +63,13 @@
 
 	 }
 
-	var icConfig 	= undefined,
-		build		= undefined 
+	var build		= undefined 
 
 	Promise.all([
-		loadJSON('config.json'),
 		getBuildNumber()
 	])
-	.then(function(result){
-
-
-		icConfig 	= result[0]
-		build		= result[1]
+	.then(function(result){		
+		build		= result[0]
 
 		angular.module("InfoCompass",[
 			'monospaced.qrcode',
@@ -87,7 +82,7 @@
 			'icMap',
 			'icPreload',
 		])
-		.constant('icConfig', icConfig)
+		.constant('icConfig', icConfig) // icConfig should be a global variable added by build script.
 
 
 		.config(['$compileProvider', function ($compileProvider) {

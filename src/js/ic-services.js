@@ -499,18 +499,8 @@ angular.module('icServices', [
 				this.privileges 		= ['suggest_new_items', 'suggest_item_changes']
 			}
 
-			async login(username, password){
-				const body 			= 	JSON.stringify({username, password})
-				const method 		= 	"POST"
-				const credentials	= 	'include'
-
-				const headers		=	{
-											'Accept': 		'application/json',
-											'Content-Type':	'application/json',
-										}
-
-				const response = await fetch(icConfig.backendLocation+'/users/login', { method, body, credentials, headers })
-
+			async login(username, password){		
+				await icBackend.login(username, password)
 				location.reload()					
 			}
 

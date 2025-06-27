@@ -3,7 +3,7 @@
 //this is causing an error in IE11 at accent map =(
 
 (function(){
-	if(!window.dpd) 							console.error('icItemStorage: missing dpd. Please load dpd.js.')
+	if(!icConfig) console.error('icItemStorage: missing icConfig. Should have been added by build process.')
 	if(!(window.ic && window.ic.itemConfig)) 	console.error('icItemStorage: missing ic.itemConfig. Please load ic-item-config.js.')
 	if(!(window.ic && window.ic.Item)) 			console.error('icItemStorage: missing ic.Item. Please load ic-item-dpd.js.')
 
@@ -31,8 +31,6 @@
 		});
 
 	}
-
-
 
 
 	function IcItemStorage(){
@@ -458,7 +456,9 @@
 
 
 			const getPublic		= 	() => httpGet(publicItems).then( result =>  result.items )
-			const getDpd		= 	() => dpd(ic.itemConfig.collectionName).get()
+			
+			// const getDpd		= 	() => dpd(ic.itemConfig.collectionName).get()
+
 			
 			const itemPromise	= 	(async () => {
 
@@ -470,7 +470,7 @@
 											try{ 		return await getPublic() } 
 											catch(e) {	console.error(e) }
 
-										return await getDpd()
+										return await icBackend.getItems()
 
 									})()
 

@@ -1,7 +1,7 @@
 "use strict";
 
 (function(){
-	if(!window.dpd) 							console.error('icItemDpd: missing dpd. Please load dpd.js.')
+	if(!icConfig) console.error('icItemDpd: missing icConfig. Should have been added by build process.')	
 	if(!(window.ic && window.ic.itemConfig)) 	console.error('icItemDpd: missing ic.itemConfig. Please load item_config.js.')
 
 
@@ -146,8 +146,8 @@
 			icItem.internal.failed = false	
 
 			icItem.internal.downloading 		= 	true
-			icItem.internal.ongoingDownload 	= 	dpd(ic.itemConfig.collectionName)
-													.get({id: icItem.id})
+			icItem.internal.ongoingDownload 	= 	icBackend
+													.getItem(icItem.id)
 													.then(icItem.importData)
 													.then(
 														() => {
@@ -169,8 +169,7 @@
 
 			const item_data = 	icItem.exportData(key, subkey)
 
-			return 	dpd(ic.itemConfig.collectionName)
-					.put({id: icItem.id}, item_data)
+			return 	icBackend.updateItem(icItem.id, item_data)
 		}
 
 
@@ -191,8 +190,8 @@
 
 			clean_data.suggestionMeta = suggestionMeta
 
-			return	dpd(ic.itemConfig.collectionName)
-					.post(clean_data)
+			return	icBackend
+					.createItem(clean_data)
 					.then(function(data){
 						icItem.importData(data)
 						return data
@@ -238,8 +237,8 @@
 
 
 
-			return	dpd(ic.itemConfig.collectionName)
-					.post(data)
+			return	icBackend
+					.createItem(clean_data)
 					.then(function(data){
 						//icItem.importData(data)
 						return data
@@ -248,8 +247,8 @@
 
 
 		icItem.delete = function(){
-			return 	dpd(ic.itemConfig.collectionName)
-					.del(icItem.id)
+			return 	icBackend
+					.deleteItem(icItem.id)
 					.then( ({count}) => count ? Promise.resolve(count) : Promise.reject('count == 0, nothing deleted.'+count))
 		}
 
