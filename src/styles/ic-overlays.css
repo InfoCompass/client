@@ -454,7 +454,7 @@ ic-overlays ic-lists-menu form {
 
 
 
-ic-overlays  p:not(.transcluded-content) {
+ic-overlays  p:not(.transcluded-content, ic-auto-popup p) {
 	white-space:			pre-wrap !important;
 }
 

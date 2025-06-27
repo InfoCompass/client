@@ -1,8 +1,11 @@
+ic-auto-popup {
+	padding:		2rem !important;	
+}
 
 ic-auto-popup h1,
 ic-auto-popup h2,
 ic-auto-popup h3 {
-	font-size:		1.2rem;
+	font-size:		1.3rem;
 }
 
 
@@ -12,4 +15,5 @@ ic-auto-popup p {
 	width:			30rem;
 	text-align:		left;
 	max-width:		100%;
+	white-space:	normal !important;
 }
