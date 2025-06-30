@@ -761,6 +761,8 @@ angular.module('icServices', [
 							icLanguages.translationTable[lang]['CONTENT'] = icLanguages.translationTable[lang]['CONTENT'] || {}
 							icLanguages.translationTable[lang]['CONTENT'][page.toUpperCase()] = content
 
+							if(page =="home") return //annoying workaround remove as soon as page heading and page menu entry are seprarately configurable
+
 							// updating title translations for the menu
 							icLanguages.translationTable[lang]['INTERFACE'] = icLanguages.translationTable[lang]['INTERFACE'] || {}
 							icLanguages.translationTable[lang]['INTERFACE'][page.toUpperCase()] = title
