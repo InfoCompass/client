@@ -3538,6 +3538,7 @@ angular.module('icServices', [
 		}
 
 		icOverlays.open = function(overlay_name, messages, deferred, overwrite_messages){
+
 			icOverlays.messages[overlay_name] = overwrite_messages
 												? 	[]
 												:	(icOverlays.messages[overlay_name] || [])
@@ -3557,8 +3558,9 @@ angular.module('icServices', [
 			// This way js wont throw an error for an uncaught rejection:
 			icOverlays.deferred[overlay_name].promise.catch( () => {} )
 
-
-			icOverlays.toggle(overlay_name, true)
+			scope.$evalAsync( () => {
+				icOverlays.toggle(overlay_name, true)				
+			})
 
 			return icOverlays.deferred[overlay_name].promise
 		}
@@ -3609,7 +3611,6 @@ angular.module('icServices', [
 			//
 			async open(id, message){
 
-
 				if(this.blocked[id]) throw "autoPopup block: "+id
 
 				const previousPromise = icOverlays.deferred['autoPopup'] || Promise.resolve()
@@ -3621,7 +3622,12 @@ angular.module('icServices', [
 				this.currentId = id
 
 				return 	icOverlays.open('autoPopup', message)
-						.finally( () => this.currentId = undefined)
+						.finally( () => {
+							this.currentId = undefined
+							// ensure that the popup is not shown again, when just navigating back and forth
+							// reload will work:
+							this.blocked[id] = true 
+						})
 
 			}
 

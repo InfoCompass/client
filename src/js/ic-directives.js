@@ -3177,8 +3177,6 @@ angular.module('icDirectives', [
 					return null
 				}
 				
-				console.log('scope.icPopUpMessage', scope.icPopupMessage)
-
 				icAutoPopupService.open(scope.icPopupId, scope.icPopupMessage)
 			}
 		}

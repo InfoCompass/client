@@ -95,7 +95,7 @@ class StaticPreCacheControl {
 		const cache 	= await caches.open(this.name)
 		const response	= await cache.match(request.clone())
 
-		if(!response) return 
+		if(!response) return await fetch(request)
 
 		console.log(`Using ${this.name} for:`, request.url)
 		return response
