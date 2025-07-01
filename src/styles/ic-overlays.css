@@ -99,6 +99,7 @@ ic-overlays > * > * {
 	display:				block;
 	width:					18rem;
 	margin:					auto;
+	max-width:				100%;
 }
 
 ic-overlays > * > ul {

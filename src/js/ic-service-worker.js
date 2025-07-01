@@ -95,7 +95,7 @@ class StaticPreCacheControl {
 		const cache 	= await caches.open(this.name)
 		const response	= await cache.match(request.clone())
 
-		if(!response) return await fetch(request)
+		if(!response) throw new Error("StaticPreCacheControl: no cached version available.")
 
 		console.log(`Using ${this.name} for:`, request.url)
 		return response
@@ -147,10 +147,17 @@ class IndexCache {
 
 	async fetch({request}) {
 
-		if(!this.match(request)) throw Error(`Request does not .match(), ${this.name}.`)		
+		if(!this.match(request)) throw Error(`Request does not .match(), ${this.name}.`)
+
+		// Must try fresh response first, otherwise user might get stuck with old version (old index.html loads old scripts!)
+		const freshResponse	=	await fetch(request)	
+
+		if(freshResponse.ok) return freshResponse
 
 		const cache			=	await caches.open(this.name)
 		const indexResponse	=	await cache.match("/")
+
+		if(!indexResponse) throw new Error("IndexCache: no cached version available.")
 
 		console.log(`Using ${this.name} for:`, request.url)
 
@@ -228,7 +235,7 @@ async function cleanCaches(){
 }
 
 function updateItems(){
-	console.log('UPDATEITEMS!!!')
+	console.log('TODO: UPDATEITEMS!!!')
 }
 
 self.addEventListener("install", installEvent => {
@@ -261,7 +268,12 @@ self.addEventListener("fetch", fetchEvent => {
 	const request 			=	fetchEvent.request		
 
 	for( const cacheControl of CURRENT_CACHES ){
-		if(cacheControl.match && cacheControl.match(request)) fetchEvent.respondWith( cacheControl.fetch(fetchEvent) )			
+		if(cacheControl.match && cacheControl.match(request)){
+			const fetchPromise 	= 	cacheControl.fetch(fetchEvent)
+									.catch( () => fetch(fetchEvent.request))
+
+			fetchEvent.respondWith(fetchPromise)			
+		} 
 	}
 })
 
