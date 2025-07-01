@@ -263,7 +263,7 @@ async function imagesToCss(src_folder, dst_folder, template_file, preload){
 									name: 		filename,
 									svg: 		filename.match(/.svg$/) ? fs.readFileSync(src_folder+'/'+filename, 'utf8') : undefined
 							}))
-							.filter(({name}) => /\.(png|jpg|jpeg|gif|svg)$/i.test(name))
+							.filter(({name}) => /\.(png|jpg|jpeg|gif|svg|eps)$/i.test(name))
 							.map( ({template, name, svg}) => {
 
 								const 	parts 		= name.replace(/\..*/g, '').split('-')
