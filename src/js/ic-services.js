@@ -3839,21 +3839,14 @@ angular.module('icServices', [
 
 		class icOptions {
 
+			ready
 			
 			constructor(){
-
-				if(!dpd.options){
-					console.warn('icOptions: missing dpd.options')
-					this.ready = $q.resolve()
-					return;
-				} 
-
 				this.ready = this.setup()
-
 			}
 
 			setup(){
-				return 	$q.when(dpd.options.get())
+				return 	$q.when(icBackend.getOptions())
 						.then( options => {
 							if(!options.length) console.warn('icOptions: no options defined.')
 							this.options= options
@@ -3947,7 +3940,7 @@ angular.module('icServices', [
 			addOption(option){
 				if(!icUser.can('edit_options')) return $q.reject('icOptions.addOption: unauthorized')
 
-				return 	$q.when(dpd.options.post(option))
+				return 	$q.when(icBackend.createOption(option))
 						.then( o => {
 							this.options.push(o) 
 							this.addKey(o.key)
@@ -3958,7 +3951,7 @@ angular.module('icServices', [
 			updateOption(option){
 				if(!icUser.can('edit_options')) return $q.reject('icOptions.updateOption: unauthorized')	
 
-				return 	$q.when(dpd.options.put(option))
+				return 	$q.when(icBackend.updateOption(option))
 						.then( o => {							
 							this.options.splice(this.options.findIndex( x => x.id == o.id), 1, o)
 							return o
@@ -3968,7 +3961,7 @@ angular.module('icServices', [
 			removeOption(option){
 				if(!icUser.can('edit_options')) return $q.reject('icOptions.removeOption: unauthorized')
 
-				return 	$q.when(dpd.options.del(option.id || option))
+				return 	$q.when(icBackend.deleteOption(option.id))
 						.then( () =>  {
 							const pos = this.options.findIndex( o => o.id == option.id)
 							this.options.splice(pos,1)

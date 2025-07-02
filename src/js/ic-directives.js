@@ -2808,7 +2808,7 @@ angular.module('icDirectives', [
 				}
 
 
-				scope.addBlock = function(data, key){
+				scope.addBlock = async function(data, key){
 
 					if(!key) console.log('Options, addBlock(): No key selected!')
 
@@ -2829,19 +2829,21 @@ angular.module('icDirectives', [
 
 										return row
 									})
-					
+
 					const options = []
 
 					rows.forEach( row => {
 						let option = 	{
 											label: 	(row[0]||'').trim(),
-											link:	(row[1]||'').trim(),	
+											link:	(row[1]||'').trim(),												
 											key						
 										}
 
+						if(row[2]) option.tag = row[2].trim()
+
 						if(!option.label) return null
 
-						option.tag = icOptions.generateTag(option)
+						option.tag = option.tag || icOptions.generateTag(option)
 
 						icOptions.sanitizeOption(option)				
 
@@ -2860,7 +2862,9 @@ angular.module('icDirectives', [
 						options.push(option)
 					})
 					
-					options.forEach( option => scope.addOption(option) )
+					for(const option of options){
+						await scope.addOption(option)
+					}
 
 				}
 

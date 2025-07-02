@@ -2,6 +2,10 @@ ic-options-edit {
 	display:				block;
 }
 
+ic-options-edit form {
+	display:				block;
+}
+
 ic-options-edit p {
 	font-size:				0.9em !important;
 }

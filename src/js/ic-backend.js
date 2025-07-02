@@ -82,9 +82,70 @@ class IcBackend {
 	}
 
 	async deleteItem(id){
-		console.log('DELETE')
 		const backendLocation 	= 	this.config.backendLocation
 		const collectionName 	= 	ic.itemConfig.collectionName
+		const method			= 	"DELETE"
+		const credentials		= 	'include'	
+		const response 			= 	await fetch(`${backendLocation}/${collectionName}/${id}`, { credentials, method })
+		const {count}			= 	await response.json()		
+
+		return 	response.ok && count === 1
+				?	{count}
+				:	Promise.reject(response)
+	}
+
+	async getOptions(){
+		const backendLocation 	= 	this.config.backendLocation
+		const collectionName 	= 	'options'
+		const credentials		= 	'include'				
+
+		const response 			= 	await fetch(`${backendLocation}/${collectionName}`, { credentials })
+		const options			= 	await response.json()
+
+		return options
+	}
+
+	async createOption(option){
+
+		const backendLocation 	= 	this.config.backendLocation
+		const collectionName 	= 	'options'
+		const method			= 	"POST"
+		const headers			=	{
+										'Accept': 		'application/json',
+										'Content-Type':	'application/json',
+									}
+		const credentials		= 	'include'		
+		const body				= 	JSON.stringify(option)
+		const response 			= 	await fetch(`${backendLocation}/${collectionName}`, { headers, credentials, method, body })
+		const resultOption		= 	await response.json()
+
+		return 	response.ok
+				?	resultOption
+				:	Promise.reject(option)
+	}
+
+	async updateOption(option){
+		const backendLocation 	= 	this.config.backendLocation
+		const collectionName 	= 	"options"
+		const method			= 	"PUT"
+		const headers			=	{
+										'Accept': 		'application/json',
+										'Content-Type':	'application/json',
+									}
+		const credentials		= 	'include'		
+		const body				= 	JSON.stringify(itemData)
+		const response 			= 	await fetch(`${backendLocation}/${collectionName}/${option.id}`, { headers, credentials, method, body })
+		const resultOption		= 	await response.json()
+
+		return 	response.ok
+				?	resultOption
+				:	Promise.reject(response)
+
+	}
+
+	async deleteOption(id){
+		const backendLocation 	= 	this.config.backendLocation
+		const collectionName 	= 	"options"
 		const method			= 	"DELETE"
 		const credentials		= 	'include'	
 		const response 			= 	await fetch(`${backendLocation}/${collectionName}/${id}`, { credentials, method })

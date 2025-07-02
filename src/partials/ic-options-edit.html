@@ -1,7 +1,16 @@
+<div 
+	ng-if = "!ic.user.can('edit_options')"
+	style = "color: var(--error-color)"
+>
+	<div class = "icon icon-left icon-interface-emergency"></div>
+	{{'INTERFACE.NOT_ALLOWED_TO_EDIT_OPTIONS' | translate}}
+</div>
+
 <form 
 	class 		= "row"
 	ng-submit 	= "addKey(key.add); key.value = key.add; key.add = ''"			
 >
+
 
 	<select ng-model  = "key.value"	>
 
