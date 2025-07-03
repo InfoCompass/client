@@ -43,14 +43,17 @@ angular.module('icDirectives', [
 
 .directive('icLoadingScreen',[
 	'ic',
-	function(ic, $rootScope){
+	'$timeout',
+	function(ic, $timeout){
 		return {
 			restrict: 		"E",
 			//templateUrl:	"partials/ic-loading-screen.html",
-			scope:			{},
+			scope:			true,
 
 			link: function(scope, element){ 
 				scope.ic = ic 
+				scope.initial = true
+				$timeout(() => scope.initial = false, 30)
 			}
 		}
 	}

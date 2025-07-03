@@ -7,18 +7,18 @@ ic-loading-screen {
 	right:					0;
 	font-size:				initial;
 	z-index:				999999;	
-	background-color:		rgba(255,255,255,1);
+	background-color:		rgba(255, 255, 255, 1);
 	flex-direction:			column;
 	justify-content: 		flex-start;
 	align-items:			center;
 	overflow:				auto;	
+	opacity:				1;
 }
 
 ic-loading-screen > * {
 	box-sizing:				border-box;
 	width:					30rem;
 	max-width:				100%;	
-	background-color:		rgba(255,255,255,1);
 	border-radius:			0.25rem;
 	border-width:			0.1rem;
 	border-style:			solid;
@@ -46,17 +46,13 @@ ic-loading-screen .progress-bar > * {
 	box-shadow:				0 0 0.5rem 0 rgba(0,0,0,0.2);
 	transition:				all ease 500ms;	
 	animation:				wave ease 1200ms infinite;
-	
+	opacity:				1;
+
 }
 
-ic-loading-screen > .loading .progress-bar > * {
+ic-loading-screen .initial .progress-bar > * {
+	opacity:				0;
 }
-
-ic-loading-screen > .ready .progress-bar > * {
-	animation-iteration-count: 3;
-}
-
-
 
 
 ic-loading-screen > *:not(.styles-ready) .progress-bar > *,
@@ -66,35 +62,33 @@ ic-loading-screen > .progress-bar > *:not(.ready) {
 
 ic-loading-screen .progress-bar > *:nth-child(1) {
 	animation-delay:		0ms;	
-	transition-delay:		300ms;
+	transition-delay:		0ms;
 }
 
 ic-loading-screen .progress-bar > *:nth-child(2) {
 	animation-delay:		150ms;
-	transition-delay:		600ms;
+	transition-delay:		100;
 }
 
 ic-loading-screen .progress-bar > *:nth-child(3) {
 	animation-delay:		300ms;
-	transition-delay:		900ms;
+	transition-delay:		200ms;
 }
 
 ic-loading-screen .progress-bar > *:nth-child(4) {
 	animation-delay:		450ms;
-	transition-delay:		1200ms;
+	transition-delay:		300ms;
 }
 
 ic-loading-screen .progress-bar > *:nth-child(5) {
 	animation-delay:		600ms;
-	transition-delay:		1500ms;
+	transition-delay:		400ms;
 }
 
 ic-loading-screen .progress-bar > *:nth-child(6) {
 	animation-delay:		750ms;
-	transition-delay:		1800ms;
+	transition-delay:		500ms;
 }
-
-
 
 ic-loading-screen .error {
 	text-align: 			center;
@@ -117,22 +111,11 @@ ic-loading-screen .error {
 
 }
 
-
 ic-loading-screen ic-consent {
 	opacity:  				0; 
 }
 
 
-ic-loading-screen > .ready  ic-consent{
-	opacity:				1 !important;
-	transition: 			300ms opacity ease-in
-}
-
-ic-loading-screen > .ready.consent-confirmation-required {
-	transition:				all ease 500ms;
-	box-shadow:				0 0 1rem 0 rgba(0,0,0,0.3);
-	border-color:			rgba(0,0,0,0.3);	
-}
 
 
 ic-loading-screen h1 {
@@ -140,16 +123,40 @@ ic-loading-screen h1 {
 	margin:					1.5rem auto;
 }
 
-ic-loading-screen.ic-remove {
-	opacity:				0;
-	transition:				all 350ms ease-in;
+
+ic-loading-screen > .ready {
+	background-color:		rgba(255,255,255,0.85);
+	transition:				all ease-in 2000ms;
 }
 
+ic-loading-screen > .ready.consent-confirmation-required {
+	transition:				all ease 500ms;
+	background-color:		rgba(255,255,255,1);
+	box-shadow:				0 0 1rem 0 rgba(0,0,0,0.3);
+	border-color:			rgba(0,0,0,0.3);	
+}
+
+ic-loading-screen > .ready  ic-consent{
+	opacity:				1 !important;
+	transition: 			300ms opacity ease-in;
+}
+
+
+ic-loading-screen > .ready .progress-bar > * {
+	animation-iteration-count: 0;
+}
+
+/*
 ic-loading-screen.ready {
 	background-color:		rgba(255,255,255,0.85);
-	transition:				background-color 3000ms linear;
-	transition-delay:		1000ms;
+	transition:				all 2000ms linear;
 }
+
+*/
+
+
+
+
 
 
 

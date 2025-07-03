@@ -167,7 +167,9 @@
 
 
 
-	<body class = "col-0">
+	<body 
+		class = "col-0"
+	>
 
 				
 		<noscript>Please enable javascript.</noscript>
@@ -196,7 +198,8 @@
 		<!-- content -->
 		<main 
 			ic-main-content 
-			ng-if	   		= "::ic.init.ready"
+			ng-if	   	= "::ic.init.ready"
+			ng-class 	= "{'done': ic.init.done}"
 		></main>
 
 		<!-- overlays -->

@@ -596,7 +596,7 @@ angular.module('icServices', [
 			}
 
 			confirmationCheckRequired(cases = this.cases){
-				return cases.some( consent_case => !this.to(consent_case.key).isKnown) 
+				return cases.some( consent_case => !consent_case.customPrompt && !this.to(consent_case.key).isKnown) 
 			}
 
 			add(key, server, default_value, custom_prompt = false){
