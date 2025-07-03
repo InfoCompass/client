@@ -9,15 +9,6 @@ html{
 	color:					#444;
 }
 
-main {
-	filter:					blur(1.5rem);
-	transition:				filter 500ms ease-in;
-}
-
-main.done{
-	filter:					blur(0);
-}
-
 
 /*ic-spinner*/
 

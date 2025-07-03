@@ -22,46 +22,6 @@ if(CONFIG.mappo){
 // 	return 	result.status === 200			
 // }
 
-class PreventCache {
-
-	name  = "prevent-cache"
-
-	async setup(){}
-
-	match(request){
-
-		const origins		=	[
-									CONFIG.statsLocation,
-									CONFIG.backendLocation,
-									...(
-										CONFIG.map && CONFIG.map.tiles
-										?	[new URL(CONFIG.map.tiles).origin]
-										:	[]
-									)
-								]
-
-
-		const select		= 	[
-									/ic-service-worker\.js/,
-									/manifest\.json/,
-									/socket\.io/,
-
-								]
-
-		const originMatch	=	origins.some( origin => request.url.startsWith(origin) )
-		const genericMatch	=	select.some( regex => request.url.match(regex) )
-
-		return originMatch || genericMatch
-	}
-
-	async fetch({request, preloadResponse}){
-
-		if(!this.match(request)) throw Error(`Request does not .match(), ${this.name}.`)
-
-		console.log(`Using ${this.name}, getting fresh response for:`, request.url)	
-		return await preloadResponse || await fetch(request.clone())
-	}
-}
 
 class StaticPreCacheControl {
 
@@ -145,9 +105,11 @@ class IndexCache {
 
 	}
 
-	async fetch({request}) {
+	async fetch({request, preloadResponse}) {
 
 		if(!this.match(request)) throw Error(`Request does not .match(), ${this.name}.`)
+
+		if(preloadResponse	&& preloadResponse.ok) return await preloadResponse
 
 		// Must try fresh response first, otherwise user might get stuck with old version (old index.html loads old scripts!)
 		const freshResponse	=	await fetch(request)	

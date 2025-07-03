@@ -2232,7 +2232,7 @@ angular.module('icServices', [
 
 				}				
 
-				icTaxonomy.addExtraTag('remote')
+				icTaxonomy.addExtraTag('remote', 'state')
 
 				icItemStorage.ready
 				.then( () => {	
