@@ -1492,7 +1492,7 @@ angular.module('icServices', [
 										}
 
 			paramQueue				=	[] 
-			submissionBufferTime	=	1000 // milliseconds
+			submissionBufferTime	=	10000 // milliseconds
 
 		
 			constructor(){}								
@@ -1554,8 +1554,9 @@ angular.module('icServices', [
 				return await fetch( this.url, { method, body })
 			}
 
-			deferedBulkSubmit(forceImmediate = false){
+			deferedBulkSubmit(forceImmediate = false, iteration = 1){
 
+				if(iteration > 5) return null
 
 				setTimeout(
 
@@ -1575,13 +1576,13 @@ angular.module('icServices', [
 							this.paramQueue.push(...params)
 						})
 
-						if(this.paramQueue.length) this.deferedBulkSubmit()
+						if(this.paramQueue.length) this.deferedBulkSubmit(false, iteration +1)
 
 					},
 
 					forceImmediate
 					?	0
-					:	this.submissionBufferTime
+					:	this.submissionBufferTime * Math.pow(iteration||1, 2)
 				)		
 
 				
