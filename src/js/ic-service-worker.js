@@ -91,6 +91,7 @@ class IndexCache {
 									/^\/assets/,
 									/^\/fonts/,
 									/^\/images/,
+									/^\/report/,
 									/^\/js/,
 									/^\/styles/,
 									/^\/worker/,
