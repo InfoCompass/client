@@ -3506,6 +3506,50 @@ angular.module('icDirectives', [
 	}
 ])
 
+.directive('icMatomoSettings',[
+
+	'ic',
+	'icMatomo',
+
+	function(ic, icMatomo){
+
+		return {
+			restrict: 		'E', 
+			template:		`
+								<label 
+									ng-repeat 	= "(key, value) in ic.matomo.settings"
+									ng-class	= "{disabled: key != 'enabled' && !ic.matomo.settings.enabled}"
+								>
+
+									<div class = "main">
+										<span class = "title">
+											{{'CONTENT.MATOMO_%s' | fill: key | translate}}
+										</span>
+										<ic-toggle 
+											value 		= "ic.matomo.settings[key]" 
+											ng-disabled = "key != 'enabled' && !ic.matomo.settings.enabled"
+										>
+									</div>				
+									<div class = "description">
+										{{'CONTENT.MATOMO_%s_DESCRIPTION' | fill: key | translate}}
+									</div>
+									
+
+								</label>
+
+								{{keys|json}}
+							`,
+			scope:			true,
+
+			link: function(scope) {
+				scope.ic 	= 	ic
+			}
+		}
+	}
+
+
+])
+
 // NOT USED, RIGHT? REMOVE ME THEN
 
 // .directive('icCalendar', [

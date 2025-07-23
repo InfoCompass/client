@@ -1,0 +1,20 @@
+<article>
+
+	<h2>{{'CONTENT.MATOMO_HEADING' | translate }}</h2>
+
+	<div 
+		ng-if = "!ic.matomo.disabled"
+		ng-bind-html="'CONTENT.MATOMO_INTRO' | translate : { visitCap: ic.matomo.maxInteractionGapMinutes}  | markdown"
+	></div>	
+
+	<div 
+		ng-if = "ic.matomo.disabled"
+		class = "col-3"
+		ng-bind-html="'CONTENT.MATOMO_DISABLED' | translate | markdown"
+	></div>	
+
+
+	<ic-matomo-settings>
+	</ic-matomo-settings>
+
+</article>
