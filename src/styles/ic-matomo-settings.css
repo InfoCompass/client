@@ -30,6 +30,7 @@ ic-matomo-settings label .title {
 }
 ic-matomo-settings label .description {
 	font-style:			italic;
+	max-width:			40rem;
 }
 
 
