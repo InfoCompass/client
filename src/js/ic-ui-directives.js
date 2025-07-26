@@ -1220,22 +1220,40 @@ angular.module('icUiDirectives', [
 			scope:			{
 								on: 	"@",
 								off:	"@",
-								value:	"="
+								value:	"=",
 							},
 
 			link: function(scope, element, attr){
 
-				element.on('click', function(){
+				element[0].setAttribute('tabindex', 0)
+				element[0].setAttribute('role', "button")
+
+
+				scope.role = "button"
+
+				element.on('click', 	event => scope.toggle(event) )
+				element.on('keydown', 	event => scope.toggle(event) )
+
+				scope.toggle = (event) => {
 
 					if(attr.disabled) return null
+
+					if(
+					 		event instanceof KeyboardEvent
+					 	&&	event.key !== " " 
+					 	&&	event.key !== "Enter" 
+					 	&&	event.key !== "Spacebar"
+
+					) return
+    
+    				event.preventDefault()
 
 					scope.$evalAsync( () => {	
 						scope.value = !scope.value 
 					})
-				
-				})
 
-				element[0].setAttribute('tabindex', 0)
+				}
+
 
 				attr.$observe('on', 	function(value) { scope.on 	= value })					
 				attr.$observe('off',	function(value) { scope.off = value })
@@ -1244,9 +1262,12 @@ angular.module('icUiDirectives', [
 					if(value){
 						element.addClass('on')
 						element.removeClass('off')						
+						element[0].setAttribute('aria-pressed', "true")
 					} else {
 						element.removeClass('on')
 						element.addClass('off')
+						element[0].setAttribute('aria-pressed', "false")
+
 					}
 				})					
 			}

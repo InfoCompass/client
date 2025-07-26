@@ -1,7 +1,7 @@
 
 const CONFIG				=	{config: "#REPLACE_CONFIG"} 	// replaced by build script
 const STATIC_FILES			=	["#REPLACE_STATIC_PRE_CACHE"]	// replaced by build script
-const CACHE_VERSION			= 	1
+const CACHE_VERSION			= 	2
 const BUILD					=	"#REPLACE_BUILD"  				// replaced by build script
 const USER_CHECK_URL		=	CONFIG.backendLocation +"/users/me"
 

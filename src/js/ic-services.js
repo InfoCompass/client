@@ -1,6 +1,5 @@
 "use strict";
 
-
 angular.module('icServices', [
 	'icPreload',
 	// 'icApi',
@@ -147,6 +146,9 @@ angular.module('icServices', [
 				if(dateOrString instanceof Date) return dateOrString
 
 				const matches	= dateOrString.match(/(\d\d\d\d)-(\d\d)-(\d\d)/)
+
+				if(!matches) throw new Error("Invalid date string expected: YYYY-MM-DD", {cause: dateOrString})
+
 				const year		= parseInt(matches[1])
 				const month		= parseInt(matches[2])-1
 				const day		= parseInt(matches[3])
@@ -485,7 +487,7 @@ angular.module('icServices', [
 
 				} catch(cause) {
 					this.clear()
-					console.error('icUser: unable to setup user.')
+					console.error('icUser: unable to setup user (that\'s ok if no one wanted to log in).')
 					console.groupCollapsed('icUser: reason for failed user setup.')
 					console.error(cause)						
 					console.groupEnd()
@@ -1472,30 +1474,66 @@ angular.module('icServices', [
 			||	typeof icConfig.matomo.url 		!= 'string' 
 			||	typeof icConfig.matomo.siteId	!= 'string'
 
-		) return { matomo: 'not enabled or invalid config'}
+		) return { disabled: 'not enabled or invalid config'}
 
+
+		if(!icConfig.pages.includes('matomo')){
+			console.error("Matomo configured, but settings page not included in icConfig! Disabling Matomo.", icConfig)	
+			return { disabled: 'Missing settings page, so disabled.'}
+		}
 
 
 		class IcMatomo {
 
-			visitIdKey				=	"ic-matomo-visit-id"
-			lastInteractionKey		=	"ic-matomo-last-interaction"
-			returnNoticeKey			=	"ic-matomo-return-notice"
-			maxInteractionGapHours	=	1
-			maxInteractionGapTime	=	1000*60*60*this.maxInteractionGapHours 
-			url						=	icConfig.matomo.url+'/matomo.php'
-			siteId					=	icConfig.matomo.siteId
-			defaultParams			=	{
-											idsite: 		this.siteId,
-											rec:			1,											
-											apiv:			1,									
-										}
+			visitIdKey					=	"ic-matomo-visit-id"
+			lastInteractionKey			=	"ic-matomo-last-interaction"
+			returnNoticeKey				=	"ic-matomo-return-notice"
+			settingsKey					=	"ic-matomo-settings"
+			maxInteractionGapMinutes	=	45
+			maxInteractionGapTime		=	1000*60*this.maxInteractionGapMinutes 
+			url							=	icConfig.matomo.url+'/matomo.php'
+			siteId						=	icConfig.matomo.siteId
+			defaultParams				=	{
+												idsite: 		this.siteId,
+												rec:			1,											
+												apiv:			1,									
+											}
 
-			paramQueue				=	[] 
-			submissionBufferTime	=	10000 // milliseconds
+			paramQueue					=	[] 
+			submissionBufferTime		=	10000 // milliseconds
 
-		
-			constructor(){}								
+			settings					=	{
+												enabled:		true,
+												returnVisits: 	true,
+												pageVisits:		true,
+												itemVisits:		true,
+												languages:		true,
+												layoutModes:	true,
+												searches:		true,
+												sections:		true,
+												filters:		true,
+											}
+
+			constructor(){
+				const 	rawSettings = localStorage.getItem(this.settingsKey)
+				let 	settings	
+
+				try {
+					settings = JSON.parse(rawSettings)					
+
+					for(const key in settings){
+						if(key in this.settings) this.settings[key] = !!settings[key]
+					}
+					
+				} catch(e) {}
+
+
+				$rootScope.$watch( 
+					() => this.settings,
+					() => { localStorage.setItem(this.settingsKey, JSON.stringify(this.settings))},
+					true
+				)
+			}
 
 
 			async getDefaultParams(config = {}){
@@ -1536,6 +1574,30 @@ angular.module('icServices', [
 
 			async submit(params){
 
+				if(!this.settings.enabled){
+					console.info("Usage analysis disabled by user. Dropping data.")
+					return
+				}
+
+				params = params.filter( param =>{
+
+							if(!param.icKey){
+								console.warn("Attempting to send usage data, but .icKey is missing, so user settings are unavailable and cannot be respected. Dropping data.", params)
+								return false
+							}
+
+							if(!this.settings[param.icKey]){
+								console.info(`Attempting to send usage data (${param.icKey}), but sending is disabled for the provided content. Dropping data.`, params)
+								return false
+							}
+
+							return true
+
+						})
+
+				params = params.map( ({icKey, ...rest}) => rest)
+
+				if(!params.length) return
 				
 				const visitIds	=	Array.from( new Set(params.map( p => p._id) ) )
 
@@ -1586,27 +1648,52 @@ angular.module('icServices', [
 				)		
 
 				
-			}	
-			
+			}			
+
+
 			async log(params){
 
 				if(icUser.loggedIn){
 					console.info("Usage analysis disabled for logged in users")
 					return
 				}
-									
+
+				if(!this.settings.enabled){
+					console.info("Usage analysis disabled by user. Dropping data.")
+					return
+				}
+
+
 				const defaultParams		=	await this.getDefaultParams()
 
 				const rawParams			= 	Array.isArray(params)
 											?	params
 											:	[params]									
 
+
 				const suppParams		=	rawParams
 											.map( p => ({
 												...defaultParams,
 												...p
 											}))
-				
+											.filter( param => {
+
+												if(!param.icKey){
+													console.warn("Attempting to log usage data, but .icKey is missing, so user settings are unavailable and cannot be respected. Dropping data.", params)
+													return false
+												}
+
+												if(!this.settings[param.icKey]){
+													console.info(`Attempting to log usage data (${param.icKey}), but sending is disabled for the provided content. Dropping data.`, params)
+													return false
+												}
+
+												return true
+
+											})
+
+				if(!suppParams.length)return
+
 				this.paramQueue.push(...suppParams)	
 
 				this.deferedBulkSubmit()	
@@ -1662,19 +1749,23 @@ angular.module('icServices', [
 			
 			// VISIT ID		
 
-			async calculateVisitId(baseId){				
+			async calculateVisitId(baseId){
 
 				const today			= 	new Date()
 				const salt			= 	icUtils.stringifyDate(today)
 				const encoder		= 	new TextEncoder()
 				const encodedId		= 	encoder.encode(baseId+salt)
 
+
 				const hashBuffer	= 	await crypto.subtle.digest('SHA-256', encodedId)
+
 				const hashArray 	= 	Array.from(new Uint8Array(hashBuffer))
 				const hashHex		= 	hashArray
 										.map((b) => b.toString(16).padStart(2, "0"))
 										.join("")
 				const hashHex16		=	hashHex.slice(0,16)						
+
+
 
 				return hashHex16
 
@@ -1683,6 +1774,7 @@ angular.module('icServices', [
 			async resetVisitId(){
 
 				const random		= 	new Uint8Array(8)
+
 
 				crypto.getRandomValues(random)
 
@@ -1693,15 +1785,17 @@ angular.module('icServices', [
 
 				const baseId		=	randomHex
 				const dateStr		=	icUtils.stringifyDate( new Date() )
-				const description	=	`This id will never be transmitted (only a hash with a daily changing salt), it will also be replaced whenever the date changes or the last interaction took place more than ${this.maxInteractionGapHours} hour(s) ago.`
+				const description	=	`This id will never be transmitted (only a hash with a daily changing salt), it will also be replaced whenever the date changes or the last interaction took place more than ${this.maxInteractionGapMinutes} minutes ago.`
 				
+
 				const data			=	{ baseId, dateStr, description }
 
 				localStorage.setItem(this.visitIdKey, JSON.stringify(data))
 
 				console.info('Resetting visit baseId to:', data)
 
-				return this.calculateVisitId(randomHex)
+
+				return this.calculateVisitId(baseId)
 			}
 
 			async loadBaseId(){
@@ -1778,7 +1872,8 @@ angular.module('icServices', [
 				const params 	= 	{
 										url:			`${window.location.origin}/p/${page}`,
 										action_name:	`page/${page}`,
-										urlref:			referrer
+										urlref:			referrer,
+										icKey:			'pageVisits',
 									}
 
 				await this.log(params)
@@ -1790,7 +1885,9 @@ angular.module('icServices', [
 
 				const params = 	{
 									url:			`${window.location.origin}/item/${item.id}`,
-									action_name:	`item/${item.title}`
+									action_name:	`item/${item.title}`,
+									icKey:			'itemVisits'
+
 								}
 
 				await this.log(params)
@@ -1800,7 +1897,8 @@ angular.module('icServices', [
 
 				const params = 	{
 									url:			`${window.location.origin}/s/${term}`,									
-									search:			term,									
+									search:			term,
+									icKey:			'searches'
 								}
 
 				await this.log(params)
@@ -1812,8 +1910,8 @@ angular.module('icServices', [
 									e_c:		'Settings',
 									e_a:		'Use Language',
 									e_n:		lang,
-									dimension1: lang
-
+									dimension1: lang,
+									icKey:		'languages'
 								}
 
 				await this.log(params)
@@ -1828,7 +1926,8 @@ angular.module('icServices', [
 										e_c:		'Layout',
 										e_a:		'Section',
 										e_n:		section,
-										dimension3:	section
+										dimension3:	section,
+										icKey:		'sections'
 
 									}))
 
@@ -1843,7 +1942,8 @@ angular.module('icServices', [
 										e_c:		'Layout',
 										e_a:		'Mode',
 										e_n:		mode,
-										dimension2: mode
+										dimension2: mode,
+										icKey:		'layoutModes'
 
 									}
 
@@ -1867,7 +1967,8 @@ angular.module('icServices', [
 											e_c:		'Filter',
 											e_a:		'any',
 											e_n:		filter,
-											dimension4:	filter
+											dimension4:	filter,
+											icKey:		'filters'
 										}))		
 				
 				await this.log(params)		
@@ -1878,22 +1979,23 @@ angular.module('icServices', [
 
 				const returnJson	= localStorage.getItem(this.returnNoticeKey)
 				const today			= icUtils.stringifyDate(new Date())
-				const description 	= "The date will not be transmitted. Used to tell Matomo about a return visit, without Matomo actually recognizing you." 
+				const todaysDate	= icUtils.parseDate(today)
+				const description 	= "The date will not be transmitted. It is used to tell Matomo about a return visit, without Matomo actually recognizing you." 
 
 				let	lastVisit
 				let lastNotification
+				let lastNotificationDate
+				let notifiedThisWeek
 
 				try { 
 
 					const returnData		= 	JSON.parse(returnJson) 
 					lastNotification		= 	returnData.lastNotification
 					lastVisit				= 	returnData.lastVisit || lastNotification
-
+					lastNotificationDate	= 	lastNotification 		&& icUtils.parseDate(lastNotification) || undefined
+					notifiedThisWeek		= 	lastNotificationDate 	&& (todaysDate.getTime()-lastNotificationDate.getTime() < 1000*60*60*24*7)
 				} catch(e) {}
 
-				const todaysDate			= icUtils.parseDate(today)
-				const lastNotificationDate	= lastNotification 		&& icUtils.parseDate(lastNotification) || undefined
-				const notifiedThisWeek		= lastNotificationDate 	&& (todaysDate.getTime()-lastNotificationDate.getTime() < 1000*60*60*24*7)
 
 				if(notifiedThisWeek){
 					lastVisit				= 	today
@@ -1902,6 +2004,7 @@ angular.module('icServices', [
 
 					return					
 				}
+
 				
 				let returnVisitScope		= 	"first-time"
 
@@ -1914,19 +2017,25 @@ angular.module('icServices', [
 					if(todaysDate.getTime()-lastVisitDate.getTime() >  1000*60*60*24*30)	returnVisitScope = "over-a-month"	
 				}
 
+
 				const params				=	{
 													e_c:		'Return Visit',
 													e_a:		'interval',
 													e_n:		returnVisitScope,
-													dimension5: returnVisitScope
+													dimension5: returnVisitScope,
+													icKey:		'returnVisits'
 												}
 
-				void this.log(params)
+				this.log(params).then( ()=> {
 
-				lastVisit 					= today	
-				lastNotification			= today
+					lastVisit 					= today	
+					lastNotification			= today
 
-				localStorage.setItem(this.returnNoticeKey, JSON.stringify({ lastVisit, lastNotification, description }) )
+					localStorage.setItem(this.returnNoticeKey, JSON.stringify({ lastVisit, lastNotification, description }) )
+
+				})
+
+
 
 			}
 
@@ -1936,8 +2045,9 @@ angular.module('icServices', [
 
 				this.noteReturn()
 
-				window.addEventListener('visibilitychange', event => {					
-					 if (document.hidden) this.deferedBulkSubmit(true)
+				window.addEventListener('visibilitychange', async event => {					
+					await this.noteReturn() // This makes sure that return visit are noted, even if the app never reloads (e.g. kept open as PWA)
+					if (document.hidden) this.deferedBulkSubmit(true)
 				})
 
 				$rootScope.$watch( 
@@ -2001,8 +2111,6 @@ angular.module('icServices', [
 
 		icMatomo = new IcMatomo()
 
-		console.log({ IcMatomo })
-
 		const stopWatching =	$rootScope.$watch( () => icInit.done, () => {
 									if(icInit.done){
 										stopWatching()
@@ -2011,7 +2119,7 @@ angular.module('icServices', [
 								})
 
 
-		return IcMatomo
+		return icMatomo
 	}
 ])
 

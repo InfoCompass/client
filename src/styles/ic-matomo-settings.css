@@ -1,0 +1,38 @@
+ic-matomo-settings {
+	display:			block;
+}
+
+ic-matomo-settings label{
+	display:			flex;
+	flex-direction:		column;
+	align-items:		flex-start;
+}
+
+ic-matomo-settings label + label {
+	position:			relative;
+	max-width:			100%;	
+	margin-top:			1rem;	
+}
+
+ic-matomo-settings label:focus-within {
+	border-color:		var(--primary-color);
+}
+ic-matomo-settings label .main{	
+	display:			flex;
+	flex-direction:		row;
+	justify-content:	space-between;
+	align-items:		center;
+	width:				100%;
+}
+
+ic-matomo-settings label .title {
+	font-weight:		bold;
+}
+ic-matomo-settings label .description {
+	font-style:			italic;
+	max-width:			40rem;
+}
+
+
+
+
