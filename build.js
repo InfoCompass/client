@@ -457,8 +457,8 @@ async function copyReadyFilesToDst(){
 
 
 	// mappo service worker cache:
-	if(config.mapo){
-		await fs.copy('./node_modules/@mappo-aggregato/client/dist/service-worker.min.js', dst+"/mappo-service-worker-cache.js")
+	if(config.mappo){
+		await fs.copy('./node_modules/mappo-aggregato-client/dist/service-worker.min.js', dst+"/mappo-service-worker-cache.js")
 	}
 
 	//tmp

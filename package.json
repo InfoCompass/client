@@ -4,7 +4,6 @@
   "description": "",
   "dependencies": {
     "@fontsource/atkinson-hyperlegible": "^5.1.0",
-    "@mappo-aggregato/client": "file:../../mappo-aggregato/npm",
     "@rschedule/core": "^1.5.0",
     "@rschedule/standard-date-adapter": "^1.5.0",
     "angular": "^1.8.2",
@@ -22,6 +21,7 @@
     "jquery": "^3.7.1",
     "leaflet": "^1.9.2",
     "leaflet.markercluster": "^1.5.3",
+    "mappo-aggregato-client": "../../mappo-aggregato/npm",
     "marked": "^4.2.2",
     "promiscuous": "^0.7.2",
     "qrcode-generator": "^1.4.4",

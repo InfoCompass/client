@@ -16,8 +16,8 @@
 			registration.active.postMessage('update-items')
 		}			
 		
+
 		window.addEventListener("beforeunload",	swUpdateItems)
-		window.addEventListener("blur", 		swUpdateItems)
 		window.addEventListener("online", 		swUpdateItems)
 
 

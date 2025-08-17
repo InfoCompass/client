@@ -1,4 +1,3 @@
-
 const CONFIG				=	{config: "#REPLACE_CONFIG"} 	// replaced by build script
 const STATIC_FILES			=	["#REPLACE_STATIC_PRE_CACHE"]	// replaced by build script
 const CACHE_VERSION			= 	2
@@ -6,14 +5,29 @@ const BUILD					=	"#REPLACE_BUILD"  				// replaced by build script
 const USER_CHECK_URL		=	CONFIG.backendLocation +"/users/me"
 
 
-let MappoServiceWorkerCache
+let mappoServiceWorkerCache
+
 if(CONFIG.mappo){
 	console.log("Found Mappo config, importing mappo caching script...")
 	importScripts("./mappo-service-worker-cache.js")
 	MappoServiceWorkerCache = Mappo.MappoServiceWorkerCache
-	console.log({MappoServiceWorkerCache})
+	mappoServiceWorkerCache	= new MappoServiceWorkerCache(CONFIG.mappo, CACHE_VERSION)
 }
 
+
+
+async function updateItems(){
+
+	console.log('Updating mappo items...')
+
+	if(!mappoServiceWorkerCache){
+		return 	console.log('failed to update mappo items, mappoServiceWorkerCache missing')
+	} 
+	const response = await mappoServiceWorkerCache.fetchFresh('low')
+
+	if( response.ok ) console.log('received fresh mappo items.[ok]')	
+	if(!response.ok ) console.warn('failed to received fresh mappo items.', response)
+}
 
 // needs testing:
 // async function getUserLoginState(){
@@ -57,7 +71,6 @@ class StaticPreCacheControl {
 
 		if(!response) throw new Error("StaticPreCacheControl: no cached version available.")
 
-		console.log(`Using ${this.name} for:`, request.url)
 		return response
 	}
 
@@ -175,9 +188,11 @@ class IndexCache {
 const CURRENT_CACHES	= 	[						
 								// new PreventCache(CACHE_VERSION), // must be first!
 								new StaticPreCacheControl(CACHE_VERSION),
-								...	(CONFIG.mappo
-									?	[new MappoServiceWorkerCache(CONFIG.mappo, CACHE_VERSION)]
-									: 	[]),
+								...	(
+									mappoServiceWorkerCache
+									?	[mappoServiceWorkerCache]
+									: 	[]
+								),
 								new IndexCache(CACHE_VERSION),
 								//new FallbackCache(CACHE_VERSION) // must be last!
 							]
@@ -197,9 +212,6 @@ async function cleanCaches(){
 	
 }
 
-function updateItems(){
-	console.log('TODO: UPDATEITEMS!!!')
-}
 
 self.addEventListener("install", installEvent => {
 	installEvent.waitUntil( (async () => {
@@ -232,7 +244,11 @@ self.addEventListener("fetch", fetchEvent => {
 
 	for( const cacheControl of CURRENT_CACHES ){
 		if(cacheControl.match && cacheControl.match(request)){
-			const fetchPromise 	= 	cacheControl.fetch(fetchEvent)
+
+			console.log(`Cache: Trying ${cacheControl.name} for:`, request.url)
+
+			const fetchPromise 	= 	cacheControl
+									.fetch(fetchEvent)
 									.catch( () => fetch(fetchEvent.request))
 
 			fetchEvent.respondWith(fetchPromise)			
