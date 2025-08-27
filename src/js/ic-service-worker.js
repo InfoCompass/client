@@ -5,20 +5,6 @@ const BUILD					=	"#REPLACE_BUILD"  				// replaced by build script
 const USER_CHECK_URL		=	CONFIG.backendLocation +"/users/me"
 
 
-<<<<<<< HEAD
-=======
-let mappoServiceWorkerCache
-
-if(CONFIG.mappo){
-	console.log("Found Mappo config, importing mappo caching script...")
-	importScripts("./mappo-service-worker-cache.js")
-	MappoServiceWorkerCache = Mappo.MappoServiceWorkerCache
-	mappoServiceWorkerCache	= new MappoServiceWorkerCache(CONFIG.mappo, CACHE_VERSION)
-}
-
->>>>>>> e4381a4ebbca5674faf51a3a1b211c88b715a9f9
-
-
 async function updateItems(){
 
 	console.log('Updating mappo items...')
@@ -191,14 +177,6 @@ class IndexCache {
 const CURRENT_CACHES	= 	[						
 								// new PreventCache(CACHE_VERSION), // must be first!
 								new StaticPreCacheControl(CACHE_VERSION),
-<<<<<<< HEAD
-=======
-								...	(
-									mappoServiceWorkerCache
-									?	[mappoServiceWorkerCache]
-									: 	[]
-								),
->>>>>>> e4381a4ebbca5674faf51a3a1b211c88b715a9f9
 								new IndexCache(CACHE_VERSION),
 								//new FallbackCache(CACHE_VERSION) // must be last!
 							]
