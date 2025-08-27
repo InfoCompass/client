@@ -223,7 +223,6 @@
 
 		icItem.submitAsEditSuggestion = function(original, suggestionMeta){
 
-			
 			data				= 	original
 									?	icItem.getDiffData(original)
 									:	icItem.exportData()
@@ -238,7 +237,7 @@
 
 
 			return	icBackend
-					.createItem(clean_data)
+					.createItem(data)
 					.then(function(data){
 						//icItem.importData(data)
 						return data

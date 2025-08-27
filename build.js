@@ -458,6 +458,15 @@ async function copyReadyFilesToDst(){
 	await	fs.copy(src+"/images/large", 		dst+"/images/large")
 	await	fs.copy(src+"/images/icons", 		dst+"/images/icons")
 
+<<<<<<< HEAD
+=======
+
+	// mappo service worker cache:
+	if(config.mappo){
+		await fs.copy('./node_modules/mappo-aggregato-client/dist/service-worker.min.js', dst+"/mappo-service-worker-cache.js")
+	}
+
+>>>>>>> e4381a4ebbca5674faf51a3a1b211c88b715a9f9
 	//tmp
 	await	fs.copy("tmp/json",						dst)
 
