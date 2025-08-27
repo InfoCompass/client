@@ -124,6 +124,7 @@ function copyQRCodeScriptsSrcToTmp(){
 async function bundleScriptsToDst(){
 
 	let files = {
+		"build"	:					`\nconst build = ${build}\n\n`,									
 		"config.js":				`icConfig = ${JSON.stringify(config)}`,
 
 		"vendor.js": 				await fs.readFile('vendor.js', 							'utf8'),
@@ -157,9 +158,7 @@ async function bundleScriptsToDst(){
 									
 	const result = 	dev
 					?	{
-							code:	`\nconst build = ${build}\n\n`
-									+
-									Object.values(files)
+							code:	Object.values(files)
 									.join(";\n")
 									.replace(/"use strict";/gi, '')
 									.replace(/"use strict;"/gi, ''),
