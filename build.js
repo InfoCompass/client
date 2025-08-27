@@ -157,7 +157,10 @@ async function bundleScriptsToDst(){
 									
 	const result = 	dev
 					?	{
-							code:	Object.values(files).join(";")
+							code:	`\nconst build = ${build}\n\n`
+									+
+									Object.values(files)
+									.join(";\n")
 									.replace(/"use strict";/gi, '')
 									.replace(/"use strict;"/gi, ''),
 							map:	''
@@ -454,12 +457,6 @@ async function copyReadyFilesToDst(){
 	await	fs.copy(src+"/js/worker", 			dst+'/worker')
 	await	fs.copy(src+"/images/large", 		dst+"/images/large")
 	await	fs.copy(src+"/images/icons", 		dst+"/images/icons")
-
-
-	// mappo service worker cache:
-	if(config.mapo){
-		await fs.copy('./node_modules/@mappo-aggregato/client/dist/service-worker.min.js', dst+"/mappo-service-worker-cache.js")
-	}
 
 	//tmp
 	await	fs.copy("tmp/json",						dst)

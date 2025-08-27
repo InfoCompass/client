@@ -433,22 +433,38 @@
 
 		icItemStorage.downloadAll = function(source){
 
-			const mappoUrl 		= 	source && source.mappoUrl
+			const mappo 		= 	source && source.mappo
 			const publicItems 	= 	source && source.publicItems
 
 			const getMappo		= 	async () => {
-										if(!mappoUrl) 	throw new Error(".mappoUrl not configured.")
+										if(!mappoClient) 	throw new Error("Mappo client not enabled.")
 
-										if(performance) performance.mark("mappo")																	
+										if(performance) performance.mark("mappo")		
+
 										
-										const response 		= 	await fetch(mappoUrl+"/latest")	
-										const adapterData 	= 	await response.json()
+										// try quickest way to get recent items: local + diff or latest
+										// on fail check navigator, if exists and navigator.offline use old cached data
+
+										let adapterData		=	undefined
+
+										try{	
+											const patchData		=	await mappoClient.getPatchData()
+											adapterData			= 	await mappoClient.patchLocalAdapterData(patchData)
+										} catch(cause) {
+											// if(navigator && navigator.onLine) throw new Error('Mappo client: unable to pull patch data.', { cause })
+											console.log({mappoClient})
+
+											adapterData			=	await mappoClient.getLocalAdapterData()	
+										}
+
 										const items			= 	adapterData
 																.map(ad => Object.values(ad.itemsRecord))
 																.flat()
-										const duration		=	performance.measure("mappo").duration
+										const duration		=	performance && performance.measure("mappo").duration || undefined
 
-										console.info(`MappoAggregato: retrieved ${items.length} items, ${duration}`)
+										console.info(`Mappo client: retrieved ${items.length} items, ${duration}ms`)
+
+										if(items.length == 0) throw "Mappo client unable to retrieve any items."
 
 										return items
 
@@ -462,7 +478,7 @@
 			
 			const itemPromise	= 	(async () => {
 
-										if(mappoUrl) 
+										if(mappo) 
 											try{ 		return await getMappo() } 
 											catch(e) {	console.error(e) }
 

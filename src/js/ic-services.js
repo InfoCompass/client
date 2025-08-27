@@ -529,6 +529,40 @@ angular.module('icServices', [
 ])
 
 
+.service('icMappo', [
+
+	'icInit',
+	'$rootScope',
+
+	function(icInit, $rootScope){
+
+		if(!mappoClient) return { enabled:false }
+
+
+		async function renew(){
+
+			if(!navigator.onLine){
+				addEventListener('online', renew, { once:true })
+				console.info('Mappo: Offline, cannot renew local adapterData; will try again later.')
+				return
+			}
+			console.info('Mappo: Renewing local adapterData.')
+			await mappoClient.renewLocalAdapterData()
+		}
+
+		const stop 	= 	$rootScope.$watch( () => {
+							if(!icInit.done) return							
+
+							setTimeout(renew, 1000)
+
+							stop()	
+						})	
+
+		return mappoClient	
+
+	}
+])
+
 .service('icConsent',[
 
 	'$q',
@@ -715,22 +749,28 @@ angular.module('icServices', [
 
 				if(!config.map) throw new Error('icRemotePages.setup() icConfig.remotePages.map must be a dictionary')
 
-				const {url, pages} = config
+				const {url, pages} 	= 	config
 
 				const defaultMap	=	{
 											id: 			'id',
 											translations: 	'translations'
 										}
 
-				const map 			= config.map || defaultMap
-
-
-				const response 		= await fetch(url)
-				const remoteData 	= await response.json()  
-
-				if(!Array.isArray(remoteData)) throw new Error ('icRemotePages.setup() expected remote data to be an Array')
+				const map 			= 	config.map || defaultMap				
 
 				const pageTranslations = {}
+
+				Object.entries(pages).forEach( ([page,_]) => { pageTranslations[page] = undefined })
+
+				console.log({pageTranslations})
+
+				this.updatePageTranslations(pageTranslations)			
+
+				const response 		= 	await fetch(url)
+				const remoteData 	= 	await response.json()  
+
+				if(!Array.isArray(remoteData)) throw new Error ('icRemotePages.setup() expected remote data to be an Array')
+				
 
 				Object.entries(pages).forEach( ([page, id]) => {
 					const idPath			= map.id
@@ -742,16 +782,24 @@ angular.module('icServices', [
 					pageTranslations[page] 	= translations
 				})
 
+				this.updatePageTranslations(pageTranslations)				
+			}
+
+
+			updatePageTranslations(pageTranslations){
 
 				Object.entries(pageTranslations).forEach( ([page, translations]) => {
 
-						icLanguages.availableLanguages.forEach(function(lang){
-
-							if(!translations[lang]) return null
+						icLanguages.availableLanguages.forEach(function(lang){		
 
 
-							const body		= translations[lang].content
-							const title		= translations[lang].title
+							const body		= 	translations && translations[lang]
+												?	translations[lang].content
+												:	'...'
+
+							const title		= 	translations && translations[lang]
+												?	translations[lang].title
+												:	'...'
 
 							const content	= `<h1>${title}</h1>\n\n${body}`
 
@@ -772,7 +820,7 @@ angular.module('icServices', [
 						})
 				})
 
-				icLanguages.refreshTranslations()
+				icLanguages.refreshTranslations()				
 			}
 
 		}
@@ -2281,9 +2329,7 @@ angular.module('icServices', [
 											.then(function(){
 
 												const publicItems 	= icConfig.publicItems || icConfig.publicItems+'/items' || undefined 	
-												const mappoUrl		= icConfig.mappo || undefined	
-
-												return 	$q.when(icItemStorage.downloadAll( icUser.can('edit_items') ? null : { publicItems, mappoUrl }) )
+												return 	$q.when(icItemStorage.downloadAll( icUser.can('edit_items') ? null : { publicItems, mappo: true }) )
 											})
 											.then(function(){
 												return icItemStorage.updateFilteredList()
@@ -4967,9 +5013,10 @@ angular.module('icServices', [
 	'icRemotePages',
 	'icRecurring',
 	'icMatomo',
+	'icMappo',
 	'$rootScope',
 
-	function(ic, icInit, icSite, icItemStorage, icLayout, icItemConfig, icTaxonomy, icFilterConfig, icLanguages, icFavourites, icOverlays, icAdmin, icUser, icStats, icConfig, icUtils, icConsent, icTiles, icOptions, icLists, icMainMap, icWebfonts, icItemRef, icKeyboard, icAutoFill, icExport, icGeo, icRemotePages, icRecurring, icMatomo, $rootScope ){
+	function(ic, icInit, icSite, icItemStorage, icLayout, icItemConfig, icTaxonomy, icFilterConfig, icLanguages, icFavourites, icOverlays, icAdmin, icUser, icStats, icConfig, icUtils, icConsent, icTiles, icOptions, icLists, icMainMap, icWebfonts, icItemRef, icKeyboard, icAutoFill, icExport, icGeo, icRemotePages, icRecurring, icMatomo, icMappo, $rootScope ){
 
 		ic.admin		= icAdmin
 		ic.autoFill		= icAutoFill
@@ -5000,16 +5047,17 @@ angular.module('icServices', [
 		ic.remotePages	= icRemotePages
 		ic.recurring	= icRecurring
 		ic.matomo		= icMatomo
+		ic.mappo		= icMappo
 
 		var stop 		= 	$rootScope.$watch(function(){
-								if(icInit.ready){
-									ic.deferred.resolve()	
-									delete ic.deferred
+								if(!icInit.ready) return
 
-									window.dispatchEvent(new CustomEvent('ic-ready', {detail:{ic}} ) )
+								ic.deferred.resolve()	
+								delete ic.deferred
 
-									stop()
-								} 
+								window.dispatchEvent(new CustomEvent('ic-ready', {detail:{ic}} ) )
+
+								stop()
 							})
 
 		window.icServices = ic
