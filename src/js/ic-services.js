@@ -862,29 +862,50 @@ angular.module('icServices', [
 					:	$q.reject('icLists.get: missing id')
 		}
 
-		icLists.createList = function(name){
-			return 	name
-					?	$q.when(dpd.lists.post({name:name}))
-					:	$q.reject('icLsist.createList: missing name')
+		icLists.createList = async function(name){
+
+			if(!name) return $q.reject('icLsist.createList: missing name')
+
+			const new_list = await $q.when(icBackend.createList({name:name}))
+
+			icLists.push(new_list)
+			new_list.items = new_list.items || []
+
+			return afterListAddition(new_list)
+				
 		} 
 
-		icLists.removeList = function(id){
-			return 	id
-					?	$q.when(dpd.lists.del(id))
-					:	$q.reject('icLists.removeList: missing id')
+		icLists.removeList = async function(id){
+
+			if(!id) return $q.reject('icLists.removeList: missing id')
+
+			await $q.when(icBackend.deleteList(id))
+
+			var index = icLists.findIndex(function(l){ return l.id == id})
+
+			if(index != -1){
+				afterListRemoval(icLists.splice(index,1))
+				$rootScope.$digest()
+			}
+
 		}
 
-		icLists.addItemTolist = function(item_or_id, list_id){
+		icLists.addItemTolist = async function(item_or_id, list_id){
 
 			var item_id = item_or_id.id || item_or_id
 
 			if(!item_id) return $q.reject('icLists.addItemToList: missing item_id')
 			if(!list_id) return $q.reject('icLists.addItemToList: missing list_id')
 
-			return $q.when(dpd.lists.put(list_id, { items: {$push: item_id} } ))
+			const new_list = await $q.when(icBackend.addItemToList(list_id, item_id))
+
+			afterListUpdate(new_list)
+
+			return new_list
+
 		}
 
-		icLists.removeItemFromList = function(item_or_id, list_id){
+		icLists.removeItemFromList = async function(item_or_id, list_id){
 			
 			var item_id = item_or_id.id || item_or_id
 
@@ -892,7 +913,12 @@ angular.module('icServices', [
 			if(!item_id) return $q.reject('icLists.addItemToList: missing item_id')
 			if(!list_id) return $q.reject('icLists.addItemToList: missing list_id')
 
-			return $q.when(dpd.lists.put(list_id, { items: {$pull: item_id} } ))
+			const new_list =  await $q.when(icBackend.removeItemFromList(list_id, item_id))
+
+			afterListUpdate(new_list)			
+
+			return new_list
+
 		}
 
 		icLists.itemInList = function(item_or_id, list_id){
@@ -907,26 +933,38 @@ angular.module('icServices', [
 			
 			var item_id = item_or_id.id || item_or_id
 
-			return	icLists.itemInList(item_id, list_id)
-					?	icLists.removeItemFromList(item_id, list_id)
-					:	icLists.addItemTolist(item_id, list_id)
+			const in_list = icLists.itemInList(item_id, list_id)
+			
+			console.log('toggleItemInList', in_list)
+
+			if( in_list) 	icLists.removeItemFromList(item_id, list_id)
+			if(!in_list)	icLists.addItemTolist(item_id, list_id)
 
 		}
 
-		icLists.updateName = function(list_id, name){
-			return $q.when(dpd.lists.put(list_id, { name: name }))
+		icLists.updateName = async function(list_id, name){
+
+			const new_list = await $q.when(icBackend.updateList({ id: list_id, name: name }))
+			
+			afterListUpdate(new_list)			
+
+			return new_list
 		}
 
-		icLists.togglePublicState = function(list_id, public_state){
-			return $q.when(dpd.lists.put(list_id, { public: public_state }))
+		icLists.togglePublicState = async function(list_id, public_state){
+
+			const new_list = await  $q.when(icBackend.updateList({ id: list_id, public: public_state }))
+
+			afterListUpdate(new_list)			
+
+			return new_list
 		}
-
-
 
 		icLists.update = function(){
-			
-			return 	$q.when(dpd.lists.get())
+
+			return 	$q.when(icBackend.getLists())
 					.then(function(lists){
+
 						while(icLists.length){ icLists.pop() }
 						
 						return 	$q.all(lists.map(function(list){
@@ -936,61 +974,6 @@ angular.module('icServices', [
 					})
 		}
 
-		//TODO: this is where sockets are used and a cookie header is set!:
-
-		dpd.lists.on("creation", function(list_id){
-			$q.when(dpd.lists.get(list_id))
-			.then(function(list){
-				icLists.push(list)
-				list.items = list.items || []
-
-				return afterListAddition(list)
-
-			})
-			.catch(function(){ /*nothing to do here*/ })
-
-		})
-
-
-
-		dpd.lists.on("update", function(list_id){
-			$q.when(dpd.lists.get(list_id))
-			.then(function(list){
-
-				var old_list 	= icLists.find(function(l){ return l.id == list_id})
-					index		= icLists.indexOf(old_list)
-
-
-				//list not known yet, mabye acces restriction changed:
-				if(index == -1){
-					icLists.push(list)
-					return afterListAddition(list)
-				} else {
-					icLists[index] = list
-					return afterListUpdate(list, old_list)
-				}
-
-			})
-			//this may happen if the changes restrict access:
-			.catch(function(error){
-				var index = icLists.find(function(l){ return l.id == list_id })
-
-				if(index !== -1) icLists.splice(index, 1)
-			})
-		})
-
-
-		dpd.lists.on("deletion", function(list_id){
-
-			var index = icLists.findIndex(function(l){ return l.id == list_id})
-
-			if(index != -1){
-				afterListRemoval(icLists.splice(index,1))
-				$rootScope.$digest()
-			}
-
-
-		})
 
 		function addFilter(list){
 
@@ -1018,6 +1001,25 @@ angular.module('icServices', [
 					})
 		}
 
+		function afterListUpdate(new_list){
+
+			var old_list 	= icLists.find(function(l){ return l.id == new_list.id})
+				index		= icLists.indexOf(old_list)
+
+
+			// List not known yet, mabye access restriction changed:
+			if(index == -1){
+				icLists.push(new_list)
+				afterListAddition(new_list)
+			} else {
+				icLists[index] = new_list
+				old_list.items && old_list.items.forEach(function(item){ icItemStorage.updateItemInternals(item) })
+				new_list.items && new_list.items.forEach(function(item){ icItemStorage.updateItemInternals(item) })
+			}
+
+
+			updateTranslations(new_list)
+		}
 
 		function afterListAddition(list){
 			
@@ -1025,15 +1027,6 @@ angular.module('icServices', [
 
 			return updateTranslations(list)
 		}
-
-		function afterListUpdate(new_list, old_list){
-			old_list.items && old_list.items.forEach(function(item){ icItemStorage.updateItemInternals(item) })
-			new_list.items && new_list.items.forEach(function(item){ icItemStorage.updateItemInternals(item) })
-
-			updateTranslations(new_list)
-		}
-
-
 
 
 		function afterListRemoval(list){

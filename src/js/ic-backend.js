@@ -121,7 +121,7 @@ class IcBackend {
 
 		return 	response.ok
 				?	resultOption
-				:	Promise.reject(option)
+				:	Promise.reject(response)
 	}
 
 	async updateOption(option){
@@ -133,7 +133,7 @@ class IcBackend {
 										'Content-Type':	'application/json',
 									}
 		const credentials		= 	'include'		
-		const body				= 	JSON.stringify(itemData)
+		const body				= 	JSON.stringify(option)
 		const response 			= 	await fetch(`${backendLocation}/${collectionName}/${option.id}`, { headers, credentials, method, body })
 		const resultOption		= 	await response.json()
 
@@ -154,6 +154,106 @@ class IcBackend {
 		return 	response.ok && count === 1
 				?	{count}
 				:	Promise.reject(response)
+	}
+
+	async getLists(){
+		const backendLocation 	= 	this.config.backendLocation
+		const collectionName 	= 	'lists'
+		const credentials		= 	'include'				
+
+		const response 			= 	await fetch(`${backendLocation}/${collectionName}`, { credentials })
+		const lists			= 	await response.json()
+
+		return lists
+	}
+
+	async createList(list){
+
+		const backendLocation 	= 	this.config.backendLocation
+		const collectionName 	= 	'lists'
+		const method			= 	"POST"
+		const headers			=	{
+										'Accept': 		'application/json',
+										'Content-Type':	'application/json',
+									}
+		const credentials		= 	'include'		
+		const body				= 	JSON.stringify(list)
+		const response 			= 	await fetch(`${backendLocation}/${collectionName}`, { headers, credentials, method, body })
+		const resultList		= 	await response.json()
+
+		return 	response.ok
+				?	resultList
+				:	Promise.reject(response)
+	}
+
+	async deleteList(id){
+		const backendLocation 	= 	this.config.backendLocation
+		const collectionName 	= 	"lists"
+		const method			= 	"DELETE"
+		const credentials		= 	'include'	
+		const response 			= 	await fetch(`${backendLocation}/${collectionName}/${id}`, { credentials, method })
+		const {count}			= 	await response.json()		
+
+		return 	response.ok && count === 1
+				?	{count}
+				:	Promise.reject(response)
+	}
+
+	async updateList(list){
+		const backendLocation 	= 	this.config.backendLocation
+		const collectionName 	= 	"lists"
+		const method			= 	"PUT"
+		const headers			=	{
+										'Accept': 		'application/json',
+										'Content-Type':	'application/json',
+									}
+		const credentials		= 	'include'		
+		const body				= 	JSON.stringify(list)
+		const response 			= 	await fetch(`${backendLocation}/${collectionName}/${list.id}`, { headers, credentials, method, body })
+		const resultList		= 	await response.json()
+
+		return 	response.ok
+				?	resultList
+				:	Promise.reject(response)
+
+	}
+
+	async addItemToList(listId, itemId){
+		const backendLocation 	= 	this.config.backendLocation
+		const collectionName 	= 	"lists"
+		const method			= 	"PUT"
+		const headers			=	{
+										'Accept': 		'application/json',
+										'Content-Type':	'application/json',
+									}
+		const credentials		= 	'include'		
+		const body				= 	JSON.stringify({ items: {$push: itemId} } )
+		const response 			= 	await fetch(`${backendLocation}/${collectionName}/${listId}`, { headers, credentials, method, body })
+		const resultList		= 	await response.json()
+
+		return 	response.ok
+				?	resultList
+				:	Promise.reject(response)
+
+	}
+
+	async removeItemFromList(listId, itemId){
+		const backendLocation 	= 	this.config.backendLocation
+		const collectionName 	= 	"lists"
+		const method			= 	"PUT"
+		const headers			=	{
+										'Accept': 		'application/json',
+										'Content-Type':	'application/json',
+									}
+		const credentials		= 	'include'		
+		const body				= 	JSON.stringify({ items: {$pull: itemId} } )
+		const response 			= 	await fetch(`${backendLocation}/${collectionName}/${listId}`, { headers, credentials, method, body })
+		const resultList		= 	await response.json()
+
+		return 	response.ok
+				?	resultList
+				:	Promise.reject(response)
+
 	}
 
 }
