@@ -762,8 +762,6 @@ angular.module('icServices', [
 
 				Object.entries(pages).forEach( ([page,_]) => { pageTranslations[page] = undefined })
 
-				console.log({pageTranslations})
-
 				this.updatePageTranslations(pageTranslations)			
 
 				const response 		= 	await fetch(url)
