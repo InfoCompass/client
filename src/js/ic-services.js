@@ -840,15 +840,13 @@ angular.module('icServices', [
 
 	function($rootScope, $q, icUser, icItemStorage, icLanguages, icTaxonomy, icConfig){
 
-		var icLists = []
+		var icLists = []		
 
-		if(!dpd.lists && !icConfig.disableLists) console.error('icLists: missing dpd.lists. Maybe backend is out of date.')
-
-		if(!dpd.lists || icConfig.disableLists){
+		if(icConfig.disableLists){
 
 			console.info('icLists disabled.')
-			icLists.disabled = true
-			icLists.ready 	= $q.resolve()
+			icLists.disabled 	= true
+			icLists.ready 		= $q.resolve()
 
 			return icLists
 		}
