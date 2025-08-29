@@ -473,8 +473,6 @@
 
 			const getPublic		= 	() => httpGet(publicItems).then( result =>  result.items )
 			
-			// const getDpd		= 	() => dpd(ic.itemConfig.collectionName).get()
-
 			
 			const itemPromise	= 	(async () => {
 

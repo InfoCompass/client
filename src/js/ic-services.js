@@ -1416,13 +1416,14 @@ angular.module('icServices', [
 	this.$get = [
 
 		'$q',
+		'icSite',
 		'icOverlays',
 		'icLanguages',
 		'icItemStorage',
 		'icItemEdits',
 		'icItemConfig',
 
-		function($q, icOverlays, icLanguages, icItemStorage, icItemEdits, icItemConfig){
+		function($q, icSite, icOverlays, icLanguages, icItemStorage, icItemEdits, icItemConfig){
 			var icAdmin = this
 
 
@@ -1430,7 +1431,7 @@ angular.module('icServices', [
 
 				icOverlays.open('spinner')
 
-				return 	$q.when(dpd.actions.exec('updateTranslations'))
+				return 	$q.when(icBackend.runAction('updateTranslations'))
 						.then(
 							function(){
 								icLanguages.refreshTranslations()
@@ -1447,16 +1448,19 @@ angular.module('icServices', [
 			icAdmin.autoTranslate = function(item){
 
 
-				var icItem			= item,
-					icEdit			= icItemEdits.get(item.id),
-					from_languages 	= [].concat(['en', 'de'], icLanguages.availableLanguages),
-					to_languages	= icLanguages.availableLanguages
+				var icItem			= 	item,
+					icEdit			= 	icItemEdits.get(item.id),
+					from_languages 	= 	[icServices.site.currentLanguage, 'en', 'de', ...icLanguages.availableLanguages]
+										.filter( (lang, index, array) => index == array.indexOf(lang) )
+										.filter( lang => lang != 'none'),
+					to_languages	= 	icLanguages.availableLanguages
+										.filter( lang => lang != 'none')	
 
 
 				icOverlays.toggle('spinner', true)
 
 
-				return $q.when(dpd.actions.exec('translateItem', {
+				return $q.when(icBackend.runAction('translateItem', {
 							item:		icItem.id,
 							from:		from_languages,
 							to:			to_languages
@@ -3855,13 +3859,7 @@ angular.module('icServices', [
 			const useExternalTileSource = !useDpdAsTileSource
 
 			if(useDpdAsTileSource){
-
-				if(!dpd.tiles){
-					console.warn('icTiles: missing dpd.tiles')
-					return []
-				}
-
-				return await dpd.tiles.get()
+				return await icBackend.getTiles()
 			}
 
 			// Needs entry in config.json { ..., tilesUrl : '...', ...}

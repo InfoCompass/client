@@ -256,7 +256,48 @@ class IcBackend {
 
 	}
 
+
+	async runAction(action, params){
+		const backendLocation 	= 	this.config.backendLocation
+		const collectionName 	= 	'actions'
+		const method			= 	"POST"
+		const headers			=	{
+										'Accept': 		'application/json',
+										'Content-Type':	'application/json',
+									}
+		const body				=	params
+									?	JSON.stringify(params)
+									:	undefined
+		const credentials		= 	'include'		
+		const response 			= 	await fetch(`${backendLocation}/${collectionName}/${action}`, { headers, credentials, method, body })
+
+		let result				
+
+		try{ 
+			result	=	await response.json() }
+		catch(e){
+			result 	=	response.statusText
+		}
+
+
+		return 	response.ok
+				?	result
+				:	Promise.reject(response)
+	}
+
+	async getTiles(){
+		const backendLocation 	= 	this.config.backendLocation
+		const collectionName 	= 	'tiles'
+		const credentials		= 	'include'				
+
+		const response 			= 	await fetch(`${backendLocation}/${collectionName}`, { credentials })
+		const tiles				= 	await response.json()
+
+		return tiles
+	}
+
+
 }
 
-icBackend = new IcBackend(icConfig) // icConfig should be global varibale added by build script.
+icBackend = new IcBackend(icConfig) // icConfig should be global variable added by build script.
 
