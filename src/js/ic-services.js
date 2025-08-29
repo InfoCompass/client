@@ -127,7 +127,7 @@ angular.module('icServices', [
 
 			stringifyDate: function(dateOrString){
 
-				if(!dateOrString) throw new TypeError("Invalid value for dateOrString", { cause: dateOrstring })
+				if(!dateOrString) throw new TypeError("Invalid value for dateOrString", { cause: dateOrString })
 
 				if(typeof dateOrString == 'string') return dateOrString
 
@@ -1746,7 +1746,7 @@ angular.module('icServices', [
 			async renewLastInteraction(){
 
 				const timestamp 	= Date.now()
-				const description	= `When last interaction is unknown or took place more than ${this.maxInteractionGapHours} hour(s) ago, prematurely resets the visitId.`
+				const description	= `When last interaction is unknown or took place more than ${this.maxInteractionGapMinutes} hour(s) ago, prematurely resets the visitId.`
 
 				localStorage.setItem(this.lastInteractionKey, JSON.stringify({timestamp, description}))
 
@@ -4550,9 +4550,9 @@ angular.module('icServices', [
 				} 
 
 
-				let fakeStartStr 	= undefined
+				let fakeStartStr 	= 	undefined
 
-				startDate 			= this.exampleDate || startDate
+				startDate 			= 	this.exampleDate || startDate
 
 				if(!startDate){
 
@@ -4570,7 +4570,13 @@ angular.module('icServices', [
 				const startTimeStr 	= 	this.startTimeString
 										?	'T'+this.startTimeString.replaceAll(':', '')+'00' 	// assumming HH:mm
 										:	''
-				const endDateStr	= 	icUtils.stringifyDate(endDate||'').replaceAll('-', '')
+
+				if(this.iteration == 'fixed' && !endDate) endDate = startDate
+
+				const endDateStr	= 	endDate
+										?	icUtils.stringifyDate(endDate||'').replaceAll('-', '')
+										:	undefined
+
 
 				const endTimeStr 	= 	this.endTimeString
 										?	'T'+this.endTimeString.replaceAll(':', '')+'00' 	// assumming HH:mm
