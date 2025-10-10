@@ -701,7 +701,8 @@
 												zoomControl: 	false,
 												trackSize:		false,
 												maxBounds:		icMainMap.defaults.maxBounds,
-												tap:			false
+												tap:			false,
+												maxBoundsViscosity: 0.9
 
 											}),
 
@@ -720,6 +721,23 @@
 											).addTo(map),
 
 						pickerControl	=	new L.Control.IcMapCoordinatePicker({ position: 	'bottomcenter' })
+
+
+					/** Add border if configured **/
+
+					if(typeof borderGeoJson !== 'undefined'){
+
+						L.geoJSON(borderGeoJson[0].geojson, { invert: true, renderer: L.svg({ padding: 1 }) })
+						.setStyle({							
+							invert:		true,
+							color: 		icConfig.activeIconColor,
+							fillColor:	'#000',
+							weight: 	2,
+							opacity: 	0.1,
+							polygonCompOp: "dst-in"
+						})
+						.addTo(map)
+					}
 
 
 					icMainMap.setMapObject(map)

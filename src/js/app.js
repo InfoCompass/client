@@ -371,7 +371,8 @@
 									if(ic.layout.mode.name == 'S')		return !ic.site.activeSections.page &&  !ic.site.activeSections.item && !ic.site.activeSections.calendar
 									if(ic.layout.mode.name == 'M')		return !ic.site.activeSections.page &&  !ic.site.activeSections.item
 									if(ic.layout.mode.name == 'L')		return !ic.site.activeSections.page &&  !(ic.site.activeSections.item && (ic.site.activeSections.list || ic.site.activeSections.calendar))
-									if(ic.layout.mode.name == 'XL')		return !ic.site.activeSections.page &&  !(ic.site.activeSections.item && (ic.site.activeSections.list || ic.site.activeSections.calendar))
+									// if(ic.layout.mode.name == 'XL')		return !ic.site.activeSections.page &&  !(ic.site.activeSections.item && (ic.site.activeSections.list || ic.site.activeSections.calendar))
+									if(ic.layout.mode.name == 'XL')		return !(ic.site.activeSections.item && (ic.site.activeSections.list || ic.site.activeSections.calendar))
 
 									return	true
 								}				

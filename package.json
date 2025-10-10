@@ -21,6 +21,7 @@
     "jquery": "^3.7.1",
     "leaflet": "^1.9.2",
     "leaflet.markercluster": "^1.5.3",
+    "leaflet.snogylop": "^0.4.0",
     "mappo-aggregato-client": "^0.1.9",
     "marked": "^4.2.2",
     "promiscuous": "^0.7.2",

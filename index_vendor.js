@@ -8,12 +8,14 @@
 // import rrule from 'rrule'
 	
 
+
 var angular 					= require('angular'),
 	angular_route				= require('angular-sanitize'),
 	angular_translate			= require('angular-translate'),
 	leaflet						= require('leaflet'),
 	leaflet_marker_cluster		= require('leaflet.markercluster'),
 	mappo						= require('mappo-aggregato-client'),
+	
 
 	//	leaflet_vector_grid			= require('leaflet.vectorgrid'),
 
@@ -28,6 +30,7 @@ var angular 					= require('angular'),
 	// ui_calendar					= require('angular-ui-calendar'),
 	// jquery						= require('jquery')
 
+// require('leaflet.snogylop')
 
 // window.fullcalendar 	= fullcalendar
 window.rrule			= rrule

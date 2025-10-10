@@ -141,7 +141,8 @@ async function bundleScriptsToDst(){
 		"ic-filters.js": 			await fs.readFile(src+'/js/ic-filters.js', 				'utf8'),
 		"ic-ui-directives.js": 		await fs.readFile(src+'/js/ic-ui-directives.js', 		'utf8'),
 		"ic-map-module.js": 		await fs.readFile(src+'/js/ic-map-module.js', 			'utf8'),
-		"custom.js":				await fs.readFile(src+'/js/custom.js',					'utf8').catch( (e) => console.log('skipping custom.js') || ''),
+		"custom.js":				await fs.readFile(src+'/js/custom.js',					'utf8').catch( (_e) => console.log('skipping custom.js') || ''),
+		"border.js":				await fs.readFile(src+'/js/border.js',					'utf8').catch( (_e) => console.log('skipping border.js') || ''),
 		"app.js": 					await fs.readFile(src+'/js/app.js', 					'utf8'),
 
 		"qrcode.js": 				await fs.readFile(src+'/js/qrcode.js', 					'utf8'),
