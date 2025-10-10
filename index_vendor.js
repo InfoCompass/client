@@ -30,7 +30,7 @@ var angular 					= require('angular'),
 	// ui_calendar					= require('angular-ui-calendar'),
 	// jquery						= require('jquery')
 
-// require('leaflet.snogylop')
+require('leaflet.snogylop')
 
 // window.fullcalendar 	= fullcalendar
 window.rrule			= rrule
