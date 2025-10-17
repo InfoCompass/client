@@ -553,7 +553,7 @@ angular.module('icServices', [
 		const stop 	= 	$rootScope.$watch( () => {
 							if(!icInit.done) return							
 
-							setTimeout(renew, 1000)
+							setTimeout(renew, 5000)
 
 							stop()	
 						})	

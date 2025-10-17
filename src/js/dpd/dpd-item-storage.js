@@ -451,8 +451,7 @@
 											const patchData		=	await mappoClient.getPatchData()
 											adapterData			= 	await mappoClient.patchLocalAdapterData(patchData)
 										} catch(cause) {
-											// if(navigator && navigator.onLine) throw new Error('Mappo client: unable to pull patch data.', { cause })
-											console.log({mappoClient})
+											if(!navigator || navigator.onLine) throw new Error('Mappo client: unable to pull patch data.', { cause })
 
 											adapterData			=	await mappoClient.getLocalAdapterData()	
 										}
