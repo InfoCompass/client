@@ -4308,6 +4308,101 @@ angular.module('icServices', [
 
 ])
 
+.service('icDistance', [
+
+	'$rootScope',
+	'icSite',
+	'icItemStorage',
+
+	function($rootScope, icSite, icItemStorage){
+
+		class IcDistance {
+
+			lastKnownPosition	=	undefined
+
+			constructor(){	
+				const parDist	=	{
+										name:  			"distance",
+										encode:			(value, ic) => {
+															const distance = parseInt(value)
+
+															return	Number.isInteger(distance) 
+																	?	`dst/${distance}` 
+																	:	''
+														},
+										decode: 		(path, ic)	=> {
+
+															const matches	= path.match(/(^|\/)dst\/([^\/]*)/)
+															const distance	= parseInt(matches && matches[2] || '')
+
+															if(Number.isInteger(distance)) return distance
+															return undefined
+														},
+										defaultValue: 	0
+									}
+
+				const parPos	=	{
+										name:  			"position",
+										encode:			(value, ic) => {
+
+															// if items are not filetred by distance, do not leak position:
+															if(!icSite.distance) return ""
+
+
+															if(!Array.isArray(value)) return ''
+
+															var [lat,lon] = value
+
+															lat = parseFloat(lat)
+															lon = parseFloat(lon)
+
+															if(!Number.isFinite(lat)) return ''
+															if(!Number.isFinite(lon)) return ''																
+
+															return	`pos/${lat},${lon}`
+														},
+										decode: 		(path, ic)	=> {
+
+															const matches	= path.match(/(^|\/)pos\/([^\/,]*)\,([^\/,]*)/)
+															const lat		= parseFloat(matches && matches[2] || '')
+															const lon		= parseFloat(matches && matches[3] || '')
+
+															if(!Number.isFinite(lat)) return undefined
+															if(!Number.isFinite(lon)) return undefined
+															return [lat,lon]
+														},
+										defaultValue: 	undefined
+									}					
+
+				icSite.registerParameter(parDist)
+				icSite.registerParameter(parPos)
+
+				$rootScope.$watch( () => icSite.distance, ( distance ) => {
+					distance
+					?	icSite.position = this.lastKnownPosition
+					:	icSite.position	= undefined
+				})
+
+
+				$rootScope.$watch( () => icSite.position, ( position ) => {
+					this.lastKnownPosition = position || this.lastKnownPosition
+				})
+			}
+
+			
+
+			setCurrentPosition(lat, lon){
+				this.currentPosition = { lat, lon }
+			}
+
+		}
+
+		return new IcDistance()
+
+	}
+
+])
+
 .service('icRecurring', [
 
 	'icConfig',
@@ -5007,9 +5102,10 @@ angular.module('icServices', [
 	'icRecurring',
 	'icMatomo',
 	'icMappo',
+	'icDistance',
 	'$rootScope',
 
-	function(ic, icInit, icSite, icItemStorage, icLayout, icItemConfig, icTaxonomy, icFilterConfig, icLanguages, icFavourites, icOverlays, icAdmin, icUser, icStats, icConfig, icUtils, icConsent, icTiles, icOptions, icLists, icMainMap, icWebfonts, icItemRef, icKeyboard, icAutoFill, icExport, icGeo, icRemotePages, icRecurring, icMatomo, icMappo, $rootScope ){
+	function(ic, icInit, icSite, icItemStorage, icLayout, icItemConfig, icTaxonomy, icFilterConfig, icLanguages, icFavourites, icOverlays, icAdmin, icUser, icStats, icConfig, icUtils, icConsent, icTiles, icOptions, icLists, icMainMap, icWebfonts, icItemRef, icKeyboard, icAutoFill, icExport, icGeo, icRemotePages, icRecurring, icMatomo, icMappo, icDistance, $rootScope ){
 
 		ic.admin		= icAdmin
 		ic.autoFill		= icAutoFill
@@ -5041,6 +5137,7 @@ angular.module('icServices', [
 		ic.recurring	= icRecurring
 		ic.matomo		= icMatomo
 		ic.mappo		= icMappo
+		ic.distance		= icDistance
 
 		var stop 		= 	$rootScope.$watch(function(){
 								if(!icInit.ready) return

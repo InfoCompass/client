@@ -142,7 +142,7 @@
 		}
 
 		
-		icItemStorage.registerFilter = function(filter_name, match_fn){
+		icItemStorage.registerFilter = function(filter_name, match_fn, overwrite = false){
 			filter_name = String(filter_name)
 
 			if(filter_name.match(/^[^a-zA-Z0-9_\-]*$/))			throw('icItemStorage: filter names must contain only letters, numbers or underscores, A-Z, a-z, 0-9. _: '+filter_name+'.')
