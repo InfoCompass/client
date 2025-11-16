@@ -176,6 +176,12 @@ async function bundleScriptsToDst(){
 
 }
 
+async function compileTaxonomyJsonToTmp(){
+	const json = JSON.stringify(taxonomy)
+	await fs.ensureDir('tmp/json')
+	await fs.writeFile('tmp/json/taxonomy.json', json, "utf8")
+}
+
 function compileTaxonomyTemplate(key, template){
 	return 		fs.readFile(template, 'utf8')
 				.then(function(template){
@@ -632,6 +638,9 @@ setup()
 .then( () => done() )
 
 
+.then( () => process.stdout.write('\nCompiling taxonomy into json file in /tmp ...'))
+.then(compileTaxonomyJsonToTmp)
+.then( () => done() )
 
 .then( () => process.stdout.write('\nCompiling image templates for images in src into /tmp for further processing ...'))
 .then(compileImageTemplatesSrcToTmp)
