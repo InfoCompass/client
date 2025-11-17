@@ -127,7 +127,7 @@ ic-page .tiles > .bottom:focus > .content  p {
 
 ic-page .tiles > * .background.icon {
 	background-size:			4rem;
-	background-position:		calc(100% - 1rem) calc(100% - 1rem) !important;
+	background-position:		right 1rem bottom 1rem !important;
 }
 
 ic-page .tiles > .bottom .background.icon {
