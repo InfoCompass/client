@@ -45,6 +45,7 @@ ic-page .tiles > *:hover .background {
 }
 
 
+ic-page .tiles > .bottom:focus .background-image,
 ic-page .tiles > .bottom:hover .background-image {
 	transform: 					scale(1.025);
 }
