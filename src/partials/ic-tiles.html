@@ -7,10 +7,15 @@
 	
 >
 	<div
-		class 		= "background {{tile.icon ?  ' icon icon-'+tile.icon : ''}} white {{tile.background ? 'background-image image-'+tile.background : ''}} {{tile.backgroundUrl ? 'background-image' : ''}}"
+		class 		= "background {{tile.background ? 'background-image image-'+tile.background : ''}} {{tile.backgroundUrl ? 'background-image' : ''}}"
 		ng-style	= "{'background-color': tile.color}"
 		style		= "{{tile.backgroundUrl ? 'background-image: url('+tile.backgroundUrl+');' : ''}}"
 	>
+		<div 
+			ng-if	= "tile.icon"
+			class 	= "icon icon-{{tile.icon}} white"
+		>
+		</div>
 	</div>
 
 	<div class ="content">

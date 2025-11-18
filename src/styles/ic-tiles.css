@@ -53,26 +53,31 @@ ic-page .tiles > .bottom:hover .background-image {
 
 
 ic-page .tiles > * > .background {
-	display:					block;
+	display:					flex;
 	position:					absolute;
 	z-index:					-1;
 	transition: 				all 0.5s ease;
 	background-repeat:			no-repeat;
+	box-sizing:					border-box;
 
 	height:						100%;
 	width:						100%;
 
 	max-width:					100%;
 
-	padding:					0 !important;
+	padding:					1rem;
+
+	justify-content:			flex-end;
+	align-items:				flex-end;
 }
 
 
 ic-page .tiles > *.bottom > .background {
 	position:					static;	
 	z-index:					0;
-
 	height:						15rem;
+	justify-content:			center;
+	align-items:				center;
 }
 
 
@@ -126,14 +131,16 @@ ic-page .tiles > .bottom:focus > .content  p {
 	color:						var(--dark-text-color) !important;
 }
 
-ic-page .tiles > * .background.icon {
+ic-page .tiles > * .background .icon {
 	background-size:			4rem;
-	background-position:		right 1rem bottom 1rem !important;
+	width:						4rem;
+	height:						4rem;	
 }
 
 ic-page .tiles > .bottom .background.icon {
+	height:						8rem;
+	width:						8rem;
 	background-size:			8rem;
-	background-position:		50% 50% !important;
 }
 
 
