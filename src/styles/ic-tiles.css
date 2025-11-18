@@ -137,7 +137,7 @@ ic-page .tiles > * .background .icon {
 	height:						4rem;	
 }
 
-ic-page .tiles > .bottom .background.icon {
+ic-page .tiles > .bottom .background .icon {
 	height:						8rem;
 	width:						8rem;
 	background-size:			8rem;
