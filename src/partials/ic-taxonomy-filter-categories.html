@@ -39,8 +39,8 @@
 			>
 				<div>{{'CATEGORIES.%s' | fill : category.name | translate}}</div>
 				<span 
-					class 		= "bubble shade-light "
-					ng-class	= "{'col-2': active, 'col-1': !active}"
+					class 		= "bubble"
+					ng-class	= "{'shade-dark': active, 'shade-light': !active}"
 					ng-if 		= "!disabled"
 				>
 					<span>
@@ -82,7 +82,7 @@
 					<div>{{'CATEGORIES.%s' | fill : tag | translate}}</div>
 					<span 
 						ng-if 		= "!disabled"
-						class 		= "bubble shade-dark col-2"
+						class 		= "bubble shade-dark"
 					>
 						<span>
 							{{ic.itemStorage.currentStats.altMatches[tag]}}

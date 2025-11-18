@@ -18,8 +18,8 @@
 		>
 			<div>{{'TYPES.%s' | fill : type.name |translate}} </div>
 			<span 
-				class 		= "bubble shade-light"
-				ng-class	= "{'col-2': active, 'col-1': !active}"
+				class 		= "bubble"
+				ng-class	= "{'shade-dark': active, 'shade-light': !active}"
 				ng-if 		= "!disabled"
 			>
 				<span>
@@ -75,7 +75,7 @@
 		>
 			<div>{{'UNSORTED_TAGS.%s' | fill : tag | translate }}</div>
 			<span 
-				class 		= "bubble shade-light col-1"
+				class 		= "bubble shade-light"
 				ng-if 		= "!disabled"
 			>
 				<span>

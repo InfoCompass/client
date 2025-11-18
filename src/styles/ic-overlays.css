@@ -272,7 +272,9 @@ ic-overlays > .center li > *{
 }
 
 
-
+ic-overlays > .center li > .bubble {
+	flex:					0 0 auto;
+}
 
 
 
