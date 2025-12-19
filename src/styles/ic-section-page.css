@@ -318,7 +318,7 @@ ic-page p > img + img {
 ic-page > a,
 ic-page p a,
 ic-page ul a {
-	color:						var(--primary-color);
+	color:						var(--active-color, var(--primary-color));
 /*	padding-left: 				0.5rem;*/
 /*	padding-right: 				0.5rem;*/
 	text-decoration: 			underline;
@@ -327,7 +327,7 @@ ic-page ul a {
 ic-page em > a {
 	display:					inline-block;
 	padding:					1rem;
-	border:						0.15rem solid var(--primary-color);
+	border:						0.15rem solid var(--active-color, var(--primary-color));
 	margin:						0 0.5rem;
 	font-style:					normal;
 }

@@ -1,5 +1,3 @@
-
-
 .bg-t {
 	background-color:			transparent;
 }
@@ -134,7 +132,7 @@
 
 .active,
 .active:hover {
-	color:						var(--primary-color);
+	color:						var(--active-color, var(--primary-color));
 }
 
 .drop-shadow {
