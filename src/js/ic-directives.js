@@ -235,6 +235,22 @@ angular.module('icDirectives', [
 // Start with just the view, edit can be a different directive, maybe utilize switch
 
 
+.directive('icExtendedSearch',[
+	'ic',
+
+	function(ic){
+		return {
+			restrict:		'E',
+			templateUrl: 	'partials/ic-extended-search.html',
+			scope:			{},
+
+			link(scope){
+				// scope.ic = ic
+			}
+		}
+	}
+])
+
 //Todo Filter für item links bauen ?
 .directive('icSearchResultList', [
 

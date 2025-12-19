@@ -1413,6 +1413,8 @@ angular.module('icUiDirectives', [
 	function(){
 		var cache = []
 
+		window.setInterval( () => { while(cache.length) cache.pop() }, 10_000)
+
 		return function(array){	
 
 			var json		= JSON.stringify(array),

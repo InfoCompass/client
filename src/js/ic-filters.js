@@ -437,7 +437,6 @@ angular.module('icFilters', [
 
 			const uniqueResults = Array.from( new Set(result) )					
 
-
 			return 	isArray
 					?	uniqueResults
 					:	uniqueResults[0]

@@ -1,0 +1,17 @@
+<ic-search>
+</ic-search>
+
+<h3>{{'INTERFACE.DISTANCE' | translate}}</h3>	
+
+<div ng-init = "distances = [1, 2, 5]">
+	<button
+		ng-repeat 	= "distance in distances"
+		class		= "round border-3 active" 
+	>
+		dist-{{distance}}
+	</button>
+</div>
+
+<div ng-init = "tags = []">
+	tags...
+</div>
