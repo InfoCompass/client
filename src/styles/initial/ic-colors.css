@@ -78,7 +78,7 @@
 .bg-3:hover,
 .bg-3:focus {
 	background-color:			var(--primary-color);
-	color:						var(--light-text-color);
+	color:						var(--primary-contrast, var(--light-text-color));
 }
 
 .bg-3.hover:focus,

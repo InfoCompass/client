@@ -1052,6 +1052,7 @@ angular.module('icServices', [
 						params: 	[],
 						switches: 	[],
 						sections:	[],
+						sectionUpdates: {}
 					}
 
 	this.onRegister = function(){}
@@ -1100,6 +1101,36 @@ angular.module('icServices', [
 		return this
 	}
 
+	this.registerSectionUpdate = function(name, updateSection){
+		this.config.sectionUpdates[name] = this.config.sectionUpdates[name] || []
+		this.config.sectionUpdates[name].push(updateSection)
+	}
+
+	this.updateSection = function(name, updateSection){
+
+		/*
+			section = 		{
+								name:  		the key used to exposed value on icSite e.g. ic.site.activeSection.%name resp. ic.site.displaySection.%name,
+								template:	url,
+								active: 	function(ic, originalActive),
+								show: 		function(ic, originalShow),
+							}
+		 */
+
+		const section = this.config.sections.find( sec => sec.name === name)
+
+		if(!section) throw ".updateSection: unknown section: "+name
+
+		const originalActive		= section.active
+		const originalShow			= section.show
+
+		if(updateSection.template)	section.template 	= updateSection.template
+		if(updateSection.active)	section.active		= ic => updateSection.active(ic, originalActive)
+		if(updateSection.show)		section.show		= ic => updateSection.show(ic, originalShow)
+
+		console.log({updateSection, section})	
+	}
+
 
 
 	this.$get = [
@@ -1118,6 +1149,12 @@ angular.module('icServices', [
 
 			icSite.activeSections 	=	{}
 			icSite.visibleSections 	= 	{}
+
+			console.log(icSite.config)
+
+			for(const section in icSite.config.sectionUpdates){
+				icSite.config.sectionUpdates[section].forEach( update => icSite.updateSection(section, update))
+			}	
 
 
 			//Params:
