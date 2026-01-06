@@ -404,7 +404,7 @@
 			item = icItemStorage.storeItem({id: id})				
 
 			if(force_download){
-				icItemStorage.ready
+				icItemStorage.ready // Argh ready is never declare din this file, but in the extension at services
 				.then( () 	=> 	icItemStorage.getItem(id) )				
 				.then( item	=> 	item && item.remoteItem 
 								?	Promise.resolve()
@@ -684,48 +684,6 @@
 		}
 
 
-
-		var areas = []
-
-
-		function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
-			var R 		= 	6371,
-				dLat 	= 	deg2rad(lat2-lat1)
-				dLon 	= 	deg2rad(lon2-lon1);
-				a 		=	Math.sin(dLat/2) * Math.sin(dLat/2) +
-							Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
-							Math.sin(dLon/2) * Math.sin(dLon/2),
-				c 		= 	2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)),
-				d 		= 	R * c
-
-			return d
-		}
-
-		function deg2rad(deg) {
-			return deg * (Math.PI/180)
-		}
-
-
-		icItemStorage.getAreaTag = function(latitude, longitude, distance){
-
-			var index 		= 	areas.findIndex(function(a){
-									return a[0] == latitude && a[1] == longitude && a[3] == distance
-								}),	
-				area_tag 	= 'area%1' 
-
-			if(index == -1){
-				areas.push([latitude, longitude, distance])
-				index = areas.length-1
-
-
-				icItemStorage.registerFilter(area_tag.replace(/%1/,index), function(item){
-					return getDistanceFromLatLonInKm(item.latitude, item.longitude, latitude, longitude) <= distance
-				})
-			}
-
-			return area_tag.replace(/%1/,index)
-
-		}
 
 
 		//This doesnt seem usefull, but slows down initial laoding

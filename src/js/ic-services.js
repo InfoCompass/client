@@ -1128,7 +1128,6 @@ angular.module('icServices', [
 		if(updateSection.active)	section.active		= ic => updateSection.active(ic, originalActive)
 		if(updateSection.show)		section.show		= ic => updateSection.show(ic, originalShow)
 
-		console.log({updateSection, section})	
 	}
 
 
@@ -2361,9 +2360,10 @@ angular.module('icServices', [
 												const publicItems 	= icConfig.publicItems || icConfig.publicItems+'/items' || undefined 	
 												return 	$q.when(icItemStorage.downloadAll( icUser.can('edit_items') ? null : { publicItems, mappo: true }) )
 											})
-											.then(function(){
-												return icItemStorage.updateFilteredList()
-											})
+											// will be called in $watchCollection anyway:
+											// .then(function(){
+											// 	return icItemStorage.updateFilteredList()
+											// })
 
 			icItemStorage.newItem = function(id){
 
@@ -2873,14 +2873,16 @@ angular.module('icServices', [
 	'$rootScope',
 	'icSite',
 	'icItemStorage',
+	'icRange',
 	'icTaxonomy',
 	'icLanguages',
 	'icItemConfig',
 	'icOptions',
 
-	function($rootScope, icSite, icItemStorage, icTaxonomy, icLanguages, icItemConfig, icOptions){
-		icSite.sortDirectionAlpha = 1;
-		icSite.sortDirection = -1;
+	function($rootScope, icSite, icItemStorage, icRange, icTaxonomy, icLanguages, icItemConfig, icOptions){
+		icSite.sortDirectionAlpha = 1
+		icSite.sortDirection = -1
+
 		var icFilterConfig = this
 
 		icSite
@@ -3289,33 +3291,51 @@ angular.module('icServices', [
 		}
 
 
-		$rootScope.$watch(
+		let listUpdateCount = 0
+
+		$rootScope.$watchCollection(
 			function(){
 				// Tag groups:
-				return 	[
-							icSite.filterByType,
-							icSite.filterByCategory,
-							icSite.filterByUnsortedTag,
-							icItemStorage.getSearchTag(icSite.searchTerm, x => adHocTranslation(x) ),
-						]
+				const areaTag 		=	icRange.getAreaTag(icSite.position && icSite.position[0], icSite.position && icSite.position[1] , icSite.range)
+				const searchTag		=	icItemStorage.getSearchTag(icSite.searchTerm, x => adHocTranslation(x) )
+
+				const collection 	= 	[
+											icSite.filterByType,
+											icSite.filterByCategory,
+											icSite.filterByUnsortedTag,
+											searchTag,
+											areaTag	
+										]
+				return collection						
 			},
 			arr => {
 
-				icItemStorage.ready
-				.then( () => {
-					icItemStorage.updateFilteredList(arr, [
-						// Groups considered alternative to the above tags groups, only one tag of these groups can be active
-						icTaxonomy.types.map(function(type){ return type.name }), 
-						icTaxonomy.categories.map( category => [category.name, ...(category.tags||[]) ] ).flat(), 
-						null, 
-						null
-					])
+				listUpdateCount ++
+				const currentCount = listUpdateCount
 
-					//updateFilteredList() will sort anyway!
-					//if(icSite.sortOrder) icItemStorage.sortFilteredList(icSite.sortOrder, icSite.sortDirection)
+				icItemStorage.ready				
+				.then( () => {
+
+					$rootScope.$applyAsync( () => {						
+
+						// Force only execute last scheduled run:
+
+						if(currentCount !== listUpdateCount) return null
+
+						icItemStorage.updateFilteredList(arr, [
+							// Groups considered alternative to the above tags groups, only one tag of these groups can be active
+							icTaxonomy.types.map(function(type){ return type.name }), 
+							icTaxonomy.categories.map( category => [category.name, ...(category.tags||[]) ] ).flat(), 
+							null, 
+							null,
+							null
+						])
+
+						//updateFilteredList() will sort anyway!
+						//if(icSite.sortOrder) icItemStorage.sortFilteredList(icSite.sortOrder, icSite.sortDirection)
+					})
 				})
-			},
-			true
+			}
 		)
 
 		$rootScope.$watchCollection(
@@ -4345,7 +4365,7 @@ angular.module('icServices', [
 
 ])
 
-.service('icDistance', [
+.service('icRange', [
 
 	'$rootScope',
 	'icSite',
@@ -4353,26 +4373,27 @@ angular.module('icServices', [
 
 	function($rootScope, icSite, icItemStorage){
 
-		class IcDistance {
+		class IcRange {
 
 			lastKnownPosition	=	undefined
+			areas 				=	[]
 
 			constructor(){	
-				const parDist	=	{
-										name:  			"distance",
+				const parRange	=	{
+										name:  			"range",
 										encode:			(value, ic) => {
-															const distance = parseInt(value)
+															const range = parseInt(value)
 
-															return	Number.isInteger(distance) 
-																	?	`dst/${distance}` 
+															return	Number.isInteger(range) 
+																	?	`rng/${range}` 
 																	:	''
 														},
 										decode: 		(path, ic)	=> {
 
-															const matches	= path.match(/(^|\/)dst\/([^\/]*)/)
-															const distance	= parseInt(matches && matches[2] || '')
+															const matches	= path.match(/(^|\/)rng\/([^\/]*)/)
+															const range		= parseInt(matches && matches[2] || '')
 
-															if(Number.isInteger(distance)) return distance
+															if(Number.isInteger(range)) return range
 															return undefined
 														},
 										defaultValue: 	0
@@ -4382,8 +4403,9 @@ angular.module('icServices', [
 										name:  			"position",
 										encode:			(value, ic) => {
 
-															// if items are not filetred by distance, do not leak position:
-															if(!icSite.distance) return ""
+
+															// if items are not filtred by range, do not leak position:
+															if(!icSite.range) return ""
 
 
 															if(!Array.isArray(value)) return ''
@@ -4396,45 +4418,118 @@ angular.module('icServices', [
 															if(!Number.isFinite(lat)) return ''
 															if(!Number.isFinite(lon)) return ''																
 
-															return	`pos/${lat},${lon}`
+															return	`pos/${lat}_${lon}`
 														},
 										decode: 		(path, ic)	=> {
 
-															const matches	= path.match(/(^|\/)pos\/([^\/,]*)\,([^\/,]*)/)
+															const matches	= path.match(/(^|\/)pos\/([^\/,]*)\_([^\/,]*)/)
 															const lat		= parseFloat(matches && matches[2] || '')
 															const lon		= parseFloat(matches && matches[3] || '')
 
 															if(!Number.isFinite(lat)) return undefined
 															if(!Number.isFinite(lon)) return undefined
-															return [lat,lon]
+
+															return [lat, lon]		
+
 														},
 										defaultValue: 	undefined
 									}					
 
-				icSite.registerParameter(parDist)
+				icSite.registerParameter(parRange)
 				icSite.registerParameter(parPos)
 
-				$rootScope.$watch( () => icSite.distance, ( distance ) => {
-					distance
-					?	icSite.position = this.lastKnownPosition
-					:	icSite.position	= undefined
+				$rootScope.$watch( () => icSite.range, ( range ) => {
+					this.updateSitePosition()
 				})
+
 
 
 				$rootScope.$watch( () => icSite.position, ( position ) => {
 					this.lastKnownPosition = position || this.lastKnownPosition
 				})
-			}
 
+			}
 			
 
 			setCurrentPosition(lat, lon){
-				this.currentPosition = { lat, lon }
+				this.lastKnownPosition = [lat, lon]
+				this.updateSitePosition()
+			}
+
+			updateSitePosition(){
+				icSite.range
+				?	icSite.position = this.lastKnownPosition
+				:	icSite.position	= undefined
+
+			}
+
+		
+
+			deg2rad(deg) {
+				return deg * (Math.PI/180)
+			}
+
+			getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
+
+				if(!Number.isFinite(lat1)) return Infinity
+				if(!Number.isFinite(lat2)) return Infinity
+				if(!Number.isFinite(lon1)) return Infinity
+				if(!Number.isFinite(lon2)) return Infinity
+
+				const R 	= 	6371
+				const dLat 	= 	this.deg2rad(lat2-lat1)
+				const dLon 	= 	this.deg2rad(lon2-lon1)
+
+				const a 	=	Math.sin(dLat/2) * Math.sin(dLat/2) +
+								Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) * 
+								Math.sin(dLon/2) * Math.sin(dLon/2)
+				const c 	= 	2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+				const d 	= 	R * c
+
+				return d
+			}
+
+
+
+			getAreaTag = function(latitude, longitude, range){
+
+				if(!Number.isFinite(latitude))	return null
+				if(!Number.isFinite(longitude))	return null
+				if(!Number.isFinite(range))		return null
+
+				let index 		= 	this.areas.findIndex(function(a){
+										return a[0] === latitude && a[1] === longitude && a[2] === range
+									})
+
+				const area_tag 	= 	'area-%1' 
+
+				if(index !== -1) return area_tag.replace(/%1/,index)
+
+				const tag 		= area_tag.replace(/%1/, this.areas.length)
+
+				this.areas.push([latitude, longitude, range])				
+
+				const rangeKM 	= range / 1000
+
+				icItemStorage.registerFilter(tag, item => {
+
+					const distance	= this.getDistanceFromLatLonInKm(item.latitude, item.longitude, latitude, longitude)
+					const inRange 	= distance <= rangeKM
+
+					console.log('XXXX', item.title, distance, inRange)
+
+					return inRange
+				})
+
+
+				console.log(tag, this.areas)
+
+				return tag
 			}
 
 		}
 
-		return new IcDistance()
+		return new IcRange()
 
 	}
 
@@ -5139,10 +5234,10 @@ angular.module('icServices', [
 	'icRecurring',
 	'icMatomo',
 	'icMappo',
-	'icDistance',
+	'icRange',
 	'$rootScope',
 
-	function(ic, icInit, icSite, icItemStorage, icLayout, icItemConfig, icTaxonomy, icFilterConfig, icLanguages, icFavourites, icOverlays, icAdmin, icUser, icStats, icConfig, icUtils, icConsent, icTiles, icOptions, icLists, icMainMap, icWebfonts, icItemRef, icKeyboard, icAutoFill, icExport, icGeo, icRemotePages, icRecurring, icMatomo, icMappo, icDistance, $rootScope ){
+	function(ic, icInit, icSite, icItemStorage, icLayout, icItemConfig, icTaxonomy, icFilterConfig, icLanguages, icFavourites, icOverlays, icAdmin, icUser, icStats, icConfig, icUtils, icConsent, icTiles, icOptions, icLists, icMainMap, icWebfonts, icItemRef, icKeyboard, icAutoFill, icExport, icGeo, icRemotePages, icRecurring, icMatomo, icMappo, icRange, $rootScope ){
 
 		ic.admin		= icAdmin
 		ic.autoFill		= icAutoFill
@@ -5174,7 +5269,7 @@ angular.module('icServices', [
 		ic.recurring	= icRecurring
 		ic.matomo		= icMatomo
 		ic.mappo		= icMappo
-		ic.distance		= icDistance
+		ic.range		= icRange
 
 		var stop 		= 	$rootScope.$watch(function(){
 								if(!icInit.ready) return

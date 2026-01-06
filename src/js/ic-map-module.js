@@ -135,6 +135,7 @@
 					return null // shadow[0]
 				}
 
+				this.options = {}
 			}
 
 			return icMapItemMarker
@@ -603,7 +604,7 @@
 						picker.longitude 	= Number(picker.longitude)
 
 						if(picker.latitude && picker.longitude) {
-							picker.zoom = icMainMap.defaults.maxZoom
+							picker.zoom = picker.zoom || icMainMap.defaults.maxZoom
 						} else {
 							picker.zoom = icMainMap.defaults.minZoom
 						}

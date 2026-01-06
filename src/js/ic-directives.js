@@ -237,15 +237,33 @@ angular.module('icDirectives', [
 
 .directive('icExtendedSearch',[
 	'ic',
+	'$rootScope',
+	'icRange',
+	'icMainMap',
+	'icSite',
 
-	function(ic){
+	function(ic, $rootScope, icRange, icMainMap, icSite){
 		return {
 			restrict:		'E',
 			templateUrl: 	'partials/ic-extended-search.html',
 			scope:			{},
 
 			link(scope){
-				// scope.ic = ic
+				scope.ic = ic
+
+				scope.pickCoordinates =  async () => {
+					const latLng		= icMainMap.mapObject.getCenter()
+					const latitude		= latLng.lat
+					const longitude		= latLng.lng
+					const zoom			= icMainMap.mapObject.getZoom()
+
+					const pickerOptions = { latitude, longitude, zoom }
+
+					const position = await icMainMap.pickCoordinates(pickerOptions)
+
+					icRange.setCurrentPosition(position.latitude, position.longitude)
+					$rootScope.$digest()
+				}
 			}
 		}
 	}
