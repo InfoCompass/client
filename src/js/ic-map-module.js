@@ -127,6 +127,9 @@
 				var element = 	$compile('<ic-map-item-marker ic-item = "item"></ic-map-item-marker')(scope)
 					//shadow	=	angular.element('<div class = "ic-map-marker-shadow"></div>')
 
+				element[0].style.setProperty("--animation-delay", Math.floor(Math.random()*200 +100)+'ms' )
+				element[0].style.setProperty("--animation-duration", Math.floor(Math.random()*100+200)+'ms' )
+
 				this.createIcon = function(){
 					return element[0]
 				}
@@ -197,6 +200,9 @@
 				cluster.scope 			= 	scope
 				cluster._marker 		= 	this
 				element[0].scope		= 	scope
+				
+				element[0].style.setProperty("--animation-delay", Math.floor(Math.random()*200 +100)+'ms' )
+				element[0].style.setProperty("--animation-duration", Math.floor(Math.random()*100+200)+'ms' )
 				
 				this.createIcon = function(){
 					return cluster._icon || element[0]

@@ -47,6 +47,11 @@ ic-map-item-marker .outer-icon {
 	background-repeat:		no-repeat;
 }
 
+ic-map-item-marker .outer-icon {
+	animation:				marker-enter var(--animation-duration, 400ms) var(--animation-delay, 100ms) ease-out forwards;
+	transform-origin:		bottom left;	
+}
+
 ic-map-item-marker .outer-icon .inner-icon {
 	position:				absolute;
 	top:					0;
@@ -137,8 +142,9 @@ ic-map-cluster-marker {
 	height:					0;
 	width:					0;
 	text-align:				center;
-	outline:				none !important;	
+	outline:				none !important;
 }
+
 
 ic-map-cluster-marker:active,
 ic-map-cluster-marker:focus,
@@ -156,7 +162,38 @@ ic-map-cluster-marker .wrapper {
 	position:				absolute;
 	left:					0em;
 	bottom:					0;
+	animation:				marker-enter var(--animation-duration, 400ms) var(--animation-delay, 100ms) ease-out forwards;
+	transform-origin:		bottom left;
 }
+
+ic-map-cluster-marker ic-map-item-marker .outer-icon {
+	animation:				none !important;	
+}
+
+
+
+@keyframes marker-enter {
+	0% {
+		transform:	scaleY(1);
+	}
+	
+	30% {
+		transform:	scaleY(0.7);
+	}
+
+	60% {
+		transform:	scaleY(1.2);
+	}
+
+	80% {
+		transform:	scaleY(0.9);
+	}
+
+	100% {
+		transform:	scaleY(1.0);
+	}
+}
+
 
 ic-map-cluster-marker ic-map-item-marker {
 	position:				relative;
