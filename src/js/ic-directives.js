@@ -241,8 +241,9 @@ angular.module('icDirectives', [
 	'icRange',
 	'icMainMap',
 	'icSite',
+	'icGeo',
 
-	function(ic, $rootScope, icRange, icMainMap, icSite){
+	function(ic, $rootScope, icRange, icMainMap, icSite, icGeo){
 		return {
 			restrict:		'E',
 			templateUrl: 	'partials/ic-extended-search.html',
@@ -251,19 +252,59 @@ angular.module('icDirectives', [
 			link(scope){
 				scope.ic = ic
 
-				scope.pickCoordinates =  async () => {
-					const latLng		= icMainMap.mapObject.getCenter()
-					const latitude		= latLng.lat
-					const longitude		= latLng.lng
-					const zoom			= icMainMap.mapObject.getZoom()
+				zipGuess 		= undefined
+				scope.position 	= undefined
 
-					const pickerOptions = { latitude, longitude, zoom }
+				scope.isNoZip = function(zip){
+					if(typeof zip !== 'string')	return true
+					if(!zip.match(/^\d{5}$/))	return true	
+					return false
+				}
 
-					const position = await icMainMap.pickCoordinates(pickerOptions)
+				scope.pickCoordinates 	=  async () => {
+					const latLng		= 	icMainMap.mapObject.getCenter()
+					const latitude		= 	latLng.lat
+					const longitude		= 	latLng.lng
+					const zoom			= 	icMainMap.mapObject.getZoom()
 
+					const pickerOptions = 	{ latitude, longitude, zoom }
+
+					const position 		= 	await icMainMap.pickCoordinates(pickerOptions)
+					
 					icRange.setCurrentPosition(position.latitude, position.longitude)
 					$rootScope.$digest()
+				}				
+
+				scope.guessCoordinatesFromZip = async function(){
+
+					try {
+						zipGuess	= await icGeo.zipCenter(scope.zip)
+						console.log({zipGuess})
+						icRange.setCurrentPosition(zipGuess.lat, zipGuess.lon)
+
+					} catch(e) {
+						zipGuess	= undefined						
+						console.error(e)
+					}
+
+					$rootScope.$digest()
 				}
+
+				$rootScope.$watch( () => icRange.lastKnownPosition, () => {
+
+					if(!icRange.lastKnownPosition){ 
+						scope.position = undefined
+					} else if(
+							zipGuess 
+						&&	zipGuess.lat == icRange.lastKnownPosition[0]
+						&&	zipGuess.lon == icRange.lastKnownPosition[1]
+					){	
+						scope.position = `${zipGuess.lat}, ${zipGuess.lon}, (${zipGuess.display_name})` 				
+					} else {
+						scope.position = `${icRange.lastKnownPosition[0]}, ${icRange.lastKnownPosition[1]}` 
+					}
+
+				}, true)
 			}
 		}
 	}
@@ -2582,20 +2623,31 @@ angular.module('icDirectives', [
 								icOnUpdate: 	'&',
 								icButtonLabel:	'<',
 								icFocus:		'<',
+								icDebounce:		'<',
 								icMini:			'@'
 							},
 
 			link: function(scope, element, attrs){
 
-				scope.ic		= ic
+				scope.ic			= ic
 
-				scope.searchId	= scope.$id
+				scope.searchId		= scope.$id
+
+				scope.modelOptions	= {}
+
+				if(scope.icDebounce){
+					scope.searchTerm = icSite.searchTerm
+				}
 
 				scope.update = function(search_term){
 					var input = element[0].querySelector('input')
 					
 					search_term = (search_term||'').replace(/[\/?#]+/g,' ')
 
+
+					if(scope.icDebounce){
+						return 
+					}
 
 					input.focus()
 					input.blur()
@@ -2612,6 +2664,10 @@ angular.module('icDirectives', [
 
 					scope.searchTerm = undefined
 				}
+
+				scope.$watch('searchTerm',  () => {
+					icSite.searchTerm = scope.searchTerm
+				})
 
 			}
 		}

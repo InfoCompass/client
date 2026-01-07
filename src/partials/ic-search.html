@@ -15,11 +15,13 @@
 >
 
 	<input
+		class				= "border-1 round"
 		id					= "search-term-{{searchId}}" 			
 		name				= "search"
 		tabindex			= "0"
 		type 				= "search" 
 		ng-model 			= "searchTerm"
+		ng-model-options	= "{ debounce: icDebounce }"
 		autocomplete		= "on"
 		placeholder			= "{{'INTERFACE.SEARCH_TERM' | translate }}"
 		focus-me			= "icFocus"

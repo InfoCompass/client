@@ -1,28 +1,68 @@
-<ic-search>
+<h2>
+	<span class ="icon icon-interface-search"></span>
+	{{'INTERFACE.EXTENDED_SEARCH' | translate}}
+</h2>	
+
+<ic-search
+	ic-debounce = "500"
+>
 </ic-search>
 
-<h3>{{'INTERFACE.DISTANCE' | translate}}</h3>	
 
-<div ng-init = "ranges = [1, 2, 5, 10, 20]">
+<h3>{{'INTERFACE.RANGE' | translate}}</h3>	
+
+<div>
+	{{'INTERFACE.CURRENT_POSITION' | translate}}: 
+	{{position ? position : ('INTERFACE.CURRENT_POSITION_UNKNOWN' | translate)}}
+<div>
+
+<div clas = "buttons">
+
+	<input 
+		class				= "border-2 padding"
+		ng-model			= "zip"
+		ng-model-options	= "{ debounce:500 }"
+		placeholder			= "{{'INTERFACE.GET_COORDINATES_FROM_ZIP_PLACEHOLDER' | translate}}" 
+	/>
+
+	<button
+		class	 		= "border-2 padding"
+		ng-click		= "guessCoordinatesFromZip()"
+		ng-disabled		= "isNoZip(zip)"
+		title			= "{{'INTERFACE.GET_COORDINATES_FROM_ZIP' | translate}}"
+	>
+		{{'INTERFACE.GET_COORDINATES_FROM_ZIP' | translate}}
+	</button>
+
+	<button
+		class	 	= "border-2 padding"
+		ng-click	= "pickCoordinates()"
+		title		= "{{'INTERFACE.PICK_COORDINATES' | translate}}"
+	>
+		{{'INTERFACE.PICK_COORDINATES' | translate}}
+	</button>
+
+</div>
+
+
+<div 
+	ng-init = "ranges = [1, 5, 10, 50]"
+	class	= "buttons"
+>
+
 	<button
 		ng-repeat 	= "range in ranges"
 		class		= "round border-2 padding" 
-		ng-click	= "ic.site.range = range*100"
+		ng-click	= "ic.site.range = range"
+		ng-class	= "{ 'bg-3': ic.site.range == range}"
 	>
-		range-{{range}}
-	</button>
-	Range: {{ic.site.range}}
+		{{range}} km
+	</button>	
+
 </div>
 
 <div ng-init = "tags = []">
 
-<button
-	class	 	= "border-3 padding"
-	ng-click	= "pickCoordinates()"
-	title		= "{{'INTERFACE.PICK_COORDINATES' | translate}}"
->
-	{{'INTERFACE.PICK_COORDINATES' | translate}}
-</button>
 
 	tags...
 </div>

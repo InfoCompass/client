@@ -88,3 +88,12 @@ ic-item-preview .auto-translation-indicator {
 	height: 				1rem;
 	width: 					1rem;
 }
+
+
+
+
+
+
+ic-item-badge {
+	display:						inline-block;
+}

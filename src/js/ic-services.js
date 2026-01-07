@@ -4358,6 +4358,20 @@ angular.module('icServices', [
 				return data
 			}
 
+			async zipCenter(postalcode){
+				const base		= icConfig.publicApi
+				const path		= '/geo-guess'
+				const queries	= new URLSearchParams({postalcode})
+				const url		= `${base}${path}?${queries}`
+				const response 	= await fetch(url)
+
+				if(!response.ok) throw new Error(`HTTP error! Status: ${response.status}`)
+
+				const data		= response.json()
+
+				return data
+			}
+
 		}
 
 		return new IcGeo()
@@ -4509,14 +4523,10 @@ angular.module('icServices', [
 
 				this.areas.push([latitude, longitude, range])				
 
-				const rangeKM 	= range / 1000
-
 				icItemStorage.registerFilter(tag, item => {
 
 					const distance	= this.getDistanceFromLatLonInKm(item.latitude, item.longitude, latitude, longitude)
-					const inRange 	= distance <= rangeKM
-
-					console.log('XXXX', item.title, distance, inRange)
+					const inRange 	= distance <= range
 
 					return inRange
 				})
