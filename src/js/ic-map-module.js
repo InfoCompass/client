@@ -201,9 +201,9 @@
 				cluster._marker 		= 	this
 				element[0].scope		= 	scope
 				
-				element[0].style.setProperty("--animation-delay", Math.floor(Math.random()*200 +100)+'ms' )
-				element[0].style.setProperty("--animation-duration", Math.floor(Math.random()*100+200)+'ms' )
-				
+				element[0].style.setProperty("--animation-delay", Math.floor(Math.random()*250 + 100)+'ms' )
+				element[0].style.setProperty("--animation-duration", Math.floor(Math.random()*150 + 250)+'ms' )
+
 				this.createIcon = function(){
 					return cluster._icon || element[0]
 				}
@@ -832,8 +832,16 @@
 						var	additional_items	=	icItemStorage.filteredList
 													.filter( item => hasValidGeoCoordinates(icItemRef.project(item, ['latitude', 'longitude'])) )
 
+						element[0].classList.add('marker-update')
+
 						markers.addLayers(additional_items.map(icMainMap.getMarker))
 
+						setTimeout(
+							() => {
+								element[0].classList.remove('marker-update')
+							},
+							1000
+						)
 						
 						return icMapMarkerDigestQueue.currentRun
 						
