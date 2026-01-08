@@ -242,18 +242,56 @@ angular.module('icDirectives', [
 	'icMainMap',
 	'icSite',
 	'icGeo',
+	'icTaxonomy',
+	'icItemStorage',
 
-	function(ic, $rootScope, icRange, icMainMap, icSite, icGeo){
+	function(ic, $rootScope, icRange, icMainMap, icSite, icGeo, icTaxonomy, icItemStorage){
 		return {
 			restrict:		'E',
 			templateUrl: 	'partials/ic-extended-search.html',
-			scope:			{},
+			scope:			{
+								icFilters: "<",
+							},
 
 			link(scope){
 				scope.ic = ic
 
 				zipGuess 		= undefined
 				scope.position 	= undefined
+			
+				scope.filters = scope.icFilters				
+
+				if(Array.isArray(scope.filters)){
+
+					scope.filters.forEach( filter => {
+
+						if(filter.type === 'categories'){
+							filter.options 	= 	icTaxonomy.categories
+												.map( category => category.name)
+												.filter( x => !!x)
+						}
+
+						if(filter.type === 'tagGroup'){
+							filter.options 	= 	(icTaxonomy.tags[filter.name] || [])
+												.filter( x => !!x)
+						}
+
+						if(filter.type === 'itemProperty'){
+							filter.options 	= 	icItemStorage
+												.data.map( item => item[filter.name])
+												.filter( (value, index, arr ) => arr.indexOf(value) == index)
+												.filter( x => !!x)
+						}
+
+
+
+					})
+				}
+
+
+				console.log(scope.icFilters)
+
+
 
 				scope.isNoZip = function(zip){
 					if(typeof zip !== 'string')	return true
@@ -2632,8 +2670,6 @@ angular.module('icDirectives', [
 				scope.ic			= ic
 
 				scope.searchId		= scope.$id
-
-				scope.modelOptions	= {}
 
 				if(scope.icDebounce){
 					scope.searchTerm = icSite.searchTerm

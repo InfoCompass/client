@@ -70,21 +70,11 @@
 	<li
 		class				= "bg-3"
 	>
-		<a 
-			class 			= "icon right icon-interface-down white"
-			ng-if			= "!icPlain"
-			tabindex		= "0"
-		>
-			{{'INTERFACE.MORE' | translate}}
-		</a>		
+		<h3> {{'INTERFACE.MORE' | translate}} </h3>		
 
-		<ul 
-			class	= "bg-0"
-			style	= "{{icPlain ? 'display: block;' : ''}}"
-		>
+		<ul	>
 			<li 
 				ng-repeat 	= "page in ic.config.pages"
-				class 		= "bg-0 hover" 
 				ng-if 		= "['home', 'tiles', 'tags', 'options'].indexOf(page) == -1"
 			> 
 				<a ic-touch-me a ng-href="/p/{{page}}">	{{'INTERFACE.%s' | fill : page| translate}}</a>	

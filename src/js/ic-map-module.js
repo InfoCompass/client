@@ -733,6 +733,7 @@
 
 					new LocateControl({
 						position: "bottomleft",
+						
 					}).addTo(map)	
 
 					/** Add border if configured **/

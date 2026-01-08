@@ -1,6 +1,6 @@
 <h2>
 	<span class ="icon icon-interface-search"></span>
-	{{'INTERFACE.EXTENDED_SEARCH' | translate}}
+	{{'INTERFACE.EXTENDED_SEARCH_HEADING' | translate}}
 </h2>	
 
 <ic-search
@@ -8,6 +8,81 @@
 >
 </ic-search>
 
+<h3>{{'INTERFACE.EXTENDED_SEARCH_TAXONOMY' | translate}}</h3>	
+
+<div class ="buttons">
+
+	<select
+		class		= "border-2 padding round icon icon right icon-interface-down"
+		ng-repeat 	= "filter in filters"
+		ng-model	= "filter.data"
+		ng-class	= "{ 'bg-3' : filter.data}"
+
+	> 
+
+		<option			
+			ng-if = "filter.type === 'categories'"
+			value = ""
+		>
+			{{'ITEMS.CATEGORY' | fill: filter.name | translate}}
+		</option>
+
+
+		<option
+			ng-if		= "filter.type === 'categories'"
+			ng-repeat 	= "option in filter.options | orderBy : ic.utils.evalItems('item.substr(0,4) == \'misc\' ? null : (\'CATEGORIES.%s\' | fill : item | translate)')"
+			value		= "{{option}}"
+		>
+			{{'CATEGORIES.%s' | fill: option | translate}}
+		</option>
+
+
+
+
+
+		<option
+			ng-if = "filter.type === 'tagGroup'"
+			value = ""
+		>
+			{{'ITEMS.%s' | fill: filter.name | translate}}
+		</option>
+
+
+
+		<option
+			ng-if		= "filter.type === 'tagGroup'"
+			ng-repeat 	= "option in filter.options | orderBy : ic.utils.evalItems('item.substr(0,4) == \'misc\' ? null : (\'UNSORTED_TAGS.%s\' | fill : item | translate)')"
+			value		= "{{option}}"
+		>
+			{{'UNSORTED_TAGS.%s' | fill: option | translate}}
+		</option>
+
+
+
+
+
+
+		<option
+			ng-if = "filter.type === 'itemProperty'"
+			value = ""
+		>
+			{{'ITEMS.%s' | fill: filter.name | translate}}
+		</option>
+
+
+
+		<option
+			ng-if		= "filter.type === 'itemProperty'"
+			ng-repeat 	= "option in filter.options | orderBy"
+			value		= "{{option}}"
+		>
+			{{ option }}
+		</option>
+
+	</select>
+
+	
+</div>
 
 <h3>{{'INTERFACE.RANGE' | translate}}</h3>	
 

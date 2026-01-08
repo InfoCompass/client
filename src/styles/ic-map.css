@@ -48,7 +48,7 @@ ic-map-item-marker .outer-icon {
 }
 
 .marker-update ic-map-item-marker .outer-icon {
-	animation:				marker-enter 500ms var(--animation-delay, 100ms) ease-out forwards;
+	animation:				marker-enter 500ms var(--animation-delay, 0ms) ease-out forwards;
 	transform-origin:		bottom left;	
 }
 
@@ -165,7 +165,7 @@ ic-map-cluster-marker .wrapper {
 }
 
 .marker-update ic-map-cluster-marker .wrapper {
-	animation:				marker-enter 500ms var(--animation-delay, 100ms) ease-out forwards;
+	animation:				marker-enter 500ms var(--animation-delay, 0ms) ease-out forwards;
 	transform-origin:		bottom left;	
 }
 
@@ -177,7 +177,7 @@ ic-map-cluster-marker ic-map-item-marker .outer-icon {
 
 @keyframes marker-enter {
 	0% {
-		transform:	scaleY(1);
+		transform:	scaleY(1);		
 	}
 	
 	30% {
