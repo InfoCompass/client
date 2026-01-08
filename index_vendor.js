@@ -14,8 +14,10 @@ var angular 					= require('angular'),
 	angular_translate			= require('angular-translate'),
 	leaflet						= require('leaflet'),
 	leaflet_marker_cluster		= require('leaflet.markercluster'),
+	{LocateControl}				= require('leaflet.locatecontrol'),
 	mappo						= require('mappo-aggregato-client'),
 	
+
 
 	//	leaflet_vector_grid			= require('leaflet.vectorgrid'),
 
@@ -36,5 +38,5 @@ require('leaflet.snogylop')
 window.rrule			= rrule
 window.RRule			= rrule.RRule
 window.mappo			= mappo
-
+window.LocateControl	= LocateControl
 

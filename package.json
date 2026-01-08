@@ -20,6 +20,7 @@
     "fullcalendar": "^6.1.15",
     "jquery": "^3.7.1",
     "leaflet": "^1.9.2",
+    "leaflet.locatecontrol": "^0.85.1",
     "leaflet.markercluster": "^1.5.3",
     "leaflet.snogylop": "^0.4.0",
     "mappo-aggregato-client": "^0.1.9",

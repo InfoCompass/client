@@ -507,9 +507,10 @@ function bundleStyles(src_dir, target_dir, filename){
 function bundleStylesToDst(){
 
 	return 	Promise.all([
-				fs.copy(src+"/styles", 									"tmp/styles"),	
-				fs.copy("node_modules/leaflet/dist/leaflet.css", 		"tmp/styles/leaflet.css"),
-				fs.copy(src+'/styles/initial', 							"tmp/styles/initial")
+				fs.copy(src+"/styles", 															"tmp/styles"),	
+				fs.copy("node_modules/leaflet/dist/leaflet.css", 								"tmp/styles/leaflet.css"),				
+				fs.copy("node_modules/leaflet.locatecontrol/dist/L.Control.Locate.min.css", 	"tmp/styles/leaflet_locatecontrol.css"),
+				fs.copy(src+'/styles/initial', 													"tmp/styles/initial")
 			])
 			.then( () => Promise.all([
 				bundleStyles('tmp/styles/initial', 	dst+'/'+styles_dir, 'initial.css'),

@@ -713,6 +713,7 @@
 
 											}),
 
+
 						pickerPane		=	map.createPane('pickerPane'),
 
 						pickerMarker	=	icMainMap.getMarker(
@@ -729,6 +730,10 @@
 
 						pickerControl	=	new L.Control.IcMapCoordinatePicker({ position: 	'bottomcenter' })
 
+
+					new LocateControl({
+						position: "bottomleft",
+					}).addTo(map)	
 
 					/** Add border if configured **/
 
