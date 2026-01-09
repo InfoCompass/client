@@ -128,7 +128,7 @@
 	<button
 		ng-repeat 	= "range in ranges"
 		class		= "round border-2 padding" 
-		ng-click	= "ic.site.range = range"
+		ng-click	= "ic.site.range = ic.site.range == range ? undefind : range"
 		ng-class	= "{ 'bg-3': ic.site.range == range}"
 	>
 		{{range}} km

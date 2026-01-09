@@ -465,7 +465,8 @@
 	])
 
 
-	.provider('icMainMap', [		
+	.provider('icMainMap', [
+
 
 		function(){
 
@@ -509,11 +510,12 @@
 				'icMapItemMarker',
 				'icItemStorage',
 				'icSite',
+				'icConfig',
 				'icItemRef',
 				'icConsent',
 				'plTemplates',
 
-				function($rootScope, $q ,icMapItemMarker, icItemStorage, icSite, icItemRef, icConsent, plTemplates){
+				function($rootScope, $q ,icMapItemMarker, icItemStorage, icSite, icConfig, icItemRef, icConsent, plTemplates){
 
 
 
@@ -531,13 +533,19 @@
 
 
 
-					defaultPicker			=	{
+						defaultPicker		=	{
 													//title:		'Pick location, translation needed',
 													latitude: 		icMainMap.defaults.center[0],
 													longitude: 		icMainMap.defaults.center[1]
-												}
+												},
+
+						rangeMarker			=	undefined
+
+
 
 					icMainMap.picker		=	angular.copy(defaultPicker)
+
+
 					
 
 					if(icMainMap.defaults.consent){
@@ -557,6 +565,34 @@
 						mapReady = $q.defer()
 						icMainMap.mapObject = undefined
 						icMainMap.ready	= mapReady.promise
+					}
+
+					icMainMap.showRange = function([lat, lon], range){
+						icMainMap.ready
+						.then( map => {
+							if(!rangeMarker){
+								rangeMarker = new L.circle([lat, lon], {radius: range*100}).addTo(map) 
+
+								rangeMarker
+								.setStyle({
+									color:		'#fff',
+									weight:		20,
+									opacity:	0.7,
+									fill:		false
+								})
+							}
+
+							rangeMarker
+							.setLatLng([lat,lon])	
+							.setRadius(range*1000)
+
+						})
+						
+					}
+
+					icMainMap.hideRange = function(){
+						if(!rangeMarker) return
+							rangeMarker.remove()
 					}
 
 					icMainMap.getMarker = function(item, options){

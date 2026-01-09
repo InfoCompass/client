@@ -4383,9 +4383,10 @@ angular.module('icServices', [
 
 	'$rootScope',
 	'icSite',
+	'icMainMap',
 	'icItemStorage',
 
-	function($rootScope, icSite, icItemStorage){
+	function($rootScope, icSite, icMainMap, icItemStorage){
 
 		class IcRange {
 
@@ -4454,8 +4455,7 @@ angular.module('icServices', [
 
 				$rootScope.$watch( () => icSite.range, ( range ) => {
 					this.updateSitePosition()
-				})
-
+				})		
 
 
 				$rootScope.$watch( () => icSite.position, ( position ) => {
@@ -4471,9 +4471,18 @@ angular.module('icServices', [
 			}
 
 			updateSitePosition(){
-				icSite.range
-				?	icSite.position = this.lastKnownPosition
-				:	icSite.position	= undefined
+
+				if(!Number.isFinite(icSite.range)){
+					icSite.position = undefined
+					icMainMap.hideRange()
+					return
+				}
+
+				icSite.position = this.lastKnownPosition
+
+				icSite.position && Number.isFinite(icSite.position[0]) && Number.isFinite(icSite.position[1])
+				?	icMainMap.showRange(icSite.position, icSite.range)
+				:	icMainMap.hideRange()
 
 			}
 
