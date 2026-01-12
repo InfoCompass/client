@@ -256,8 +256,14 @@ angular.module('icDirectives', [
 			link(scope){
 				scope.ic = ic
 
-				zipGuess 		= undefined
-				scope.position 	= undefined
+				zipGuess 		= 	undefined
+
+				scope.position	= 	{
+										coordinates: 	undefined,
+										method: 		undefined,
+										methodUsed:		undefined,
+										methods: 		['zip', 'manual', 'auto']
+									}
 			
 				scope.filters = scope.icFilters				
 
@@ -313,11 +319,10 @@ angular.module('icDirectives', [
 					$rootScope.$digest()
 				}				
 
-				scope.guessCoordinatesFromZip = async function(){
+				scope.guessCoordinatesFromZip = async function(zip){
 
 					try {
-						zipGuess	= await icGeo.zipCenter(scope.zip)
-						console.log({zipGuess})
+						zipGuess	= await icGeo.zipCenter(zip)
 						icRange.setCurrentPosition(zipGuess.lat, zipGuess.lon)
 
 					} catch(e) {
@@ -331,15 +336,21 @@ angular.module('icDirectives', [
 				$rootScope.$watch( () => icRange.lastKnownPosition, () => {
 
 					if(!icRange.lastKnownPosition){ 
-						scope.position = undefined
+						scope.position.coordinates = undefined
 					} else if(
 							zipGuess 
 						&&	zipGuess.lat == icRange.lastKnownPosition[0]
 						&&	zipGuess.lon == icRange.lastKnownPosition[1]
 					){	
-						scope.position = `${zipGuess.lat}, ${zipGuess.lon}, (${zipGuess.display_name})` 				
+						scope.position.coordinates = `${zipGuess.lat}, ${zipGuess.lon}, (${zipGuess.display_name})` 				
 					} else {
-						scope.position = `${icRange.lastKnownPosition[0]}, ${icRange.lastKnownPosition[1]}` 
+						scope.position.coordinates = `${icRange.lastKnownPosition[0]}, ${icRange.lastKnownPosition[1]}` 
+					}
+
+					if(!scope.position.method){
+						scope.position.method =	scope.position.coordinates
+												?	'manual'
+												:	'zip'
 					}
 
 				}, true)

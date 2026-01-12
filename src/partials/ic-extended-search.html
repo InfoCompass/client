@@ -1,14 +1,17 @@
-<h2>
+<h1>
 	<span class ="icon icon-interface-search"></span>
 	{{'INTERFACE.EXTENDED_SEARCH_HEADING' | translate}}
-</h2>	
+</h1>	
+
+
+<h2>{{'INTERFACE.EXTENDED_SEARCH_LABEL' | translate}}</h2>	
 
 <ic-search
 	ic-debounce = "500"
 >
 </ic-search>
 
-<h3>{{'INTERFACE.EXTENDED_SEARCH_TAXONOMY' | translate}}</h3>	
+<h2>{{'INTERFACE.EXTENDED_SEARCH_TAXONOMY' | translate}}</h2>	
 
 <div class ="buttons">
 
@@ -24,7 +27,7 @@
 			ng-if = "filter.type === 'categories'"
 			value = ""
 		>
-			{{'ITEMS.CATEGORY' | fill: filter.name | translate}}
+			{{'INTERFACE.SELECT_NO_VALUE' | translate}} {{'ITEMS.CATEGORY' | fill: filter.name | translate}}
 		</option>
 
 
@@ -44,7 +47,7 @@
 			ng-if = "filter.type === 'tagGroup'"
 			value = ""
 		>
-			{{'ITEMS.%s' | fill: filter.name | translate}}
+			{{'INTERFACE.SELECT_NO_VALUE' | translate}} {{'ITEMS.%s' | fill: filter.name | translate}}
 		</option>
 
 
@@ -66,7 +69,7 @@
 			ng-if = "filter.type === 'itemProperty'"
 			value = ""
 		>
-			{{'ITEMS.%s' | fill: filter.name | translate}}
+			{{'INTERFACE.SELECT_NO_VALUE' | translate}} {{'ITEMS.%s' | fill: filter.name | translate}}
 		</option>
 
 
@@ -84,44 +87,96 @@
 	
 </div>
 
-<h3>{{'INTERFACE.RANGE' | translate}}</h3>	
-
-<div>
-	{{'INTERFACE.CURRENT_POSITION' | translate}}: 
-	{{position ? position : ('INTERFACE.CURRENT_POSITION_UNKNOWN' | translate)}}
-<div>
-
-<div clas = "buttons">
-
-	<input 
-		class				= "border-2 padding"
-		ng-model			= "zip"
-		ng-model-options	= "{ debounce:500 }"
-		placeholder			= "{{'INTERFACE.GET_COORDINATES_FROM_ZIP_PLACEHOLDER' | translate}}" 
-	/>
-
-	<button
-		class	 		= "border-2 padding"
-		ng-click		= "guessCoordinatesFromZip()"
-		ng-disabled		= "isNoZip(zip)"
-		title			= "{{'INTERFACE.GET_COORDINATES_FROM_ZIP' | translate}}"
-	>
-		{{'INTERFACE.GET_COORDINATES_FROM_ZIP' | translate}}
-	</button>
-
-	<button
-		class	 	= "border-2 padding"
-		ng-click	= "pickCoordinates()"
-		title		= "{{'INTERFACE.PICK_COORDINATES' | translate}}"
-	>
-		{{'INTERFACE.PICK_COORDINATES' | translate}}
-	</button>
-
-</div>
+<h2>{{'INTERFACE.EXTENDED_SEARCH_RANGE' | translate}}</h2>	
 
 
 <div 
-	ng-init = "ranges = [1, 5, 10, 50]"
+	class 	= "buttons split"
+>
+
+	<div>
+		<h3>{{'INTERFACE.CURRENT_POSITION' | translate}}</h3>	
+		<button
+			ng-repeat 	= "method in position.methods"
+			class		= "icon icon-interface-radio left"
+			ng-class	= "{'checked': method == position.method }"
+			ng-click	= "position.method = method"
+		>
+			{{'INTERFACE.GET_POSITION_METHOD_%s' | fill: method | translate}}
+		</button>
+	</div>
+
+	<div>
+
+		<h3 title = "{{position.coordinates}}">
+			{{'INTERFACE.CURRENT_POSITION' | translate}}: 
+			<span ng-if = "!position.coordinates">{{'INTERFACE.CURRENT_POSITION_UNKNOWN' | translate}}</span>
+		</h3>
+
+
+		
+		<button 
+			ng-if		= "position.method == 'manual' && position.coordinates"
+			class		= "icon icon-interface-position_marker left"
+			title		= "{{'INTERFACE.SHOW_MANUAL_POSITION_ON_MAP' | fill: method | translate}}"
+			ng-click	= ""
+		> {{'INTERFACE.MANUALLY_PICKED_POSITION' | translate}} </button>	
+
+		<button 
+			ng-if		= "position.method == 'auto' && position.coordinates"	
+			class		= "icon icon-interface-position_marker left"
+			title		= "{{'INTERFACE.SHOW_AUTO_POSITION_ON_MAP' | fill: method | translate}}"
+			ng-click	= ""
+		> {{'INTERFACE.AUTO_DETERMINED_POSITION' | translate}} </button>	
+
+		<button 
+			ng-if		= "position.method == 'zip' && position.coordinates"	
+			class		= "icon icon-interface-position_marker left"
+			title		= "{{'INTERFACE.SHOW_AUTO_POSITION_ON_MAP' | fill: method | translate}}"
+			ng-click	= ""
+		>
+			({{position.zip}})
+		</button>	
+
+
+
+		<input 
+			ng-if				= "position.method == 'zip'"
+			class				= "border-2 padding"
+			ng-model			= "position.zip"
+			ng-model-options	= "{ debounce:500 }"
+			placeholder			= "{{'INTERFACE.PLACEHOLDER_ZIP' | translate}}" 
+		/>
+
+		<button
+			ng-if			= "position.method == 'zip'"
+			class	 		= "border-2 padding"
+			ng-click		= "guessCoordinatesFromZip(position.zip)"
+			ng-disabled		= "isNoZip(position.zip)"
+			title			= "{{'INTERFACE.GET_COORDINATES_FROM_ZIP' | translate}}"
+		>
+			{{'INTERFACE.GET_COORDINATES_FROM_ZIP' | translate}}
+		</button>
+
+
+
+
+		<button
+			ng-if		= "position.method == 'manual'"
+			class	 	= "border-2 padding"
+			ng-click	= "pickCoordinates()"
+			title		= "{{'INTERFACE.PICK_COORDINATES' | translate}}"
+		>
+			{{'INTERFACE.PICK_COORDINATES' | translate}}
+		</button>
+
+	</div>
+</div>
+
+<h3>{{'INTERFACE.EXTENDED_SEARCH_RADIUS' | translate}}</h3>	
+
+<div 
+	ng-init = "ranges = [1, 5, 10, 20, 50]"
 	class	= "buttons"
 >
 

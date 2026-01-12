@@ -44,6 +44,21 @@
 	padding-left:			1.5em;
 }
 
+.icon.left.round{
+	background-position:	0.5em 50%;
+	padding-left:			2rem;
+}
+
+.icon.right {
+	background-position:	100% 50%;
+	padding-right:			1.5em;
+}
+
+.icon.right.round{
+	background-position:	calc(100% - 0.5em) 50%;
+	padding-right:			2rem;
+}
+
 .icon.inline {
 	vertical-align: 		baseline;
 	min-width: 				1em;
@@ -53,23 +68,6 @@
 
 }
 
-/*
-.img.left {
-	left:					0;
-}
-
-*/
-
-.icon.right {
-	background-position:	100% 50%;
-	padding-right:			1.5em;
-}
-
-/*.img{
-	right:					0;
-}
-
-*/
 .icon.top {
 	background-position:	50% 0%;
 	padding-top:			1.5em;
