@@ -181,15 +181,15 @@ ic-map-cluster-marker ic-map-item-marker .outer-icon {
 	}
 	
 	30% {
-		transform:	scaleY(0.8);
+		transform:	scaleY(0.85);
 	}
 
 	60% {
-		transform:	scaleY(1.1);
+		transform:	scaleY(1.075);
 	}
 
 	80% {
-		transform:	scaleY(0.9);
+		transform:	scaleY(0.95);
 	}
 
 	100% {
