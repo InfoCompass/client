@@ -595,6 +595,10 @@
 							rangeMarker.remove()
 					}
 
+					icMainMap.getCurrentLocation = function() {
+						
+					}
+
 					icMainMap.getMarker = function(item, options){
 
 						const projected = icItemRef.project(item, ['latitude', 'longitude'])	

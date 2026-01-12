@@ -159,8 +159,6 @@
 		</button>
 
 
-
-
 		<button
 			ng-if		= "position.method == 'manual'"
 			class	 	= "border-2 padding"
@@ -191,8 +189,13 @@
 
 </div>
 
-<div ng-init = "tags = []">
+<hr/>
 
-
-	tags...
+<div class = "results">
+	<a
+		class 	= "bg-3 round padding large"
+		ng-href = "{{ { list: true } | icLink }}"
+	>
+		{{'INTERFACE.EXTENDED_SEARCH_RESULTS' | translate : { number:ic.itemStorage.filteredList.length } }}
+	</a>
 </div>

@@ -612,7 +612,6 @@ angular.module('icDirectives', [
 					ic.itemStorage.filteredList.forEach( item => {
 
 
-
 						const hasExcludedTag 	= excludedTags.some(x => item.tags.includes(x))
 
 						if(hasExcludedTag) return

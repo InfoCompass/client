@@ -17,3 +17,9 @@ ic-extended-search .buttons.split > * {
 	align-items:		flex-start;
 	gap:				0.5rem;
 }
+
+ic-extended-search .results {
+	display:			flex;
+	justify-content:	center;
+	margin-top:			2rem;
+}
