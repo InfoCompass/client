@@ -165,7 +165,7 @@ ic-map-cluster-marker .wrapper {
 }
 
 .marker-update ic-map-cluster-marker .wrapper {
-	animation:				marker-enter 500ms var(--animation-delay, 0ms) ease-out forwards;
+	animation:				marker-enter 600ms var(--animation-delay, 0ms) ease-out forwards;
 	transform-origin:		bottom left;	
 }
 
@@ -181,15 +181,15 @@ ic-map-cluster-marker ic-map-item-marker .outer-icon {
 	}
 	
 	30% {
-		transform:	scaleY(0.6);
+		transform:	scaleY(0.8);
 	}
 
 	60% {
-		transform:	scaleY(1.2);
+		transform:	scaleY(1.1);
 	}
 
 	80% {
-		transform:	scaleY(0.8);
+		transform:	scaleY(0.9);
 	}
 
 	100% {
