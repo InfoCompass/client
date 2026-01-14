@@ -2695,9 +2695,7 @@ angular.module('icDirectives', [
 					search_term = (search_term||'').replace(/[\/?#]+/g,' ')
 
 
-					if(scope.icDebounce){
-						return 
-					}
+					if(scope.icDebounce) return 
 
 					input.focus()
 					input.blur()
@@ -2716,7 +2714,7 @@ angular.module('icDirectives', [
 				}
 
 				scope.$watch('searchTerm',  () => {
-					icSite.searchTerm = scope.searchTerm
+					if(scope.icDebounce) icSite.searchTerm = scope.searchTerm
 				})
 
 			}
