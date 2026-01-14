@@ -4604,6 +4604,7 @@ angular.module('icServices', [
 			_weekday	= undefined
 			startTime	= undefined
 			endTime		= undefined
+			exampleDate	= undefined
 
 			set iteration(x) {
 				if(!RecurringRule.availableIterations.includes(x)) throw new Error(`Unavailable iteration: ${x}`, { cause:x })
@@ -4670,7 +4671,7 @@ angular.module('icServices', [
 				const endTime		= 	flatRule[3] && new Date(1970,0,1,...flatRule[3].split(':').map(x => parseInt(x) ))
 
 
-				const [YYYY, MM, DD]=	(flatRule[4]||'XXXX-XX-XX').split('-')
+				const [YYYY, MM, DD]=	(flatRule[4]||'XXXX-XX-XX').split('-') // exampleDate
 				const year			=	parseInt(YYYY)
 				const month			=	parseInt(MM)-1
 				const day			=	parseInt(DD)
@@ -4917,9 +4918,12 @@ angular.module('icServices', [
 
 				const rrule 	= this.getRRule()
 
-				const year		= date.getFullYear()
-				const month		= (date.getMonth()+1+'').padStart(2, '0')
-				const day		= (date.getDate()+'').padStart(2, '0')
+				const start		= this.exampleDate || date
+	
+				const year		=  start.getFullYear()
+				const month		= (start.getMonth()+1+'').padStart(2, '0')
+				const day		= (start.getDate()+'').padStart(2, '0')
+
 
 				const dtstart 	= `DTSTART:${year}${month}${day}T000000`
 
