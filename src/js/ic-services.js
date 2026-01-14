@@ -4392,6 +4392,7 @@ angular.module('icServices', [
 
 			lastKnownPosition	=	undefined
 			areas 				=	[]
+			detectedPosition	=	undefined
 
 			constructor(){	
 				const parRange	=	{
@@ -4452,6 +4453,7 @@ angular.module('icServices', [
 
 				icSite.registerParameter(parRange)
 				icSite.registerParameter(parPos)
+
 
 				$rootScope.$watch( () => icSite.range, ( range ) => {
 					this.updateSitePosition()
@@ -4544,6 +4546,35 @@ angular.module('icServices', [
 				console.log(tag, this.areas)
 
 				return tag
+			}
+
+			locate = async function(focus = false) {
+
+				if(this.detectedPosition) return this.detectedPosition
+
+				let resolve, reject 
+
+				const promise = new Promise( (solve, ject) => { resolve = solve; reject = ject })
+				
+				L.locate({
+					watch: true,
+					show: focus
+				})
+
+				icMainMap.mapObject.addEventListener('locationfound', ({latlng}) => {
+					this.detectedPosition = [latlng.lat, latlng.lng]
+					resolve(latlng)
+				}, {once: true})
+
+				icMainMap.mapObject.addEventListener('locationerror', e => {
+					reject(e)
+				}, {once: true})
+
+				return await promise
+			}
+
+			focusDetectedLocation = async function(){
+				await this.locate(true)				
 			}
 
 		}

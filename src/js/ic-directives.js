@@ -333,6 +333,10 @@ angular.module('icDirectives', [
 					$rootScope.$digest()
 				}
 
+				scope.locate = function(){
+					icRange.locate(true)
+				}
+
 				$rootScope.$watch( () => icRange.lastKnownPosition, () => {
 
 					if(!icRange.lastKnownPosition){ 

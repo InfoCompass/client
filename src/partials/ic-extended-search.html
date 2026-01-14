@@ -126,7 +126,7 @@
 			ng-if		= "position.method == 'auto' && position.coordinates"	
 			class		= "icon icon-interface-position_marker left"
 			title		= "{{'INTERFACE.SHOW_AUTO_POSITION_ON_MAP' | fill: method | translate}}"
-			ng-click	= ""
+			ng-click	= "locate()"
 		> {{'INTERFACE.AUTO_DETERMINED_POSITION' | translate}} </button>	
 
 		<button 
@@ -167,6 +167,16 @@
 		>
 			{{'INTERFACE.PICK_COORDINATES' | translate}}
 		</button>
+
+		<button
+			ng-if		= "position.method == 'auto'"
+			class	 	= "border-2 padding"
+			ng-click	= "locate()"
+			title		= "{{'INTERFACE.GET_POSITION_METHOD_AUTO' | translate}}"
+		>
+			{{'INTERFACE.GET_POSITION_METHOD_AUTO' | translate}}
+		</button>	
+
 
 	</div>
 </div>
