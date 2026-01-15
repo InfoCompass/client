@@ -24,6 +24,8 @@ angular.module('icServices', [
 ])
 
 
+
+
 .service('icUtils', [
 
 	'$rootScope',
@@ -1149,7 +1151,6 @@ angular.module('icServices', [
 			icSite.activeSections 	=	{}
 			icSite.visibleSections 	= 	{}
 
-			console.log(icSite.config)
 
 			for(const section in icSite.config.sectionUpdates){
 				icSite.config.sectionUpdates[section].forEach( update => icSite.updateSection(section, update))
@@ -4360,6 +4361,10 @@ angular.module('icServices', [
 			}
 
 			async zipCenter(postalcode){
+
+				if(typeof postalcode != 'string')	throw "postalcode must be string"
+				if(!postalcode.match(/^\d{5}$/))	throw "postalcode must consist of exactly 5 digits"	
+
 				const base		= icConfig.publicApi
 				const path		= '/geo-guess'
 				const queries	= new URLSearchParams({postalcode})
@@ -4463,6 +4468,7 @@ angular.module('icServices', [
 
 				$rootScope.$watch( () => icSite.position, ( position ) => {
 					this.lastKnownPosition = position || this.lastKnownPosition
+					this.updateSitePosition()
 				})
 
 			}
@@ -4473,19 +4479,38 @@ angular.module('icServices', [
 				this.updateSitePosition()
 			}
 
+			clearPosition(){
+				this.lastKnownPosition = undefined
+				this.updateSitePosition()
+			}
+
 			updateSitePosition(){
 
-				if(!Number.isFinite(icSite.range)){
-					icSite.position = undefined
-					icMainMap.hideRange()
-					return
+
+				const hasRange 		= !!Number.isFinite(icSite.range)
+				const hasLastKnown	= !!(this.lastKnownPosition && Number.isFinite(this.lastKnownPosition[0]) && Number.isFinite(this.lastKnownPosition[1]))
+
+
+				if(hasLastKnown){
+					icMainMap.showLocationMarker(this.lastKnownPosition)
 				}
 
-				icSite.position = this.lastKnownPosition
+				if(hasRange && hasLastKnown){
+					icSite.position		=	this.lastKnownPosition
+					icMainMap.showRange(this.lastKnownPosition, icSite.range)
+				}
 
-				icSite.position && Number.isFinite(icSite.position[0]) && Number.isFinite(icSite.position[1])
-				?	icMainMap.showRange(icSite.position, icSite.range)
-				:	icMainMap.hideRange()
+				if(!hasLastKnown){
+					icSite.position		=	undefined
+					icMainMap.hideLocationMarker()
+					icMainMap.hideRange()
+				}
+				
+				if(!hasRange){
+					icSite.position		=	undefined
+					icMainMap.hideRange()		
+				}
+
 
 			}
 
@@ -4551,25 +4576,26 @@ angular.module('icServices', [
 
 			locate = async function(focus = false) {
 
-				if(this.detectedPosition) return this.detectedPosition
-
 				let resolve, reject 
 
 				const promise = new Promise( (solve, ject) => { resolve = solve; reject = ject })
 				
-				L.locate({
-					watch: true,
-					show: focus
-				})
-
 				icMainMap.mapObject.addEventListener('locationfound', ({latlng}) => {
 					this.detectedPosition = [latlng.lat, latlng.lng]
-					resolve(latlng)
+					this.setCurrentPosition(...this.detectedPosition)
+					resolve(this.detectedPosition)
+					$rootScope.$digest()
 				}, {once: true})
 
 				icMainMap.mapObject.addEventListener('locationerror', e => {
 					reject(e)
+					$rootScope.$digest()					
 				}, {once: true})
+
+				icMainMap.mapObject.locate({					
+					show: focus
+				})
+
 
 				return await promise
 			}
@@ -5252,7 +5278,75 @@ angular.module('icServices', [
 	}
 ])
 
+.service('icCalendar', [
 
+	'icSite',
+
+	function(icSite){
+
+		icSite.registerParameter({
+			name: 			'start',
+			encode:			function(value, ic){
+								if(!value) return ''
+								if(!value.match(/^\d\d\d\d-\d\d-\d\d$/))	 return ''
+								return 'start/'+value 
+							},
+			decode:			function(path, ic){
+								var matches = path.match(/(^|\/)start\/([^\/]*)/)
+								const value = (matches && matches[2])
+								if(!value) return undefined
+								if(!value.match(/^\d\d\d\d-\d\d-\d\d$/))	 return undefined
+								return value
+							}
+		})
+
+		icSite.registerParameter({
+			name: 			'end',
+			encode:			function(value, ic){
+								if(!value) return ''
+								if(!value.match(/^\d\d\d\d-\d\d-\d\d$/))	 return ''
+								return 'end/'+value 
+							},
+			decode:			function(path, ic){
+								var matches = path.match(/(^|\/)end\/([^\/]*)/)
+								const value = (matches && matches[2])
+								if(!value) return ''
+								if(!value.match(/^\d\d\d\d-\d\d-\d\d$/))	 return ''
+								return value
+							}
+		})
+
+
+		class IcCalendar {
+
+			getNextWeekend(date = new Date()){
+
+				const dayOfWeek = 	date.getDay()
+				const offsetSat	= 	[-1,5,4,3,2,1,0][dayOfWeek]
+
+				const saturday	= 	new Date()
+				const sunday	= 	new Date()
+
+				saturday.setDate(date.getDate() + offsetSat)
+				sunday.setDate(date.getDate() + offsetSat+1)
+
+				return [saturday, sunday]				
+				
+			}
+
+			getNextDay(date = new Date()){
+				const d	= new Date(date.getTime())
+
+				d.setDate(d.getDate()+1)
+
+				return d
+			}
+		}
+
+		return new IcCalendar
+
+	}	
+])
 
 //updating core Service
 
@@ -5290,9 +5384,10 @@ angular.module('icServices', [
 	'icMatomo',
 	'icMappo',
 	'icRange',
+	'icCalendar',
 	'$rootScope',
 
-	function(ic, icInit, icSite, icItemStorage, icLayout, icItemConfig, icTaxonomy, icFilterConfig, icLanguages, icFavourites, icOverlays, icAdmin, icUser, icStats, icConfig, icUtils, icConsent, icTiles, icOptions, icLists, icMainMap, icWebfonts, icItemRef, icKeyboard, icAutoFill, icExport, icGeo, icRemotePages, icRecurring, icMatomo, icMappo, icRange, $rootScope ){
+	function(ic, icInit, icSite, icItemStorage, icLayout, icItemConfig, icTaxonomy, icFilterConfig, icLanguages, icFavourites, icOverlays, icAdmin, icUser, icStats, icConfig, icUtils, icConsent, icTiles, icOptions, icLists, icMainMap, icWebfonts, icItemRef, icKeyboard, icAutoFill, icExport, icGeo, icRemotePages, icRecurring, icMatomo, icMappo, icRange, icCalendar, $rootScope ){
 
 		ic.admin		= icAdmin
 		ic.autoFill		= icAutoFill

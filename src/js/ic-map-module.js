@@ -183,6 +183,53 @@
 
 	])
 
+	.service('icMapLocationMarker',[
+
+		'$compile',
+
+		function($compile){
+
+			var icMapLocationMarker = function(parentScope){
+
+				var scope 	=  	parentScope.$new()
+				var element = 	$compile('<ic-map-location-marker class ="picker highlight"></ic-map-item-marker')(scope)
+
+				this.createIcon = function(){
+					return element[0]
+				}
+
+				this.createShadow = function(){
+					return null // shadow[0]
+				}
+
+				this.options = {}
+			}
+
+			return icMapLocationMarker
+		}
+	])
+
+
+
+	.directive('icMapLocationMarker',[
+
+		'$templateCache',
+		'ic',
+
+		function($templateCache, ic){
+			return {
+				restrict:		'E',
+				template:		`<a class ="icon icon-interface-position_marker" ng-href = "{{{page:'extended_search', list: false} | icLink}}"></div>`,
+
+				link: function(scope, element){
+
+				}
+
+			}
+		}
+
+	])
+
 
 	.service('icMapClusterMarker',[
 
@@ -517,6 +564,7 @@
 				'$rootScope',
 				'$q',
 				'icMapItemMarker',
+				'icMapLocationMarker',
 				'icItemStorage',
 				'icSite',
 				'icConfig',
@@ -524,7 +572,7 @@
 				'icConsent',
 				'plTemplates',
 
-				function($rootScope, $q ,icMapItemMarker, icItemStorage, icSite, icConfig, icItemRef, icConsent, plTemplates){
+				function($rootScope, $q ,icMapItemMarker, icMapLocationMarker, icItemStorage, icSite, icConfig, icItemRef, icConsent, plTemplates){
 
 
 
@@ -548,7 +596,14 @@
 													longitude: 		icMainMap.defaults.center[1]
 												},
 
-						rangeMarker			=	undefined
+						rangeMarker			=	undefined,
+
+						locationMarker		=	new L.marker(
+													icMainMap.defaults.center, 
+													{
+														icon: new icMapLocationMarker(icMainMap.scope)
+													}
+												)
 
 
 
@@ -576,11 +631,13 @@
 						icMainMap.ready	= mapReady.promise
 					}
 
+
 					icMainMap.showRange = function([lat, lon], range){
+
 						icMainMap.ready
 						.then( map => {
 							if(!rangeMarker){
-								rangeMarker = new L.circle([lat, lon], {radius: range*100}).addTo(map) 
+								rangeMarker = new L.circle([lat, lon], {radius: range*100})
 
 								rangeMarker
 								.setStyle({
@@ -592,6 +649,7 @@
 							}
 
 							rangeMarker
+							.addTo(icMainMap.mapObject)
 							.setLatLng([lat,lon])	
 							.setRadius(range*1000)
 
@@ -604,9 +662,19 @@
 							rangeMarker.remove()
 					}
 
-					icMainMap.getCurrentLocation = function() {
-						
+					icMainMap.showLocationMarker = function([lat,lon]){
+						icMainMap.ready
+						.then( map => {
+							locationMarker
+							.setLatLng([lat,lon])
+							.addTo(map)
+						})
 					}
+
+					icMainMap.hideLocationMarker = function(){
+						locationMarker.remove()
+					}
+
 
 					icMainMap.getMarker = function(item, options){
 
@@ -655,10 +723,10 @@
 
 						picker = picker || defaultPicker
 
-						picker.latitude 	= Number(picker.latitude)
-						picker.longitude 	= Number(picker.longitude)
+						picker.latitude 	= Number(picker.latitude || defaultPicker.latitude)
+						picker.longitude 	= Number(picker.longitude || defaultPicker.longitude)
 
-						if(picker.latitude && picker.longitude) {
+						if(hasValidGeoCoordinates(picker)) {
 							picker.zoom = picker.zoom || icMainMap.defaults.maxZoom
 						} else {
 							picker.zoom = icMainMap.defaults.minZoom
@@ -780,6 +848,7 @@
 
 						pickerControl	=	new L.Control.IcMapCoordinatePicker({ position: 	'bottomcenter' })
 
+					
 
 					new LocateControl({
 						position: "bottomleft",

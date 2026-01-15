@@ -244,8 +244,11 @@ angular.module('icDirectives', [
 	'icGeo',
 	'icTaxonomy',
 	'icItemStorage',
+	'icOverlays',
+	'icFilterConfig',
+	'icCalendar',
 
-	function(ic, $rootScope, icRange, icMainMap, icSite, icGeo, icTaxonomy, icItemStorage){
+	function(ic, $rootScope, icRange, icMainMap, icSite, icGeo, icTaxonomy, icItemStorage, icOverlays, icFilterConfig, icCalendar){
 		return {
 			restrict:		'E',
 			templateUrl: 	'partials/ic-extended-search.html',
@@ -260,12 +263,14 @@ angular.module('icDirectives', [
 
 				scope.position	= 	{
 										coordinates: 	undefined,
-										method: 		undefined,
-										methodUsed:		undefined,
-										methods: 		['zip', 'manual', 'auto']
+										zip:			undefined,
 									}
 			
-				scope.filters = scope.icFilters				
+				scope.filters 	= scope.icFilters				
+
+				scope.today		= icUtils.stringifyDate(new Date())
+				scope.tomorrow	= icUtils.stringifyDate(icCalendar.getNextDay())
+				scope.weekend	= icCalendar.getNextWeekend().map( d => icUtils.stringifyDate(d) )
 
 				if(Array.isArray(scope.filters)){
 
@@ -289,13 +294,26 @@ angular.module('icDirectives', [
 												.filter( x => !!x)
 						}
 
-
-
 					})
 				}
 
+				scope.$watch(
+					() => scope.filters,
+					filters => {
+						filters.forEach( filter => {
+							if(filter.type === "tagGroup"){
+								icFilterConfig.clearUnsortedTag(icTaxonomy.tags[filter.name])
+								icFilterConfig.toggleUnsortedTag(filter.data)
+							}
 
-				console.log(scope.icFilters)
+							if(filter.type === "categories"){
+								icFilterConfig.clearCategory()
+								icFilterConfig.toggleCategory(filter.data, true, true)
+							}
+
+						})
+					}, true
+				)
 
 
 
@@ -305,10 +323,19 @@ angular.module('icDirectives', [
 					return false
 				}
 
+				scope.clearPosition = function(){
+					icRange.clearPosition()
+				}
+
 				scope.pickCoordinates 	=  async () => {
-					const latLng		= 	icMainMap.mapObject.getCenter()
-					const latitude		= 	latLng.lat
-					const longitude		= 	latLng.lng
+
+
+					const latLng		= 	Array.isArray(icRange.lastKnownPosition)
+											?	[...icRange.lastKnownPosition]
+											:	icMainMap.mapObject.getCenter()
+
+					const latitude		= 	latLng[0] || latLng.lat
+					const longitude		= 	latLng[1] || latLng.lng					
 					const zoom			= 	icMainMap.mapObject.getZoom()
 
 					const pickerOptions = 	{ latitude, longitude, zoom }
@@ -316,14 +343,22 @@ angular.module('icDirectives', [
 					const position 		= 	await icMainMap.pickCoordinates(pickerOptions)
 					
 					icRange.setCurrentPosition(position.latitude, position.longitude)
+					icMainMap.mapObject.flyTo([position.latitude, position.longitude])
+
 					$rootScope.$digest()
 				}				
 
 				scope.guessCoordinatesFromZip = async function(zip){
 
 					try {
-						zipGuess	= await icGeo.zipCenter(zip)
-						icRange.setCurrentPosition(zipGuess.lat, zipGuess.lon)
+						zipGuess		= await icGeo.zipCenter(zip)
+						
+						const latitude	= parseFloat(zipGuess.lat)
+						const longitude	= parseFloat(zipGuess.lon)
+						const position	= [latitude, longitude]
+
+						icRange.setCurrentPosition(...position)
+						icMainMap.mapObject.flyTo(position)
 
 					} catch(e) {
 						zipGuess	= undefined						
@@ -333,9 +368,26 @@ angular.module('icDirectives', [
 					$rootScope.$digest()
 				}
 
-				scope.locate = function(){
-					icRange.locate(true)
+				scope.locate = async function(){
+					icOverlays.open('spinner')
+					
+					try {
+						const position = await icRange.locate(true)
+						icMainMap.mapObject.flyTo(position)
+					} catch(e){
+						console.error(e)
+					}
+					icOverlays.toggle('spinner', false)
 				}
+
+				scope.$watch(
+					() 	=> scope.position.zip,
+					zip => {
+						if(typeof zip != 'string')	return
+						if(scope.isNoZip(zip))		return
+						scope.guessCoordinatesFromZip(zip)	
+					}
+				)
 
 				$rootScope.$watch( () => icRange.lastKnownPosition, () => {
 
@@ -349,12 +401,8 @@ angular.module('icDirectives', [
 						scope.position.coordinates = `${zipGuess.lat}, ${zipGuess.lon}, (${zipGuess.display_name})` 				
 					} else {
 						scope.position.coordinates = `${icRange.lastKnownPosition[0]}, ${icRange.lastKnownPosition[1]}` 
-					}
-
-					if(!scope.position.method){
-						scope.position.method =	scope.position.coordinates
-												?	'manual'
-												:	'zip'
+						scope.position.zip = ''
+						zipGuess = undefined
 					}
 
 				}, true)
@@ -384,8 +432,11 @@ angular.module('icDirectives', [
 
 .directive('icCalendarControls',[
 	'ic',
+	'icSite',
+	'icUtils',
+	'icCalendar',
 
-	function(ic){
+	function(ic, icSite, icUtils, icCalendar){
 
 		return 	{
 			restrict:		'AE',
@@ -394,9 +445,9 @@ angular.module('icDirectives', [
 
 				scope.ic = ic
 
-				scope.startDate 	= undefined
-				scope.endDate		= undefined
-				scope.customDate	= undefined
+				//scope.startDate 	= undefined
+				//scope.endDate		= undefined
+				//scope.customDate	= undefined
 
 				function sameDay(d1, d2){
 					if(!d1) return false
@@ -410,14 +461,12 @@ angular.module('icDirectives', [
 
 
 
-				let today		= new Date()
-					year		= today.getFullYear()
-					month		= (today.getMonth()+1+'').padStart(2, '0')
-					day			= (today.getDate()+'').padStart(2, '0')						
 
-				scope.today 	= `${year}-${month}-${day}`
+				scope.today 	= icUtils.stringifyDate(new Date())
+
 
 				scope.selectDay	= function(d){
+
 					scope.startDate 	= new Date(d.getTime())
 					scope.endDate		= new Date(d.getTime())
 					
@@ -437,11 +486,8 @@ angular.module('icDirectives', [
 
 				scope.selectTomorrow = function(){
 
-					const d	= new Date()
-
-					d.setDate(d.getDate()+1)
-
-					scope.selectDay(d)
+					const tomorrow	= icCalendar.getNextDay()
+					scope.selectDay(tomorrow)
 				}
 
 				scope.toggleTomorrow = function(){
@@ -454,14 +500,7 @@ angular.module('icDirectives', [
 
 					const today		= 	new Date()
 
-					const dayOfWeek = 	today.getDay()
-					const offsetSat	= 	[-1,5,4,3,2,1,0][dayOfWeek]
-
-					const saturday	= 	new Date()
-					const sunday	= 	new Date()
-
-					saturday.setDate(today.getDate() + offsetSat)
-					sunday.setDate(today.getDate() + offsetSat+1)
+					const [saturday, sunday] = icCalendar.getNextWeekend(today)
 
 					scope.startDate		= saturday
 					scope.endDate		= sunday
@@ -525,11 +564,42 @@ angular.module('icDirectives', [
 
 				}
 
-				scope.unset()
+				// scope.unset()
 
 				scope.$watch( () => scope.customDate, () => {
 					if(scope.customDate instanceof Date) scope.selectDay(scope.customDate)
 				})
+
+				scope.$watch(
+					() => icSite.start,
+					dateString => {
+						scope.startDate = 	dateString
+											?	icUtils.parseDate(dateString)
+											:	undefined
+
+					}
+				)
+
+				scope.$watch(
+					() => icSite.end,
+					dateString => {
+						scope.endDate = 	dateString
+											?	icUtils.parseDate(dateString)
+											:	undefined
+
+					}
+				)
+
+				scope.$watch( 
+					() => scope.startDate && icUtils.stringifyDate(scope.startDate),
+					dateString => icSite.start = dateString
+				)
+
+				scope.$watch( 
+					() => scope.endDate && icUtils.stringifyDate(scope.endDate),
+					dateString => icSite.end = dateString
+				)
+
 
 			}
 		}

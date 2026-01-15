@@ -19,7 +19,7 @@
 		class		= "border-2 padding round icon icon right icon-interface-down"
 		ng-repeat 	= "filter in filters"
 		ng-model	= "filter.data"
-		ng-class	= "{ 'bg-3' : filter.data}"
+		ng-class	= "{ 'bg-5' : filter.data}"
 
 	> 
 
@@ -91,11 +91,25 @@
 
 <div>
 	{{'INTERFACE.CURRENT_POSITION'| translate }}:
-	<span
+	<span		
 		ng-if = "!position.coordinates" 
 	>
 		{{'INTERFACE.CURRENT_POSITION_UNKNOWN'| translate }}
 	</span>
+	<span
+		ng-if = "position.coordinates" 
+		class = "left icon icon-interface-position_marker"
+	>
+		{{position.coordinates}}
+	</span>
+
+	<button
+		ng-if		= "position.coordinates" 
+		class		= "round padding border-2 icon icon-interface-close left"
+		ng-click	= "clearPosition()"
+	>
+		{{'INTERFACE.CURRENT_POSITION_CLEAR'| translate }}
+	</button>
 </div>
 
 <div class = "buttons">	
@@ -128,99 +142,6 @@
 <br/>
 
 {{'INTERFACE.EXTENDED_SEARCH_RADIUS' | translate}}
-<!-- 
-
-<div 
-	class 	= "buttons split"
->
-
-	<div>
-		<h3>{{'INTERFACE.CURRENT_POSITION' | translate}}</h3>	
-		<button
-			ng-repeat 	= "method in position.methods"
-			class		= "icon icon-interface-radio left"
-			ng-class	= "{'checked': method == position.method }"
-			ng-click	= "position.method = method"
-		>
-			{{'INTERFACE.GET_POSITION_METHOD_%s' | fill: method | translate}}
-		</button>
-	</div>
-
-	<div>
-
-		<h3 title = "{{position.coordinates}}">
-			{{'INTERFACE.CURRENT_POSITION' | translate}}: 
-			<span ng-if = "!position.coordinates">{{'INTERFACE.CURRENT_POSITION_UNKNOWN' | translate}}</span>
-		</h3>
-
-
-		
-		<button 
-			ng-if		= "position.method == 'manual' && position.coordinates"
-			class		= "icon icon-interface-position_marker left"
-			title		= "{{'INTERFACE.SHOW_MANUAL_POSITION_ON_MAP' | fill: method | translate}}"
-			ng-click	= ""
-		> {{'INTERFACE.MANUALLY_PICKED_POSITION' | translate}} </button>	
-
-		<button 
-			ng-if		= "position.method == 'auto' && position.coordinates"	
-			class		= "icon icon-interface-position_marker left"
-			title		= "{{'INTERFACE.SHOW_AUTO_POSITION_ON_MAP' | fill: method | translate}}"
-			ng-click	= "locate()"
-		> {{'INTERFACE.AUTO_DETERMINED_POSITION' | translate}} </button>
-
-		<button 
-			ng-if		= "position.method == 'zip' && position.coordinates"	
-			class		= "icon icon-interface-position_marker left"
-			title		= "{{'INTERFACE.SHOW_AUTO_POSITION_ON_MAP' | fill: method | translate}}"
-			ng-click	= ""
-		>
-			({{position.zip}})
-		</button>	
-
-
-
-		<input 
-			ng-if				= "position.method == 'zip'"
-			class				= "border-2 padding"
-			ng-model			= "position.zip"
-			ng-model-options	= "{ debounce:500 }"
-			placeholder			= "{{'INTERFACE.PLACEHOLDER_ZIP' | translate}}" 
-		/>
-
-		<button
-			ng-if			= "position.method == 'zip'"
-			class	 		= "border-2 padding"
-			ng-click		= "guessCoordinatesFromZip(position.zip)"
-			ng-disabled		= "isNoZip(position.zip)"
-			title			= "{{'INTERFACE.GET_COORDINATES_FROM_ZIP' | translate}}"
-		>
-			{{'INTERFACE.GET_COORDINATES_FROM_ZIP' | translate}}
-		</button>
-
-
-		<button
-			ng-if		= "position.method == 'manual'"
-			class	 	= "border-2 padding"
-			ng-click	= "pickCoordinates()"
-			title		= "{{'INTERFACE.PICK_COORDINATES' | translate}}"
-		>
-			{{'INTERFACE.PICK_COORDINATES' | translate}}
-		</button>
-
-		<button
-			ng-if		= "position.method == 'auto'"
-			class	 	= "border-2 padding"
-			ng-click	= "locate()"
-			title		= "{{'INTERFACE.GET_POSITION_METHOD_AUTO' | translate}}"
-		>
-			{{'INTERFACE.GET_POSITION_METHOD_AUTO' | translate}}
-		</button>	
-
-
-	</div>
-</div> -->
-
 
 <div 
 	ng-init = "ranges = [1, 5, 10, 20, 50]"
@@ -232,12 +153,38 @@
 		ng-disabled	= "!position.coordinates"
 		class		= "round border-2 padding" 
 		ng-click	= "ic.site.range = ic.site.range == range ? undefind : range"
-		ng-class	= "{ 'bg-3': ic.site.range == range}"
+		ng-class	= "{ 'bg-5': ic.site.range == range}"
 		title		= "{{ position.coordinates ? '' : ('INTERFACE.CURRENT_POSITION'| translate) +':'+('INTERFACE.CURRENT_POSITION_UNKNOWN'| translate) }}"
 	>
 		{{range}} km
 	</button>	
 
+</div>
+
+
+<h2>{{'INTERFACE.EXTENDED_SEARCH_DATE' | translate}}</h2>
+
+<div class ="buttons">
+	<a 
+		class 	= "padding round border-2"
+		ng-href	= "{{ {calendar: true, start: today, end:today} | icLink }}"
+	>
+		{{'INTERFACE.TODAY' | translate }}
+	</a>
+
+	<a 
+		class 	= "padding round border-2"
+		ng-href	= "{{ {calendar: true, start: tomorrow, end:tomorrow} | icLink }}"
+	>
+		{{'INTERFACE.TOMORROW' | translate }}
+	</a>
+
+	<a 
+		class 	= "padding round border-2"
+		ng-href	= "{{ {calendar: true, start: weekend[0], end:weekend[1]} | icLink }}"
+	>
+		{{'INTERFACE.WEEKEND' | translate }}
+	</a>
 </div>
 
 <hr/>

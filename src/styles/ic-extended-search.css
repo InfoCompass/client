@@ -1,4 +1,5 @@
-ic-extended-search .buttons {
+ic-extended-search .buttons,
+ic-extended-search a {
 	display:			flex;
 	flex-wrap:			wrap;
 	gap:				1rem;
@@ -7,9 +8,11 @@ ic-extended-search .buttons {
 }
 
 
-ic-extended-search .buttons > * {
+ic-extended-search .buttons > *,
+ic-extended-search a > * {
 	width:				auto;
 	flex:				0 0 auto;
+	margin:				0 !important;
 }
 
 ic-extended-search .results {
