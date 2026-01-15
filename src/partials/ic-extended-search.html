@@ -89,6 +89,46 @@
 
 <h2>{{'INTERFACE.EXTENDED_SEARCH_RANGE' | translate}}</h2>	
 
+<div>
+	{{'INTERFACE.CURRENT_POSITION'| translate }}:
+	<span
+		ng-if = "!position.coordinates" 
+	>
+		{{'INTERFACE.CURRENT_POSITION_UNKNOWN'| translate }}
+	</span>
+</div>
+
+<div class = "buttons">	
+
+	<input 
+		class				= "border-2 padding"
+		ng-model			= "position.zip"
+		ng-model-options	= "{ debounce:500 }"
+		placeholder			= "{{'INTERFACE.PLACEHOLDER_ZIP' | translate}}" 
+	/>
+
+	<button
+		class	 	= "border-2 padding round"
+		ng-click	= "pickCoordinates()"
+		title		= "{{'INTERFACE.PICK_COORDINATES' | translate}}"
+	>
+		{{'INTERFACE.PICK_COORDINATES' | translate}}
+	</button>
+
+	<button
+		class	 	= "border-2 padding round"
+		ng-click	= "locate()"
+		title		= "{{'INTERFACE.GET_POSITION_METHOD_AUTO' | translate}}"
+	>
+		{{'INTERFACE.GET_POSITION_METHOD_AUTO' | translate}}
+	</button>	
+
+</div>
+
+<br/>
+
+{{'INTERFACE.EXTENDED_SEARCH_RADIUS' | translate}}
+<!-- 
 
 <div 
 	class 	= "buttons split"
@@ -127,7 +167,7 @@
 			class		= "icon icon-interface-position_marker left"
 			title		= "{{'INTERFACE.SHOW_AUTO_POSITION_ON_MAP' | fill: method | translate}}"
 			ng-click	= "locate()"
-		> {{'INTERFACE.AUTO_DETERMINED_POSITION' | translate}} </button>	
+		> {{'INTERFACE.AUTO_DETERMINED_POSITION' | translate}} </button>
 
 		<button 
 			ng-if		= "position.method == 'zip' && position.coordinates"	
@@ -179,9 +219,8 @@
 
 
 	</div>
-</div>
+</div> -->
 
-<h3>{{'INTERFACE.EXTENDED_SEARCH_RADIUS' | translate}}</h3>	
 
 <div 
 	ng-init = "ranges = [1, 5, 10, 20, 50]"
@@ -190,9 +229,11 @@
 
 	<button
 		ng-repeat 	= "range in ranges"
+		ng-disabled	= "!position.coordinates"
 		class		= "round border-2 padding" 
 		ng-click	= "ic.site.range = ic.site.range == range ? undefind : range"
 		ng-class	= "{ 'bg-3': ic.site.range == range}"
+		title		= "{{ position.coordinates ? '' : ('INTERFACE.CURRENT_POSITION'| translate) +':'+('INTERFACE.CURRENT_POSITION_UNKNOWN'| translate) }}"
 	>
 		{{range}} km
 	</button>	

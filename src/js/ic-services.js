@@ -3295,6 +3295,7 @@ angular.module('icServices', [
 
 		$rootScope.$watchCollection(
 			function(){
+
 				// Tag groups:
 				const areaTag 		=	icRange.getAreaTag(icSite.position && icSite.position[0], icSite.position && icSite.position[1] , icSite.range)
 				const searchTag		=	icItemStorage.getSearchTag(icSite.searchTerm, x => adHocTranslation(x) )
@@ -4412,7 +4413,7 @@ angular.module('icServices', [
 															if(Number.isInteger(range)) return range
 															return undefined
 														},
-										defaultValue: 	0
+										defaultValue: 	undefined
 									}
 
 				const parPos	=	{

@@ -118,7 +118,7 @@
 
 		function($compile){
 
-			var icMapItemMarker = function(item, parentScope){
+			var icMapItemMarker = function(item, parentScope, options = {}){
 
 				var scope 	=  	parentScope.$new()
 
@@ -129,6 +129,15 @@
 
 				element[0].style.setProperty("--animation-delay", Math.floor(Math.random()*200 +100)+'ms' )
 				element[0].style.setProperty("--animation-duration", Math.floor(Math.random()*100+200)+'ms' )
+
+				if(options.class){
+
+					options.class =	Array.isArray(options.class)
+									?	options.class
+									:	options.class.split(/[\s,]+/)
+
+					element[0].classList.add(...options.class) 
+				}
 
 				this.createIcon = function(){
 					return element[0]
@@ -619,9 +628,9 @@
 
 						options.item		= item
 						options.riseOnHover	= false
-						options.icon 		= icMainMap.markerCache[item.id] || new icMapItemMarker(item, icMainMap.scope)
+						options.icon 		= icMainMap.markerCache[item.id] || new icMapItemMarker(item, icMainMap.scope, { class: options.class })
 
-						
+												
 
 						return 	new L.marker(
 									[projected.latitude, projected.longitude], 
@@ -764,7 +773,8 @@
 												{
 													draggable: 	true, 
 													autoPan: 	true, 
-													pane: 		'pickerPane'
+													pane: 		'pickerPane',
+													class:		'picker highlight'
 												}
 											).addTo(map),
 

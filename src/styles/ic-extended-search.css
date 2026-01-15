@@ -3,19 +3,13 @@ ic-extended-search .buttons {
 	flex-wrap:			wrap;
 	gap:				1rem;
 	margin:				1rem 0;
+	align-items:		center;
 }
 
 
-ic-extended-search .buttons.split {
-	display:			flex;	
-}
-
-ic-extended-search .buttons.split > * {
-	flex:				1 0 0;
-	display:			flex;
-	flex-direction:		column;
-	align-items:		flex-start;
-	gap:				0.5rem;
+ic-extended-search .buttons > * {
+	width:				auto;
+	flex:				0 0 auto;
 }
 
 ic-extended-search .results {

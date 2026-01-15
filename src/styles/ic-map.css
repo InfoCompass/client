@@ -30,6 +30,38 @@ ic-map-item-marker {
 	outline:				none !important;
 }
 
+.picker:before{
+	position:				absolute;
+	opacity:				0;
+	transition:				opacity 500ms ease-out;
+	animation-play-state:	paused;
+}
+
+.picker.highlight:before {
+	content:				'';
+	bottom:					-0.5rem;
+	left:					-0.5rem;
+	height:					1rem;
+	width:					1rem;
+	z-index:				-1;
+	box-shadow:				0 0 3rem 4rem #fff;
+	background:				var(--active-color, --primary-color, #f00);
+	border-radius:			100%;
+	opacity:				1;
+	animation:				pulse 500ms ease-in-out infinite alternate;
+	animation-play-state:	running;
+}
+
+@keyframes pulse {
+	0%{
+		transform:			scale(0.5);
+	}
+
+	100%{
+		transform:			scale(1);
+	}
+}
+
 ic-map-item-marker.leaflet-marker-draggable{
 	transition:				none;
 }
@@ -338,21 +370,16 @@ ic-map-coordinate-picker-control {
 	box-sizing:				border-box;
 	max-width:				95%;
 	padding:				0.5rem 0.5rem;
-	background-color:		rgba(255,255,255,1);
-	color:					var(--plain-text-color);
 	border-radius:			0.3rem;
 	font-size:				1rem;
 	justify-content: 		space-between;
 	flex-wrap:				wrap;
+	gap:					1rem;
 }
 
-ic-map-coordinate-picker-control > *{
+ic-map-coordinate-picker-control > * {
 	flex:					1 0 1rem;
 	text-align:				center;
-}
-
-ic-map-coordinate-picker-control > :first-child {
-	flex:					1 0 100%;
 }
 
 
