@@ -2656,7 +2656,7 @@ angular.module('icServices', [
 
 				if(!haystack) return []
 
-				haystack = 	haystack.filter
+				haystack = 	Array.isArray(haystack)
 							?	haystack
 							:	[haystack]
 				

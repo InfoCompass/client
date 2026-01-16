@@ -3599,6 +3599,28 @@ angular.module('icDirectives', [
 ])
 
 
+.directive('icItemTile',[
+	
+	"ic",
+
+	function(ic){
+		return {
+			restrict:		'E',
+			templateUrl:	'partials/ic-item-tile.html',
+
+			scope:			{
+								icItem: '<'
+							},
+
+			link: function(scope, element){
+				scope.ic = ic
+			}
+		}
+	}
+])
+
+
+
 .directive('icHelp', [
 
 	'ic',
