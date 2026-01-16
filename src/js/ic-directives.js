@@ -4115,3 +4115,67 @@ angular.module('icDirectives', [
 		}
 	}
 ])
+
+
+
+.directive('icButtonStyles', [
+
+	'ic',
+
+	function(ic){
+		return {
+			restrict:	'E',
+			template:	`
+							<div ng-repeat ="class  in classList">
+								<h2>{{class}}</h2> 									
+								<button 
+									class			= "{{class.replace('.', ' ')}}"
+									ng-repeat-start = "label in labels"
+								>
+									{{label}}
+								</button>
+								<br ng-repeat-end>
+							</div>
+						`,
+			scope:		{},
+
+			link: function(scope, element){
+				scope.ic = ic
+									
+				scope.shapes 	= ["", ".round"]
+				scope.borders 	= ["", ".border"]
+				scope.modes		= ["", ".emph"]
+				scope.states	= ["", ".activated"]
+				scope.icons		= ["", ".icon icon.interface-languages", ".icon icon.interface-languages.left", ".icon icon.interface-languages.right"]
+
+				function mergeCombinations(...arrays){
+
+					const [a,b, ...rest] = arrays
+
+					if(rest.length == 0) return	arrays[0].flatMap( a => arrays[1].map( b => a + b) )
+
+					return mergeCombinations( mergeCombinations(a,b), ...rest)
+				}
+
+				scope.classList = 	mergeCombinations(
+										scope.shapes,
+										scope.borders,
+										scope.modes,
+										scope.states
+									)
+
+				scope.labels	=	[
+										"",
+										"Short",
+										"Rather long label",
+										"A bit over the top long label",
+										"Label that will probably nit fit into one line"
+									]
+
+				console.log(scope.classList)
+
+			}
+		}
+	}
+])
+
