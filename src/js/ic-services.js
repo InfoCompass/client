@@ -4485,6 +4485,10 @@ angular.module('icServices', [
 				this.updateSitePosition()
 			}
 
+			clearRange(){
+				
+			}
+
 			updateSitePosition(){
 
 
@@ -4497,7 +4501,7 @@ angular.module('icServices', [
 				}
 
 				if(hasRange && hasLastKnown){
-					icSite.position		=	this.lastKnown
+					icSite.position		=	this.lastKnownPosition
 					icMainMap.showRange(this.lastKnownPosition, icSite.range)
 				}
 
@@ -4514,8 +4518,6 @@ angular.module('icServices', [
 
 
 			}
-
-		
 
 			deg2rad(deg) {
 				return deg * (Math.PI/180)

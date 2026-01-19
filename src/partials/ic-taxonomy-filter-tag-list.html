@@ -2,7 +2,7 @@
 <div class = "wrapper bg-0">
 
 	<button
-		class		= "bg-3 round"
+		class		= "bg-3 rounded"
 		ng-if		= "ic.site.searchTerm"
 		title		= "{{'INTERFACE.REMOVE_FILTER' | translate}}: {{'INTERFACE.SEARCH_FOR' | translate}} '{{ic.site.searchTerm}}'"
 		ng-click	= "ic.site.searchTerm = null"
@@ -13,7 +13,7 @@
 	</button>
 
 	<button 
-		class		= "bg-3 round"
+		class		= "bg-3 rounded"
 		ng-repeat	= "type in ic.site.filterByType"
 		title		= "{{'INTERFACE.REMOVE_FILTER' | translate}}: {{'TYPES.%s' | fill : type | translate }}"
 		ng-click	= "ic.filterConfig.toggleType(type)"
@@ -24,7 +24,7 @@
 	</button>
 
 	<button 
-		class		= "bg-3 round"
+		class		= "bg-3 rounded"
 		ng-repeat	= "category in ic.site.filterByCategory"
 		title		= "{{'INTERFACE.REMOVE_FILTER' | translate}}: {{'CATEGORIES.%s' | fill : category | translate }}"
 		ng-click	= "ic.filterConfig.toggleCategory(category)"
@@ -35,7 +35,7 @@
 	</button>
 
 	<button 
-		class		= "bg-3 round"
+		class		= "bg-3 rounded"
 		ng-repeat	= "tag in ic.site.filterByUnsortedTag"
 		title		= "{{'INTERFACE.REMOVE_FILTER' | translate}}: {{'UNSORTED_TAGS.%s' | fill : tag | translate }}"
 		ng-click	= "ic.filterConfig.toggleUnsortedTag(tag)"
@@ -46,10 +46,22 @@
 	</button>
 
 	<button 
+		class		= "bg-3 rounded"
+		ng-if		= "ic.site.position && ic.site.range"
+		title		= "{{'INTERFACE.REMOVE_FILTER' | translate}}: {{'INTERFACE.RANGE'|translate }}"
+		ng-click	= "ic.site.range = undefined"
+		ic-touch-me
+	>
+		<span>	{{'INTERFACE.RANGE'| translate }}: {{ic.site.range}}km </span>
+		<span class = "icon right white icon-interface-close"></span>
+	</button>
+
+
+	<button 
 		ng-if		= "ic.site.filterByType.length+ic.site.filterByCategory.length+ic.site.filterByUnsortedTag.length > 1"
-		class		= "border-3 round active"
+		class		= "border-3 rounded active"
 		title		= "{{'INTERFACE.REMOVE_ALL_FILTERS' | translate}}"
-		ng-click	= "ic.filterConfig.clearType().clearCategory().clearUnsortedTag()"
+		ng-click	= "ic.filterConfig.clearType().clearCategory().clearUnsortedTag(): ic.site.range = undefined"
 		ic-touch-me
 	>
 		<span>	{{'INTERFACE.REMOVE_ALL_FILTERS' | translate }} </span>

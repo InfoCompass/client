@@ -223,23 +223,23 @@ ic-map-cluster-marker ic-map-item-marker .outer-icon {
 
 @keyframes marker-enter {
 	0% {
-		transform:	scaleY(1);		
+		transform:	scaleY(1) scaleX(1);		
 	}
 	
 	30% {
-		transform:	scaleY(0.85);
+		transform:	scaleY(0.85) scaleX(1.05);
 	}
 
 	60% {
-		transform:	scaleY(1.075);
+		transform:	scaleY(1.075) scaleX(0.9);
 	}
 
 	80% {
-		transform:	scaleY(0.95);
+		transform:	scaleY(0.95) scaleX(1.05);
 	}
 
 	100% {
-		transform:	scaleY(1.0);
+		transform:	scaleY(1.0) scaleX(1);
 	}
 }
 

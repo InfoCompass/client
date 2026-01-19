@@ -329,7 +329,6 @@ angular.module('icDirectives', [
 
 				scope.pickCoordinates 	=  async () => {
 
-
 					const latLng		= 	Array.isArray(icRange.lastKnownPosition)
 											?	[...icRange.lastKnownPosition]
 											:	icMainMap.mapObject.getCenter()
@@ -398,7 +397,7 @@ angular.module('icDirectives', [
 						&&	zipGuess.lat == icRange.lastKnownPosition[0]
 						&&	zipGuess.lon == icRange.lastKnownPosition[1]
 					){	
-						scope.position.coordinates = `${zipGuess.lat}, ${zipGuess.lon}, (${zipGuess.display_name})` 				
+						scope.position.coordinates = `${zipGuess.display_name}` 				
 					} else {
 						scope.position.coordinates = `${icRange.lastKnownPosition[0]}, ${icRange.lastKnownPosition[1]}` 
 						scope.position.zip = ''
