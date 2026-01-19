@@ -1,0 +1,20 @@
+.ic-category-tiles {
+	display:				grid;
+	grid-template-columns:	1fr 1fr;
+	gap:					2rem;
+}
+
+ic-category-tile {	
+	display:				flex;
+	flex-direction:			column;
+	align-items:			stretch;
+	justify-content:		space-between;
+	gap:					1rem;
+}
+
+ic-category-tile .image {
+	aspect-ratio:			1.85;		
+	width:					100%;
+	box-sizing:				border-box;
+	background-size:		cover;
+}
