@@ -1151,6 +1151,7 @@ angular.module('icServices', [
 			icSite.activeSections 	=	{}
 			icSite.visibleSections 	= 	{}
 
+			console.log(icSite.config)
 
 			for(const section in icSite.config.sectionUpdates){
 				icSite.config.sectionUpdates[section].forEach( update => icSite.updateSection(section, update))
@@ -2656,7 +2657,7 @@ angular.module('icServices', [
 
 				if(!haystack) return []
 
-				haystack = 	Array.isArray(haystack)
+				haystack = 	haystack.filter
 							?	haystack
 							:	[haystack]
 				
@@ -4496,7 +4497,7 @@ angular.module('icServices', [
 				}
 
 				if(hasRange && hasLastKnown){
-					icSite.position		=	this.lastKnownPosition
+					icSite.position		=	this.lastKnown
 					icMainMap.showRange(this.lastKnownPosition, icSite.range)
 				}
 
@@ -5343,7 +5344,7 @@ angular.module('icServices', [
 			}
 		}
 
-		return new IcCalendar
+		return new IcCalendar()
 
 	}	
 ])

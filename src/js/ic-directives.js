@@ -3619,6 +3619,27 @@ angular.module('icDirectives', [
 	}
 ])
 
+.directive('icCategoryTile',[
+	
+	"ic",
+
+	function(ic){
+		return {
+			restrict:		'E',
+			templateUrl:	'partials/ic-category-tile.html',
+			transclude:		true,
+
+			scope:			{
+								icCategory: '<'
+							},
+
+			link: function(scope, element){
+				scope.ic = ic
+			}
+		}
+	}
+])
+
 
 
 .directive('icHelp', [

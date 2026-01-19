@@ -370,12 +370,21 @@ angular.module('icUiDirectives', [
 			restrict:	'A',
 
 			link: function(scope, element, attrs){
+
+
 				var container 	= element[0],
 					step_size	= parseInt(attrs.icScrollRepeatLimitStepSize) || 10,
 					l			= attrs.icScrollRepeatLimitAs || 'icScrollRepeatLimit'
 
+				// Sometimes the event handle onScroll keeps fireing for an old result list element
+				// Keeping track of the most recent one to avoid conflicts
+				scope.element = element[0]	
+
 
 				while( (container = container.parentElement) && !container.hasAttribute('ic-scroll-repeat-limit-container')){}
+
+
+
 
 				if(!container){
 					console.warn('icScrollRepeatLimit: missing container.', element[0])
@@ -391,57 +400,81 @@ angular.module('icUiDirectives', [
 					scope[l] += step_size
 				}
 
-				var surplus = undefined
 
 				function updateLimit(){
-					var last_surplus = surplus
 
-					surplus = element[0].getBoundingClientRect().bottom-container[0].getBoundingClientRect().bottom
+					const elementRect	= element[0].getBoundingClientRect()
+					const containerRect	= container[0].getBoundingClientRect()
 
-					if(surplus == last_surplus && !scope.noMoreItems) return false
+					const elementHeight = elementRect.bottom-elementRect.top
+
+					if(elementHeight <= 0 )	return false
+
+					const surplus = elementRect.bottom-containerRect.bottom
+
 
 					const noDecrease = 'icScrollRepeatLimitNoDecrease' in attrs
 
-					if(surplus < container[0].clientHeight)						scope[l] += step_size						
-					if(surplus > 2*container[0].clientHeight && !noDecrease)	scope[l] -= step_size
+					const increaseWarrented = surplus < container[0].clientHeight && !scope.noMoreItems
+					const decreaseWarrented = surplus > 2*container[0].clientHeight && !noDecrease
+
+					const changeWarrented	= increaseWarrented || decreaseWarrented
+
+					if(!changeWarrented) return false
+
+					if(increaseWarrented)	scope[l] += step_size						
+					if(decreaseWarrented)	scope[l] -= step_size					
+
+					scope.$apply()	
 
 					return true
 				}
 
+				let updateScheduled = false
 
-				function onScroll(){
-					container[0].removeEventListener('scroll', onScroll)
-					window.requestAnimationFrame(function(){
-						if(updateLimit()){
-							window.setTimeout(function(){
-								onScroll()
-							}, 250)	
-							scope.$apply()
-						} else {
-							container[0].addEventListener('scroll', onScroll, {passive:true})
-						}
-					})
+				function scheduleUpdate(){
+					if(updateScheduled) return
+
+					window.setTimeout( () => {
+
+						updateScheduled = false
+
+						const limitUpdated = updateLimit()
+						if(limitUpdated) scheduleUpdate()
+
+					}, 250)
+
+					updateScheduled = true 
 				}
 
 
 				scope.$watch(
 					function(){
-						return [scope.$eval(attrs.icScrollRepeatLimit), scope[l]]
+
+						const elementRect	= element[0].getBoundingClientRect()
+						const containerRect	= container[0].getBoundingClientRect()
+						const elementHeight = elementRect.bottom-elementRect.top
+
+						return [scope.$eval(attrs.icScrollRepeatLimit), scope[l], elementHeight]
 					}, 
 					function(obj){
+
 						var max = obj[0]
 						scope[l] 			= Math.max(Math.min(max, scope[l]), step_size)
 						scope.noMoreItems 	= max <= scope[l]
 						scope.noScroll 		= container[0].clientHeight == container[0].scrollHeight
-						updateLimit()
+						scheduleUpdate()						
 					}, true
 				)
 
-				container[0].addEventListener('scroll', onScroll, {passive:true})
+				container[0].addEventListener('scroll', scheduleUpdate, { passive:true })
 			
+				scheduleUpdate()
+
 				scope.$on('$destroy', function(){
 					container[0].removeEventListener('scroll', onScroll)
 				})
+				
 			}
 		}
 	}
