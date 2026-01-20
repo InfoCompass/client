@@ -55,7 +55,7 @@ button::-moz-focus-inner {
 select,
 button {
 	cursor:				pointer;
-	background-color:	var(--primary-background-color, #fff);
+	background-color:	var(--primary-background-color, transparent);
 	border-radius:		0;
 	padding:			0;
 	margin:				0;
