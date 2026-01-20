@@ -41,6 +41,7 @@
 .icon.left {
 	background-position:	0 50%;
 	padding-left:			1.5em;
+	line-height:			1.5em;
 }
 
 .icon.left.rounded{
@@ -51,6 +52,7 @@
 .icon.right {
 	background-position:	100% 50%;
 	padding-right:			1.5em;
+	line-height:			1.5em;
 }
 
 .icon.right.rounded{
