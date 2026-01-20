@@ -707,9 +707,9 @@ setup()
 
 
 
-.then( () => process.stdout.write('\nCleaninng up...'))
-.then(cleanUp)
-.then( () => process.stdout.write('\x1b[32m Done.\n\n'))
+// .then( () => process.stdout.write('\nCleaninng up...'))
+// .then(cleanUp)
+// .then( () => process.stdout.write('\x1b[32m Done.\n\n'))
 
 
 .then(

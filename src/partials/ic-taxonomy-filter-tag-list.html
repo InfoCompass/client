@@ -61,7 +61,7 @@
 		ng-if		= "ic.site.filterByType.length+ic.site.filterByCategory.length+ic.site.filterByUnsortedTag.length > 1"
 		class		= "border-3 rounded active"
 		title		= "{{'INTERFACE.REMOVE_ALL_FILTERS' | translate}}"
-		ng-click	= "ic.filterConfig.clearType().clearCategory().clearUnsortedTag(): ic.site.range = undefined"
+		ng-click	= "ic.filterConfig.clearType().clearCategory().clearUnsortedTag(); ic.site.range = undefined"
 		ic-touch-me
 	>
 		<span>	{{'INTERFACE.REMOVE_ALL_FILTERS' | translate }} </span>
