@@ -47,6 +47,10 @@ ic-event-details .details  .time-range > * {
 	display:					inline-block;
 }
 
+ic-event-details .details  .time-range > time {
+	font-family:				mono;
+}
+
 ic-event-details a[download] {
 	display:					block !important;
 	margin-bottom:				1rem;

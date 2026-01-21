@@ -453,7 +453,7 @@ angular.module('icUiDirectives', [
 
 						const elementRect	= element[0].getBoundingClientRect()
 						const containerRect	= container[0].getBoundingClientRect()
-						const elementHeight = elementRect.bottom-elementRect.top
+						const elementHeight = Math.floor(elementRect.bottom-elementRect.top)
 
 						return [scope.$eval(attrs.icScrollRepeatLimit), scope[l], elementHeight]
 					}, 
@@ -466,6 +466,7 @@ angular.module('icUiDirectives', [
 						scheduleUpdate()						
 					}, true
 				)
+
 
 				container[0].addEventListener('scroll', scheduleUpdate, { passive:true })
 			

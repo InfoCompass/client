@@ -3292,6 +3292,8 @@ angular.module('icServices', [
 
 		}
 
+		icFilterConfig.isActive = false
+
 
 		let listUpdateCount = 0
 
@@ -3309,9 +3311,12 @@ angular.module('icServices', [
 											searchTag,
 											areaTag	
 										]
+
 				return collection						
 			},
 			arr => {
+
+				icFilterConfig.isActive = arr.some( filter => Array.isArray(filter) ? filter.length : !!filter)
 
 				listUpdateCount ++
 				const currentCount = listUpdateCount
@@ -4570,9 +4575,6 @@ angular.module('icServices', [
 
 					return inRange
 				})
-
-
-				console.log(tag, this.areas)
 
 				return tag
 			}
