@@ -3185,6 +3185,17 @@ angular.module('icServices', [
 			return icFilterConfig
 		}
 
+
+		icFilterConfig.clearAll = function(){
+			icFilterConfig
+			.clearType()
+			.clearCategory()
+			.clearUnsortedTag()
+
+			icSite.range = undefined
+			icSite.searchTerm = null
+		}
+
 		//TDODO: check
 
 		icItemStorage.ready
@@ -3292,31 +3303,36 @@ angular.module('icServices', [
 
 		}
 
-		icFilterConfig.isActive = false
+		icFilterConfig.getActiveFilters = function(){
+			// Tag groups:
+			const areaTag 		=	icRange.getAreaTag(icSite.position && icSite.position[0], icSite.position && icSite.position[1] , icSite.range)
+			const searchTag		=	icItemStorage.getSearchTag(icSite.searchTerm, x => adHocTranslation(x) )
 
+			const collection 	= 	[
+										icSite.filterByType,
+										icSite.filterByCategory,
+										icSite.filterByUnsortedTag,
+										searchTag,
+										areaTag	
+									]
+			return collection						
+		}
+
+		icFilterConfig.isActive = function() {
+			const filters	= 	icFilterConfig.getActiveFilters()
+			const isActive	= 	filters.some( 
+									filter => 	Array.isArray(filter) 
+												?	filter.length > 0 
+												:	!!filter
+								)
+			return isActive
+		}
 
 		let listUpdateCount = 0
 
 		$rootScope.$watchCollection(
-			function(){
-
-				// Tag groups:
-				const areaTag 		=	icRange.getAreaTag(icSite.position && icSite.position[0], icSite.position && icSite.position[1] , icSite.range)
-				const searchTag		=	icItemStorage.getSearchTag(icSite.searchTerm, x => adHocTranslation(x) )
-
-				const collection 	= 	[
-											icSite.filterByType,
-											icSite.filterByCategory,
-											icSite.filterByUnsortedTag,
-											searchTag,
-											areaTag	
-										]
-
-				return collection						
-			},
-			arr => {
-
-				icFilterConfig.isActive = arr.some( filter => Array.isArray(filter) ? filter.length : !!filter)
+			()	=> icFilterConfig.getActiveFilters(),
+			arr => {				
 
 				listUpdateCount ++
 				const currentCount = listUpdateCount

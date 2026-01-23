@@ -1,8 +1,6 @@
 <section
 	ng-repeat 		= "section in ic.site.config.sections"
 	ng-show			= "ic.site.visibleSections[section.name]"
-	
-	
 	id				= "section-{{section.name}}"
 	class			= "bg-1"
 	ng-include 		= "section.template" 

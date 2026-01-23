@@ -17,7 +17,7 @@ ic-taxonomy-filter:after {
 }
 
 
-ic-taxonomy-filter section h2 {
+ic-taxonomy-filter section .section-toggle {
 	margin:						0;
 	margin-bottom:				1px;
 	font-weight:				400;
@@ -32,7 +32,7 @@ ic-taxonomy-filter section ul {
 	margin:						0;
 }
 
-ic-taxonomy-filter section h2.icon, /*alt*/ 
+ic-taxonomy-filter section .section-toggle.icon, /*alt*/ 
 ic-taxonomy-filter section li,	/*alt*/
 ic-taxonomy-filter section button,
 ic-taxonomy-filter section.types > button /* gets overridden in ic-pages =( */{
@@ -47,6 +47,11 @@ ic-taxonomy-filter section.types > button /* gets overridden in ic-pages =( */{
 	background-position:		1rem 50% !important;
 	overflow-wrap: 				anywhere;
 	margin: 					0 !important;
+}
+
+
+ic-taxonomy-filter section li .section-toggle {
+	font-size:					1.5rem;
 }
 
 ic-taxonomy-filter section button:not(.icon){

@@ -2,11 +2,11 @@
 <html 
 	lang			=	"{{ic.site.currentLanguage}}" 
 	ng-class		=	"{
-							'show-page': 		ic.site.displayedComponents.page, 
-							'show-list': 		ic.site.displayedComponents.list, 
-							'show-item':		ic.site.displayedComponents.item, 
-							'show-map':			ic.site.displayedComponents.map,
-							'show-filter':		ic.site.displayedComponents.filter, 
+							'show-page': 		ic.site.visibleSections.page, 
+							'show-list': 		ic.site.visibleSections.list, 
+							'show-item':		ic.site.visibleSections.item, 
+							'show-map':			ic.site.visibleSections.map,
+							'show-filter':		ic.site.visibleSections.filter, 
 							'expand-map':		ic.site.expandMap,
 							'item-print-off':	!ic.site.activeItem
 						}"

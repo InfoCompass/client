@@ -2,16 +2,14 @@
 	ng-if = "ic.taxonomy.categories && ic.taxonomy.categories.length > 0"
 	class = "categories" 
 >
-	<h2>
-		<button
-			class 		= "bg-0 icon"
-			ng-class	= "{'icon-interface-down': expanded, 'icon-interface-right': !expanded}"
-			ng-click	= "expanded = !expanded"
-			ic-touch-me	= "true" 
-		>
-			{{'INTERFACE.CATEGORIES' | translate}}
-		</button>
-	</h2>
+	<button
+		class 		= "bg-0 icon section-toggle"
+		ng-class	= "{'icon-interface-down open': expanded, 'icon-interface-right': !expanded}"
+		ng-click	= "expanded = !expanded"
+		ic-touch-me	= "true" 
+	>
+		{{'INTERFACE.CATEGORIES' | translate}}
+	</button>
 
 	<div 
 		class 		= "bg-0"
@@ -20,7 +18,7 @@
 		<button
 			ng-if		= "true"
 			class 		= "icon icon-interface-radio"
-			ng-class	= "{'bg-3 white  checked':ic.filterConfig.categoryCleared()}"
+			ng-class	= "{'bg-3 white checked':ic.filterConfig.categoryCleared()}"
 			ng-click	= "ic.filterConfig.clearCategory()" 
 			ic-touch-me	= "true"
 		>
@@ -33,7 +31,7 @@
 				ng-if			= "true"
 				class			= "icon icon-category-{{::category.name}} bg-0"
 				ic-button		= "{active:ic.filterConfig.categoryActive(category.name), disabled: !ic.itemStorage.currentStats.altMatches[category.name]}"
-				ng-class		= "{'bg-3 white':active, disabled: disabled}"
+				ng-class		= "{'bg-3 white checked':active, disabled: disabled}"
 				ng-click		= "!disabled && ic.filterConfig.toggleCategory(category.name, undefined, true);"
 				ic-touch-me		= "!disabled"
 			>

@@ -447,13 +447,39 @@ angular.module('icUiDirectives', [
 					updateScheduled = true 
 				}
 
+				let heightCheckScheduled 	= false
+				let lastHeightValue			= undefined
 
-				scope.$watch(
+				function scheduleHeightCheck(){
+					
+					if(!heightCheckScheduled){	
+						window.setTimeout( () => {
+
+							heightCheckScheduled = false
+
+							const elementRect	= element[0].getBoundingClientRect()
+							const containerRect	= container[0].getBoundingClientRect()
+							const elementHeight = Math.floor(elementRect.bottom-elementRect.top)
+
+							if(elementHeight == lastHeightValue) return
+
+							lastHeightValue = elementHeight
+							
+							scope.$digest()	
+							
+
+						}, 250)
+					}
+
+					return lastHeightValue
+
+				}
+
+
+				scope.$watchCollection(
 					function(){
 
-						const elementRect	= element[0].getBoundingClientRect()
-						const containerRect	= container[0].getBoundingClientRect()
-						const elementHeight = Math.floor(elementRect.bottom-elementRect.top)
+						const elementHeight = scheduleHeightCheck()
 
 						return [scope.$eval(attrs.icScrollRepeatLimit), scope[l], elementHeight]
 					}, 
@@ -464,7 +490,7 @@ angular.module('icUiDirectives', [
 						scope.noMoreItems 	= max <= scope[l]
 						scope.noScroll 		= container[0].clientHeight == container[0].scrollHeight
 						scheduleUpdate()						
-					}, true
+					}
 				)
 
 
@@ -1336,7 +1362,14 @@ angular.module('icUiDirectives', [
 .filter('fill', [
 	function(){
 		return function(str, rep){
-			rep = rep || 'undefined'
+
+			rep =	typeof rep == 'boolean'
+					?	String(rep)
+					:	rep
+
+			rep = 	rep === undefined 
+					?	'undefined'
+					:	rep
 			
 			rep = 	Array.isArray(rep)
 					?	rep  
