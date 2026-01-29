@@ -1,0 +1,29 @@
+
+ic-map-expand-control button,
+ic-map-expand-control button >* {
+	touch-action: 			none;
+}
+
+ic-map-switch-control button,
+ic-map-expand-control button {
+	display:				block;
+	width:					2.5rem;
+	height:					2.5rem;
+	background-repeat:		no-repeat;
+	background-position:	50% 50%;
+	background-size:		2.5rem;
+	font-size:				2rem;
+
+}
+
+ic-map-switch-control button,
+ic-map-switch-control button:focus,
+ic-map-switch-control button:hover,
+ic-map-switch-control button:active,
+ic-map-expand-control button,
+ic-map-expand-control button:focus,
+ic-map-expand-control button:hover,
+ic-map-expand-control button:active {
+	background-color:		transparent !important;
+	font-size:				2rem;
+}

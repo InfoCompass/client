@@ -4122,9 +4122,11 @@ angular.module('icDirectives', [
 											.filter( x => !!x)
 
 				const icon_classes		=	all_selectors
+											.flatMap( selector => selector.split(/,\s*/))
 											.filter( selector => selector.match(/^.icon-[^,.:\s]+$/gi))
 				
 				const image_classes		=	all_selectors
+											.flatMap( selector => selector.split(/,\s*/))				
 											.filter( selector => selector.match(/^.image-[^,.:\s]+$/gi))	
 
 
