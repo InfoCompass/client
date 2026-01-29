@@ -413,12 +413,16 @@ angular.module('icUiDirectives', [
 					const surplus = elementRect.bottom-containerRect.bottom
 
 
-					const noDecrease = 'icScrollRepeatLimitNoDecrease' in attrs
+					const noDecrease 	= 'icScrollRepeatLimitNoDecrease' in attrs
 
-					const increaseWarrented = surplus < container[0].clientHeight && !scope.noMoreItems
-					const decreaseWarrented = surplus > 2*container[0].clientHeight && !noDecrease
+					const outerHeight	= container[0].clientHeight
+
+					const increaseWarrented = surplus <   outerHeight && !scope.noMoreItems
+					const decreaseWarrented = surplus > 2*outerHeight && !noDecrease
 
 					const changeWarrented	= increaseWarrented || decreaseWarrented
+
+					console.log({changeWarrented, outerHeight, surplus})
 
 					if(!changeWarrented) return false
 
