@@ -422,8 +422,6 @@ angular.module('icUiDirectives', [
 
 					const changeWarrented	= increaseWarrented || decreaseWarrented
 
-					console.log({changeWarrented, outerHeight, surplus})
-
 					if(!changeWarrented) return false
 
 					if(increaseWarrented)	scope[l] += step_size						
@@ -1363,6 +1361,38 @@ angular.module('icUiDirectives', [
 ])
 
 
+.directive('icExtend', [
+
+	function(){
+		return{
+			restrict:		"A",
+			scope:			{
+								icExtend : '<'
+							},
+
+			link: function(scope, element, attrs, ctrl){
+				
+
+				scope.$watch( 
+
+					() => scope.icExtend, 
+
+					extend => {
+						const scrollHeight 	= element[0].scrollHeight
+						
+						element[0].style.height = 	extend
+													?	scrollHeight+'px'
+													:	'0px'
+					}
+				)					
+
+			}
+		}
+	}
+])
+
+
+
 .filter('fill', [
 	function(){
 		return function(str, rep){
@@ -1639,6 +1669,7 @@ angular.module('icUiDirectives', [
 		}
 	}
 ])
+
 
 .filter('onScreen', function(){
 	return function(x){

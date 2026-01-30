@@ -3165,12 +3165,23 @@ angular.module('icServices', [
 
 
 		icFilterConfig.toggleSortOrder = function(sortCriterium, keep_direction){
-			icSite.sortOrder == sortCriterium
-			?	keep_direction || icFilterConfig.toggleSortDirection()
-			:	icSite.sortOrder = sortCriterium
 
-			icSite.sortDirectionAlpha = 1;
-			icSite.sortDirection = -1;
+			if(keep_direction){
+				icSite.sortOrder = sortCriterium
+				return icFilterConfig
+			}
+
+			if(icSite.sortOrder == sortCriterium){
+				icSite.sortOrder.match('alphabetical_')
+				?	icFilterConfig.toggleSortDirectionAlpha()
+				:	icFilterConfig.toggleSortDirection()
+				return icFilterConfig
+			}
+
+			icSite.sortOrder = sortCriterium
+
+			icSite.sortDirectionAlpha = undefined;
+			icSite.sortDirection = undefined;
 
 			return icFilterConfig
 		}

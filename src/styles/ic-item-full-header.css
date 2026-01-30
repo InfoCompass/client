@@ -119,6 +119,7 @@ ic-item-full-header nav .down {
 	min-height:					0;
 	overflow:					hidden;
 	transition:					all 200ms ease-in-out;
+	padding:					0 !important;
 }
 
 ic-item-full-header:not(.ic-scroll-bottom) 	nav .up {
