@@ -1371,20 +1371,28 @@ angular.module('icUiDirectives', [
 							},
 
 			link: function(scope, element, attrs, ctrl){
+
+
+				function update(){
+					
+
+					const contentHeight 	= 	Array.from(element[0].children)
+												.reduce( (sum, el) => {
+													return sum + el.offsetHeight
+												},0)
+
+					if(element[0].id) console.log(element[0].id, contentHeight)							
+					element[0].style.height = 	scope.icExtend
+												?	contentHeight+'px'
+												:	'0px'	
+				}
 				
+				const mutationObserver		= 	new MutationObserver(update)
+				const resizeObserver		=	new ResizeObserver(update)
 
-				scope.$watch( 
-
-					() => scope.icExtend, 
-
-					extend => {
-						const scrollHeight 	= element[0].scrollHeight
-						
-						element[0].style.height = 	extend
-													?	scrollHeight+'px'
-													:	'0px'
-					}
-				)					
+				mutationObserver.observe(element[0], { subtree: true, childList: true })
+				resizeObserver.observe(element[0])
+				scope.$watch( () => scope.icExtend, update)
 
 			}
 		}

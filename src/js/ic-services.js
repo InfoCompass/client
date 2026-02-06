@@ -1792,7 +1792,7 @@ angular.module('icServices', [
 
 				localStorage.setItem(this.lastInteractionKey, JSON.stringify({timestamp, description}))
 
-				console.info('Renewing last interaction', new Date(timestamp))
+				console.info('Renewing date of last interaction', new Date(timestamp))
 
 				return timestamp
 			}			

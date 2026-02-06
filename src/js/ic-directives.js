@@ -2816,11 +2816,13 @@ angular.module('icDirectives', [
 
 	'ic',
 	'icTaxonomy',
+	'icItemStorage',
 
-	function(ic, icTaxonomy) {
+	function(ic, icTaxonomy, icItemStorage) {
 		return {
 			restrict:		'E',
 			templateUrl:	'partials/ic-taxonomy-filter.html',
+			scope:			true,
 
 			link: function(scope, element){
 				scope.ic 		= 	ic
@@ -2828,6 +2830,18 @@ angular.module('icDirectives', [
 										categories: 	true,
 										// unsortedTags: 	true
 									}
+
+				scope.matchesIgnoringType = function(){
+
+					const count	=	icTaxonomy.types.reduce( (sum, type) => {
+										const altMatches = icItemStorage.currentStats.altMatches[type.name] || 0
+										return sum + altMatches
+									}, 0)
+
+
+					return count
+				}
+
 			}
 		}
 	}
@@ -2869,8 +2883,9 @@ angular.module('icDirectives', [
 
 	'ic',
 	'icTaxonomy',
+	'icItemStorage',
 
-	function(ic, icTaxonomy){
+	function(ic, icTaxonomy, icItemStorage){
 
 		return {
 			restrict:		'E',
@@ -2882,6 +2897,14 @@ angular.module('icDirectives', [
 
 			link: function(scope, element){
 				scope.ic = ic
+
+				scope.matchesIgnoringCategory = function(){
+					const count	=	icTaxonomy.categories.reduce( (sum, category) => {
+										const altMatches = icItemStorage.currentStats.altMatches[category.name] || 0
+										return sum + altMatches
+									}, 0)
+					return count	
+				}
 
 			}
 		}

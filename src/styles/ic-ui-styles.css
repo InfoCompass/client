@@ -122,3 +122,8 @@ ic-carousel 	nav button + button,
 
 .selects select {
 }
+
+
+[ic-extend] {
+	overflow-y:		hidden;
+}
