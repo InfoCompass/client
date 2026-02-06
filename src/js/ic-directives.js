@@ -2842,6 +2842,17 @@ angular.module('icDirectives', [
 					return count
 				}
 
+				scope.totalsIgnoringType = function(){
+
+					const count	=	icTaxonomy.types.reduce( (sum, type) => {
+										const altMatches = icItemStorage.currentStats.totals[type.name] || 0
+										return sum + altMatches
+									}, 0)
+
+
+					return count
+				}
+
 			}
 		}
 	}
@@ -2897,14 +2908,6 @@ angular.module('icDirectives', [
 
 			link: function(scope, element){
 				scope.ic = ic
-
-				scope.matchesIgnoringCategory = function(){
-					const count	=	icTaxonomy.categories.reduce( (sum, category) => {
-										const altMatches = icItemStorage.currentStats.altMatches[category.name] || 0
-										return sum + altMatches
-									}, 0)
-					return count	
-				}
 
 			}
 		}
