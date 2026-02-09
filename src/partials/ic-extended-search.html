@@ -16,7 +16,7 @@
 <div class ="buttons">
 
 	<select
-		class		= "border-2 padding rounded icon icon right icon-interface-down"
+		class		= "border-2 rounded icon icon right icon-interface-down"
 		ng-repeat 	= "filter in filters"
 		ng-model	= "filter.data"
 		ng-class	= "{ 'bg-5' : filter.data}"
@@ -103,7 +103,7 @@
 
 	<button
 		ng-if		= "position.coordinates" 
-		class		= "rounded padding border-2 icon icon-interface-close left"
+		class		= "rounded border-2 icon icon-interface-close left"
 		ng-click	= "clearPosition()"
 	>
 		{{'INTERFACE.CURRENT_POSITION_CLEAR'| translate }}
@@ -113,7 +113,7 @@
 <div class = "buttons">	
 
 	<input 
-		class				= "border-2 padding"
+		class				= "border-2"
 		ng-model			= "position.zip"
 		ng-model-options	= "{ debounce:500 }"
 		placeholder			= "{{'INTERFACE.PLACEHOLDER_ZIP' | translate}}" 
@@ -121,7 +121,7 @@
 	
 
 	<button
-		class	 	= "border-2 padding rounded"
+		class	 	= "border-2 rounded"
 		ng-click	= "pickCoordinates()"
 		title		= "{{'INTERFACE.PICK_COORDINATES' | translate}}"
 	>
@@ -129,7 +129,7 @@
 	</button>
 
 	<button
-		class	 	= "border-2 padding rounded"
+		class	 	= "border-2 rounded"
 		ng-click	= "locate()"
 		title		= "{{'INTERFACE.GET_POSITION_METHOD_AUTO' | translate}}"
 	>
@@ -150,7 +150,7 @@
 	<button
 		ng-repeat 	= "range in ranges"
 		ng-disabled	= "!position.coordinates"
-		class		= "rounded border-2 padding" 
+		class		= "rounded border-2" 
 		ng-click	= "ic.site.range = ic.site.range == range ? undefind : range"
 		ng-class	= "{ 'bg-5': ic.site.range == range}"
 		title		= "{{ position.coordinates ? '' : ('INTERFACE.CURRENT_POSITION'| translate) +':'+('INTERFACE.CURRENT_POSITION_UNKNOWN'| translate) }}"
@@ -165,21 +165,21 @@
 
 <div class ="buttons">
 	<a 
-		class 	= "padding rounded border-2"
+		class 	= "rounded border-2 ic-button"
 		ng-href	= "{{ {calendar: true, start: today, end:today} | icLink }}"
 	>
 		{{'INTERFACE.TODAY' | translate }}
 	</a>
 
 	<a 
-		class 	= "padding rounded border-2"
+		class 	= "rounded border-2  ic-button"
 		ng-href	= "{{ {calendar: true, start: tomorrow, end:tomorrow} | icLink }}"
 	>
 		{{'INTERFACE.TOMORROW' | translate }}
 	</a>
 
 	<a 
-		class 	= "padding rounded border-2"
+		class 	= "rounded border-2 ic-button"
 		ng-href	= "{{ {calendar: true, start: weekend[0], end:weekend[1]} | icLink }}"
 	>
 		{{'INTERFACE.WEEKEND' | translate }}
@@ -190,7 +190,7 @@
 
 <div class = "results">
 	<a
-		class 	= "bg-3 rounded padding large"
+		class 	= "bg-3 rounded large  ic-button"
 		ng-href = "{{ { list: true } | icLink }}"
 	>
 		{{'INTERFACE.EXTENDED_SEARCH_RESULTS' | translate : { number:ic.itemStorage.filteredList.length } }}

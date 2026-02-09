@@ -55,14 +55,14 @@ ic-map-item-marker {
 	content:				'';
 	bottom:					-0.5rem;
 	left:					-0.5rem;
-	height:					1rem;
+	height:					0.5rem;
 	width:					1rem;
 	z-index:				-1;
-	box-shadow:				0 0 3rem 4rem #fff;
-	background:				var(--active-color, --primary-color, #f00);
+	box-shadow:				0 0 0.5rem 0.5rem #fff;
+	background:				var(--active-color, --primary-color, #6af);
 	border-radius:			100%;
 	opacity:				1;
-	animation:				pulse 500ms ease-in-out infinite alternate;
+	animation:				pulse 750ms ease-in-out infinite alternate;
 	animation-play-state:	running;
 }
 

@@ -1400,6 +1400,20 @@ angular.module('icServices', [
 
 			}
 
+			const defaultNOVSOptions = 	{
+											skip : []
+										}
+
+			icSite.numberOfVisibleSections = function(options) {
+
+				options = Object.assign({}, defaultNOVSOptions, options)
+
+				return	Object.keys(icSite.visibleSections)
+						.filter( key => !options.skip.includes(key))
+						.filter( key => icSite.visibleSections[key])
+						.length
+			}
+
 
 			$rootScope.$watch(
 				function(){
@@ -3121,9 +3135,6 @@ angular.module('icServices', [
 		icFilterConfig.categoryCleared = function(){
 			return !icSite.filterByCategory.length
 		}
-
-
-
 
 
 
