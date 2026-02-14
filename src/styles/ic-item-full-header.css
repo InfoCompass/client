@@ -112,6 +112,10 @@ ic-item-full-header.ic-scroll-top nav {
 	top:						-1rem;
 }
 
+ic-item-full-header nav button {
+	border-radius:				0;
+}
+
 ic-item-full-header nav .up,
 ic-item-full-header nav .down {
 	opacity:					0;

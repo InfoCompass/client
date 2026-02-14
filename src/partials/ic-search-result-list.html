@@ -17,6 +17,10 @@
 	<a
 		ng-repeat		= "item in ic.itemStorage.filteredList | limitTo : displayLimit"
 		ng-href			= "{{ {activeItem: item} | icLink }}"
+		ng-mouseover	= "ic.mainMap.highlightItem(item)"
+		ng-mouseleave	= "ic.mainMap.highlightItem(undefined)"
+		ng-focus		= "ic.mainMap.highlightItem(item)"
+		ng-blur			= "ic.mainMap.highlightItem(undefined)"
 		ic-touch-me
 	>
 		<ic-item-preview

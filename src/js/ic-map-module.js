@@ -160,8 +160,9 @@
 
 		'$templateCache',
 		'ic',
+		'icMainMap',
 
-		function($templateCache, ic){
+		function($templateCache, ic, icMainMap){
 			return {
 				restrict:		'AE',
 				//templateUrl:	'partials/ic-map-marker-item.html',
@@ -176,6 +177,15 @@
 
 				link: function(scope, element){
 					scope.ic = ic
+
+					scope.$watch( 
+						() => icMainMap.highlightedItem,
+						item => {
+
+							const highlight = !!( (item && scope.icItem) && (item.id == scope.icItem.id) )
+							element[0].classList.toggle('highlight',  highlight)
+						}
+					)
 				}
 
 			}
@@ -279,8 +289,9 @@
 		'$templateCache',
 		'icSite',
 		'ic',
+		'icMainMap',
 
-		function($templateCache, icSite, ic){
+		function($templateCache, icSite, ic, icMainMap){
 			return {
 				restrict:		'AE',
 				//templateUrl:	'partials/ic-map-marker-cluster.html',
@@ -290,7 +301,7 @@
 									icCluster:	"<"
 								},
 
-				link: function(scope){
+				link: function(scope, element){
 
 					scope.ic = ic
 
@@ -307,6 +318,11 @@
 									?	0
 									:	1
 						}
+
+						scope.$watch( 
+							() => scope.items && scope.items.includes(icMainMap.highlightedItem), 
+							highlight => element[0].classList.toggle('highlight', highlight)
+						)
 					})
 					
 				}
@@ -563,6 +579,7 @@
 
 				'$rootScope',
 				'$q',
+				'$timeout',
 				'icMapItemMarker',
 				'icMapLocationMarker',
 				'icItemStorage',
@@ -572,19 +589,20 @@
 				'icConsent',
 				'plTemplates',
 
-				function($rootScope, $q ,icMapItemMarker, icMapLocationMarker, icItemStorage, icSite, icConfig, icItemRef, icConsent, plTemplates){
+				function($rootScope, $q, $timeout ,icMapItemMarker, icMapLocationMarker, icItemStorage, icSite, icConfig, icItemRef, icConsent, plTemplates){
 
 
 
 					var mapReady 			= 	$q.defer(),
 						markersReady 		= 	$q.defer(),
 						icMainMap 			= 	{
-													ready:			mapReady.promise,
-													markersReady:	markersReady.promise,
-													defaults:		defaults,
-													mapObject: 		undefined,
-													markerCache:	{},
-													scope:			$rootScope.$new(),
+													ready:				mapReady.promise,
+													markersReady:		markersReady.promise,
+													defaults:			defaults,
+													mapObject: 			undefined,
+													markerCache:		{},
+													scope:				$rootScope.$new(),
+													highlightedItem:	undefined
 												},		
 
 
@@ -606,7 +624,6 @@
 												)
 
 
-
 					icMainMap.picker		=	angular.copy(defaultPicker)
 
 
@@ -616,7 +633,20 @@
 						icMainMap.consent 		=	icConsent.add('map_tiles', icMainMap.defaults.consent.server, icMainMap.defaults.consent.default, icMainMap.defaults.consent.customPrompt)
 					}
 
+					icMainMap.highlightItem = function(item){
+						icMainMap.highlightedItem = item
 
+						// delate de-highlighting to prevent flickering:
+						$timeout(
+							() => icMainMap.mapObject._container.classList.toggle('highlight-item', !!icMainMap.highlightedItem),
+
+							!!item
+							?	0
+							:	200
+						)
+
+
+					}
 
 					icMainMap.setMapObject = function(obj){
 						if(icMainMap.mapObject) console.warn('icMainMap: mapObject already set!')
