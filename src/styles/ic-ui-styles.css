@@ -125,5 +125,16 @@ ic-carousel 	nav button + button,
 
 
 [ic-extend] {
-	overflow-y:		hidden;
+	overflow-y:				hidden;
+	transition:				height 350ms ease-in-out;
+	height:					0;
+}
+
+[ic-settle-scrollbar] {
+	overflow-y:				auto;
+	box-sizing:				border-box;
+}
+
+[ng-click]:hover {
+	cursor:					pointer;
 }

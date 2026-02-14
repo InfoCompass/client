@@ -1,0 +1,17 @@
+ic-item-location {
+	display:			block;
+}
+
+ic-item-location   {
+	display: 			flex;
+	flex-direction:		row;
+	flex-wrap:			wrap;
+	gap:				0 0.5em;
+}
+
+ic-item-location  > * {
+	flex:				1 1 auto;
+	display:			flex;
+	flex-wrap:			wrap;
+	gap:				0 0.5em;
+}

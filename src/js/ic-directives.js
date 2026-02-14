@@ -822,6 +822,47 @@ angular.module('icDirectives', [
 	}
 ])
 
+.directive('icItemLocation', [
+
+	'ic',
+	'icItemRef',
+
+	function(ic, icItemRef){
+		return {
+
+			restrict: 		'AE',
+			templateUrl: 	'partials/ic-item-location.html',
+			scope:			{
+								icItem:	"<",
+								icShort: "<"
+							},
+
+			link: function(scope, element, attrs){
+				scope.ic = ic
+
+				scope.projected				= undefined
+				scope.hasPhysicalLocation 	= undefined
+
+				scope.$watch(
+					() => 	scope.icItem,
+					() => 	{
+						if(scope.icItem){
+							scope.projected 			= icItemRef.project(scope.icItem, ['location', 'address', 'zip', 'city', 'country'])
+							scope.hasPhysicalLocation	= !scope.icShort && scope.projected.location || scope.projected.address
+						} else {
+							scope.projected				= undefined
+							scope.hasPhysicalLocation	= undefined
+						}
+
+						element[0].classList.toggle('no-physical-location', !scope.hasPhysicalLocation)
+					}
+							
+				)
+			}
+		}
+	}
+])
+
 .directive('icCalendarSheet', [
 
 	'ic',

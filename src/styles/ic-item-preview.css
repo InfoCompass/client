@@ -77,7 +77,7 @@ ic-item-preview .content .brief .date {
 }
 
 
-ic-item-preview .content .location {
+ic-item-preview .content ic-item-location {
 	display:				flex;
 	font-size:				1rem;
 	margin-top:				1rem;
@@ -86,6 +86,10 @@ ic-item-preview .content .location {
 	padding-left:			2em;
 }	
 
+
+ic-item-preview .content ic-item-location.no-physical-location {
+	display:				none;
+}
 
 ic-item-preview .auto-translation-indicator {
 	position: 				absolute;

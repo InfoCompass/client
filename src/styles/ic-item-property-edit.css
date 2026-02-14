@@ -152,7 +152,7 @@ ic-item-property-edit .options button > *:first-child {
 .ic-item-property-edit.invalid textarea,
 ic-item-property-edit.invalid input[type="text"],
 ic-item-property-edit.invalid textarea {
-	box-shadow:					0 0 0 2px var(--error-color);
+	box-shadow:					0 0 0 2px var(--error-color) inset;
 }
 
 .ic-item-property-edit.invalid,

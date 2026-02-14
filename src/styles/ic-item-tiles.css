@@ -72,8 +72,18 @@ ic-item-tile .location {
 	margin:					0.5rem;	
 }
 
-ic-item-tile .location .text {
-	font-size:				0.75rem;		
+ic-item-tile ic-item-location {
+	font-size:				0.75rem;
+	padding-left:			2em!important;
+	min-height:				2em!important;
+}
+
+ic-item-tile ic-item-location > *:first-child {
+	width:					100%;
+}
+
+ic-item-tile ic-item-location.no-physical-location {
+	display:				none;
 }
 
 

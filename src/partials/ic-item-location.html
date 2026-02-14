@@ -1,0 +1,10 @@
+<span ng-if = "hasPhysicalLocation">
+	<span ng-if = "!icShort && projected.location">{{projected.location}}</span>
+	<span ng.if = "projected.address">{{projected.address}}</span>	
+</span>
+
+<span ng-if = "hasPhysicalLocation">
+	<span ng-if = "projected.zip">{{projected.zip}}</span>
+	<span ng-if = "projected.city">{{projected.city}}</span>
+</span>
+

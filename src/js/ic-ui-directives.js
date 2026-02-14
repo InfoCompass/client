@@ -1380,11 +1380,12 @@ angular.module('icUiDirectives', [
 												.reduce( (sum, el) => {
 													return sum + el.offsetHeight
 												},0)
-
-					if(element[0].id) console.log(element[0].id, contentHeight)							
+					
 					element[0].style.height = 	scope.icExtend
 												?	contentHeight+'px'
-												:	'0px'	
+												:	'0px'
+
+					element[0].classList.toggle('extended', scope.icExtend)							
 				}
 				
 				const mutationObserver		= 	new MutationObserver(update)

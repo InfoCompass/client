@@ -21,25 +21,20 @@
 	<div 
 		class = "title"
 	>
-		Café Zick-Zack
+		{{icItem | icFullTitle}}
 	</div>
 
 	<div 
 		class = "brief"
 	>
-		Beisammensein mit Handarbeit
+		{{icItem.brief[ic.site.currentLanguage]}}
 	</div>
 
 </div>
 
-
-<div class = "location">
-
-	<div class = "icon icon-type-location"></div>
-
-	<div class = "text">
-		Osloer Str. 12<br/>
-		13359 Berlin
-	</div>
-
-</div>
+<ic-item-location
+	class		= "icon icon-type-location left"
+	ic-item		= "icItem"
+	ic-short	= "true"
+>	
+</ic-item-location>
