@@ -9,62 +9,62 @@
 		ic-touch-me
 	>
 		<span> {{'INTERFACE.SEARCH_FOR' | translate}} "{{ic.site.searchTerm}}"	 </span>
-		<span class = "icon right white icon-interface-close"></span>
+		<span class = "icon right icon-interface-close"></span>
 	</button>
 
 	<button 
-		class		= "removable bg-3 rounded"
+		class		= "removable rounded"
 		ng-repeat	= "type in ic.site.filterByType"
 		title		= "{{'INTERFACE.REMOVE_FILTER' | translate}}: {{'TYPES.%s' | fill : type | translate }}"
 		ng-click	= "ic.filterConfig.toggleType(type)"
 		ic-touch-me
 	>
 		<span>	{{'TYPES.%s' | fill : type | translate }} </span>
-		<span class = "icon right white icon-interface-close"></span>
+		<span class = "icon right icon-interface-close"></span>
 	</button>
 
 	<button 
-		class		= "removable bg-3 rounded"
+		class		= "removable rounded"
 		ng-repeat	= "category in ic.site.filterByCategory"
 		title		= "{{'INTERFACE.REMOVE_FILTER' | translate}}: {{'CATEGORIES.%s' | fill : category | translate }}"
 		ng-click	= "ic.filterConfig.toggleCategory(category)"
 		ic-touch-me
 	>
 		<span>	{{'CATEGORIES.%s' | fill : category | translate }} </span>
-		<span class = "icon right white icon-interface-close"></span>
+		<span class = "icon right icon-interface-close"></span>
 	</button>
 
 	<button 
-		class		= "removable bg-3 rounded"
+		class		= "removable rounded"
 		ng-repeat	= "tag in ic.site.filterByUnsortedTag"
 		title		= "{{'INTERFACE.REMOVE_FILTER' | translate}}: {{'UNSORTED_TAGS.%s' | fill : tag | translate }}"
 		ng-click	= "ic.filterConfig.toggleUnsortedTag(tag)"
 		ic-touch-me
 	>
 		<span>	{{'UNSORTED_TAGS.%s' | fill : tag | translate }} </span>
-		<span class = "icon right white icon-interface-close"></span>
+		<span class = "icon right icon-interface-close"></span>
 	</button>
 
 	<button 
-		class		= "removable bg-3 rounded"
+		class		= "removable rounded"
 		ng-if		= "ic.site.position && ic.site.range"
 		title		= "{{'INTERFACE.REMOVE_FILTER' | translate}}: {{'INTERFACE.RANGE'|translate }}"
 		ng-click	= "ic.site.range = undefined"
 		ic-touch-me
 	>
 		<span>	{{'INTERFACE.RANGE'| translate }}: {{ic.site.range}}km </span>
-		<span class = "icon right white icon-interface-close"></span>
+		<span class = "icon right icon-interface-close"></span>
 	</button>
 
 	<button 
 		ng-if		= "ic.filterConfig.isActive()"
-		class		= "removable emph border-3 rounded active"
+		class		= "removable all rounded"
 		title		= "{{'INTERFACE.REMOVE_ALL_FILTERS' | translate}}"
 		ng-click	= "ic.filterConfig.clearAll()"
 		ic-touch-me
 	>
 		<span>	{{'INTERFACE.REMOVE_ALL_FILTERS' | translate }} </span>
-		<span class = "icon right white icon-interface-close"></span>
+		<span class = "icon right icon-interface-close"></span>
 	</button>
 
 </div>

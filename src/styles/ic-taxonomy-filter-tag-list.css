@@ -8,15 +8,10 @@ ic-taxonomy-filter-tag-list {
 ic-taxonomy-filter-tag-list a, /*alt*/
 ic-taxonomy-filter-tag-list button {
 	flex:						0 1 auto;
-	display:					inline-flex !important;
 	position:					relative;
-	line-height:				2rem;
-	padding:					0 0.75rem;
 	margin:						0.25rem 0.25rem;
 	white-space: 				nowrap;
 	min-width:					0;
-	align-items: 				center;
-
 }
 
 ic-taxonomy-filter-tag-list a > *, /*alt*/

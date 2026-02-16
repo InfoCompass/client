@@ -17,6 +17,11 @@ ic-extended-search a > * {
 
 ic-extended-search .results {
 	display:			flex;
-	justify-content:	center;
-	margin-top:			2rem;
+	justify-content:	flex-start;
 }
+
+
+ic-extended-search ic-search {
+	margin:				2rem 0;
+}
+

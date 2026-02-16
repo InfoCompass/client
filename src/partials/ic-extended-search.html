@@ -3,23 +3,29 @@
 	{{'INTERFACE.EXTENDED_SEARCH_HEADING' | translate}}
 </h1>	
 
-
-<h2>{{'INTERFACE.EXTENDED_SEARCH_LABEL' | translate}}</h2>	
-
 <ic-search
 	ic-debounce = "500"
 >
 </ic-search>
+
+<div class = "results">
+	<a
+		class 	= "ic-button prio large"
+		ng-href = "{{ { list: true } | icLink }}"
+	>
+		{{'INTERFACE.EXTENDED_SEARCH_RESULTS' | translate : { number:ic.itemStorage.filteredList.length } }}
+	</a>
+</div>
 
 <h2>{{'INTERFACE.EXTENDED_SEARCH_TAXONOMY' | translate}}</h2>	
 
 <div class ="buttons">
 
 	<select
-		class		= "border-2 rounded icon icon right icon-interface-down"
+		class		= "border icon icon right icon-interface-down"
 		ng-repeat 	= "filter in filters"
 		ng-model	= "filter.data"
-		ng-class	= "{ 'bg-5' : filter.data}"
+		ng-class	= "{'activated' : filter.data}"
 
 	> 
 
@@ -57,7 +63,6 @@
 		>
 			{{'UNSORTED_TAGS.%s' | fill: option | translate}}
 		</option>
-
 
 
 
@@ -186,13 +191,3 @@
 	</a>
 </div>
 
-<hr/>
-
-<div class = "results">
-	<a
-		class 	= "bg-3 rounded large  ic-button"
-		ng-href = "{{ { list: true } | icLink }}"
-	>
-		{{'INTERFACE.EXTENDED_SEARCH_RESULTS' | translate : { number:ic.itemStorage.filteredList.length } }}
-	</a>
-</div>
