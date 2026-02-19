@@ -920,7 +920,7 @@ angular.module('icDirectives', [
 
 				scope.references = emptyArray
 
-				scope.$watch('icItem', item => {
+				scope.$watch('icItem',  item => {
 
 					scope.references = 	item
 										?	ic.itemStorage.data.filter( item2 => item2.location_ref == item.id )
@@ -2959,14 +2959,48 @@ angular.module('icDirectives', [
 .directive('icSorting', [
 
 	'ic',
+	'icSite',
+	'icFilterConfig',
 
-	function(ic, icTaxonomy){
+	function(ic, icSite, icFilterConfig){
 		return {
 			restrict:		'E',
 			templateUrl:	'partials/ic-sorting.html',
 
 			link: function(scope, element){
 				scope.ic = ic
+
+				scope.sort
+
+				scope.$watchCollection(
+					() =>	[ icSite.sortOrder, icSite.sortDirection, icSite.sortDirectionAlpha],
+					() =>	{
+								const isAlpha 	=	icSite.sortOrder.match(/^alphabetical_/)
+								const direction	=	isAlpha
+													?	icSite.sortDirectionAlpha	
+													:	icSite.sortDirection
+
+								scope.sort 		= 	`${icSite.sortOrder}:${direction}`
+
+							}
+				)
+
+				scope.$watch(
+					() =>	 scope.sort,
+					() => 	{
+								if(!scope.sort) return 
+
+								const [order, direction] 	= 	scope.sort.split(':')
+								const isAlpha				=	order.match(/^alphabetical_/)
+
+								icFilterConfig.toggleSortOrder(order, true)
+
+								isAlpha
+								?	icFilterConfig.toggleSortDirectionAlpha(direction)	
+								:	icFilterConfig.toggleSortDirection(direction)	
+
+							}
+				)
 			}
 		}
 	}

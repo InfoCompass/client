@@ -28,7 +28,6 @@
 		<div ng-repeat 	= "category in ic.taxonomy.categories">
 
 			<button
-				ng-if			= "true"
 				class			= "icon icon-category-{{::category.name}} bg-0"
 				ic-button		= "{active:ic.filterConfig.categoryActive(category.name), disabled: !ic.itemStorage.currentStats.altMatches[category.name]}"
 				ng-class		= "{'bg-3 white checked':active, disabled: disabled}"

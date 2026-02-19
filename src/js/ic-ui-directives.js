@@ -667,9 +667,12 @@ angular.module('icUiDirectives', [
 						var aboveBottom	=	sourceElement.scrollTop + sourceElement.clientHeight < sourceElement.scrollHeight 
 											&& 	element[0].offsetHeight + sourceElement.clientHeight < sourceElement.scrollHeight
 
+						var noScroll	= 	sourceElement.clientHeight == sourceElement.scrollHeight										
 
-						element.toggleClass('ic-scroll-top', belowTop)		
+
+						element.toggleClass('ic-scroll-top', 	belowTop)		
 						element.toggleClass('ic-scroll-bottom', aboveBottom)
+						element.toggleClass('ic-scroll-none', 	noScroll)
 
 						if(apply_requested) return null	
 						if(belowTop == scope.icScrollBelowTop && aboveBottom == scope.icScrollAboveBottom)	return null
@@ -689,6 +692,10 @@ angular.module('icUiDirectives', [
 					if(event.detail.sourceName != target) return null
 					check()
 				}
+
+				var resizeObserver = new ResizeObserver(check)
+
+				resizeObserver.observe(element[0])
 
 				scope.scrollTop = function(){
 					window.requestAnimationFrame( () => {

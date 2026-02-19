@@ -10,7 +10,7 @@
 
 <div class = "results">
 	<a
-		class 	= "ic-button prio large"
+		class 	= "ic-button prio"
 		ng-href = "{{ { list: true } | icLink }}"
 	>
 		{{'INTERFACE.EXTENDED_SEARCH_RESULTS' | translate : { number:ic.itemStorage.filteredList.length } }}
@@ -126,7 +126,7 @@
 	
 
 	<button
-		class	 	= "border-2 rounded"
+		class	 	= "border rounded"
 		ng-click	= "pickCoordinates()"
 		title		= "{{'INTERFACE.PICK_COORDINATES' | translate}}"
 	>
@@ -134,7 +134,7 @@
 	</button>
 
 	<button
-		class	 	= "border-2 rounded"
+		class	 	= "border rounded"
 		ng-click	= "locate()"
 		title		= "{{'INTERFACE.GET_POSITION_METHOD_AUTO' | translate}}"
 	>
@@ -155,9 +155,9 @@
 	<button
 		ng-repeat 	= "range in ranges"
 		ng-disabled	= "!position.coordinates"
-		class		= "rounded border-2" 
+		class		= "rounded border" 
 		ng-click	= "ic.site.range = ic.site.range == range ? undefind : range"
-		ng-class	= "{ 'bg-5': ic.site.range == range}"
+		ng-class	= "{ 'activated': ic.site.range == range}"
 		title		= "{{ position.coordinates ? '' : ('INTERFACE.CURRENT_POSITION'| translate) +':'+('INTERFACE.CURRENT_POSITION_UNKNOWN'| translate) }}"
 	>
 		{{range}} km
@@ -170,21 +170,21 @@
 
 <div class ="buttons">
 	<a 
-		class 	= "rounded border-2 ic-button"
+		class 	= "rounded border ic-button"
 		ng-href	= "{{ {calendar: true, start: today, end:today} | icLink }}"
 	>
 		{{'INTERFACE.TODAY' | translate }}
 	</a>
 
 	<a 
-		class 	= "rounded border-2  ic-button"
+		class 	= "rounded border ic-button"
 		ng-href	= "{{ {calendar: true, start: tomorrow, end:tomorrow} | icLink }}"
 	>
 		{{'INTERFACE.TOMORROW' | translate }}
 	</a>
 
 	<a 
-		class 	= "rounded border-2 ic-button"
+		class 	= "rounded border ic-button"
 		ng-href	= "{{ {calendar: true, start: weekend[0], end:weekend[1]} | icLink }}"
 	>
 		{{'INTERFACE.WEEKEND' | translate }}

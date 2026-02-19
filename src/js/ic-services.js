@@ -3203,7 +3203,7 @@ angular.module('icServices', [
 		}
 
 		icFilterConfig.toggleSortDirectionAlpha = function(dir){
-			icSite.sortDirectionAlpha = (icSite.sortDirectionAlpha * -1);
+			icSite.sortDirectionAlpha = dir || (icSite.sortDirectionAlpha * -1);
 			return icFilterConfig
 		}
 
