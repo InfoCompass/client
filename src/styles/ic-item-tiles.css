@@ -5,7 +5,8 @@
 	margin:					1rem 0;
 }
 
-ic-item-tile {
+ic-item-tile,
+[ic-item-tile] {
 	position:				relative;
 	display:				flex;
 	box-sizing:				border-box;
@@ -20,7 +21,8 @@ ic-item-tile {
 
 
 
-ic-item-tile header {
+ic-item-tile header,
+[ic-item-tile] header {
 	position:				relative;	
 	display:				flex;
 	box-sizing:				border-box;	
@@ -31,7 +33,8 @@ ic-item-tile header {
 	z-index:				2;
 }
 
-ic-item-tile header .background {
+ic-item-tile header .background,
+[ic-item-tile] header .background {
 	position:				absolute;
 	top:					0;
 	bottom:					0;
@@ -41,30 +44,36 @@ ic-item-tile header .background {
 	z-index:				-1;
 }
 
-ic-item-tile header .icon:not(button) {
+ic-item-tile header .icon:not(button),
+[ic-item-tile] header .icon:not(button) {
 	font-size:				2rem;
 }
 
-ic-item-tile header button {
-	background:				transparent;
+ic-item-tile header button, 
+[ic-item-tile] header button {
+	background-color:		transparent;
 }
 
-ic-item-tile .details {
+ic-item-tile .details,
+[ic-item-tile] .details {
 	flex:					1 0 auto;
 	margin:					0.5rem;	
 }
 
-ic-item-tile .details .title {
+ic-item-tile .details .title,
+[ic-item-tile].details .title {
 	font-weight:			600;
 	margin-bottom:			0.5rem;
 }
 
-ic-item-tile .details .brief {
+ic-item-tile .details .brief,
+[ic-item-tile] .details .brief {
 	font-size:				0.75rem;
 }
 
 
-ic-item-tile .location {
+ic-item-tile .location,
+[ic-item-tile] .location {
 	flex:					0 0 auto;
 	display:				flex;
 	align-items:			center;
@@ -72,17 +81,20 @@ ic-item-tile .location {
 	margin:					0.5rem;	
 }
 
-ic-item-tile ic-item-location {
+ic-item-tile ic-item-location,
+[ic-item-tile] ic-item-location {
 	font-size:				0.75rem;
 	padding-left:			2em!important;
 	min-height:				2em!important;
 }
 
-ic-item-tile ic-item-location > *:first-child {
+ic-item-tile ic-item-location > *:first-child,
+[ic-item-tile] ic-item-location > *:first-child {
 	width:					100%;
 }
 
-ic-item-tile ic-item-location.no-physical-location {
+ic-item-tile ic-item-location.no-physical-location,
+[ic-item-tile] ic-item-location.no-physical-location {
 	display:				none;
 }
 

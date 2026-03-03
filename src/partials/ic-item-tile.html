@@ -6,10 +6,14 @@
 	</div>
 
 
-	<!-- add proper favourite icons, addFavourite, removeFavourite -->
-
 	<button
-		class = "icon icon-interface-favourites"		
+		class 		= 	"icon"		
+		ng-class	= 	"{ 
+							'icon-interface-favourites_remove'	: ic.favourites.contains(icItem),
+							'icon-interface-favourites_add'		:!ic.favourites.contains(icItem)
+						}"
+		ng-click 	= 	"ic.favourites.toggleItem(icItem); $event.preventDefault()" 
+		title		= 	"{{ (ic.favourites.contains(icItem) ? 'INTERFACE.FAVOURITE_REMOVE' :'INTERFACE.FAVOURITE_ADD') | translate}}"
 	>
 	</button>
 

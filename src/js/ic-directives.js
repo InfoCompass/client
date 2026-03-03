@@ -1213,8 +1213,9 @@ angular.module('icDirectives', [
 						icItemEdits.clear(scope.icEdit)
 						icSite.editItem 	= false
 
-						if(icSite.activeItem.internal.new){					
+						if(icSite.activeItem.internal.new){												
 							icItemStorage.removeItem(scope.icItem)
+
 							icSite.activeItem 	= null
 						}
 
@@ -3705,7 +3706,7 @@ angular.module('icDirectives', [
 
 	function(ic){
 		return {
-			restrict:		'E',
+			restrict:		'AE',
 			templateUrl:	'partials/ic-item-tile.html',
 
 			scope:			{

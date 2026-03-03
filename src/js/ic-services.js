@@ -4103,6 +4103,7 @@ angular.module('icServices', [
 								map[option.tag] = option.label
 							})
 
+							// Make sure to update mappo if anything changes here!
 							return icLanguages.addUniformTranslations('UNSORTED_TAGS', map)
 
 						})	

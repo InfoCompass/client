@@ -130,6 +130,7 @@ ic-overlays > ic-spinner {
 	height:					1.5em;
 	min-height:				0;
 	max-height:				100%;
+	min-width:				0 !important;
 	top:					auto;
 	bottom:					20%;
 	left:					50%;

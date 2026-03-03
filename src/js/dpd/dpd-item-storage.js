@@ -105,13 +105,14 @@
 		}
 
 		icItemStorage.removeItem = function(item_or_id, skip_internals){
-			var item 	= 	icItemStorage.getItem(item_or_id),
-				pos		=  	icItemStorage.data.indexOf(item)
 
-			if(pos != -1) icItemStorage.data.splice(pos, 1)
+			var item 		= 	icItemStorage.getItem(item_or_id),
+				posData		=  	icItemStorage.data.indexOf(item),
+				posFilter	=	icItemStorage.filteredList.indexOf(item)
 
-			//TODO
-			if(!skip_internals) icItemStorage.updateItemInternals(item)
+			if(posData 		!= -1) icItemStorage.data.splice(posData, 1)
+			if(posFilter 	!= -1) icItemStorage.filteredList.splice(posFilter, 1)
+
 
 			return icItemStorage
 		}

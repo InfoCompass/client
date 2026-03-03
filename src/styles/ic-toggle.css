@@ -1,14 +1,23 @@
 ic-toggle {
-	display:				inline-block;
-	overflow:				hidden;
-	border-radius:			1em;
-	border:					1px solid var(--primary-color);
-	line-height:			1.3em;		
-	height:					1.3em;
-	user-select:			none;
-	vertical-align:			baseline;
-	cursor:					pointer;
-	margin-bottom:			-0.35em;
+	display:						inline-block;
+	overflow:						hidden;
+	border-radius:					1em;
+	border:							1px solid var(--toggle-border-color, var(--primary-color));
+	line-height:					1.3em;		
+	height:							1.3em;
+	user-select:					none;
+	vertical-align:					baseline;
+	cursor:							pointer;
+	margin-bottom:					-0.35em;
+	transition:						background 200ms ease-in-out;
+}
+
+ic-toggle.on{
+	background-color:				var(--toggle-on-background, transparent);	
+}
+
+ic-toggle.off{
+	background-color:				var(--toggle-off-background, transparent);	
 }
 
 ic-toggle .shuttle {
@@ -35,15 +44,29 @@ ic-toggle .shuttle .indicator:before {
 	box-sizing:				border-box;
 	height:					0.9em;
 	width:					0.9em;
-	background-color:		transparent;
-	border:					1px solid var(--primary-color);
+	border:					1px solid var(--toggle-border-color, var(--primary-color));
 	border-radius:			100%;	
 	transition:				background-color 200ms ease-in-out;
 }
 
-ic-toggle .shuttle .on,
-ic-toggle .shuttle .off {	
+ic-toggle.on .shuttle .indicator:before {	
+	background-color:		var(--toggle-on-indicator-color, var(--primary-color));
 }
+
+ic-toggle.off .shuttle .indicator:before {	
+	background-color:		var(--toggle-off-indicator-color, transparent);
+}
+
+
+
+ic-toggle .shuttle .on{
+	color:					var(--toggle-on-text-color);	
+}
+
+ic-toggle .shuttle .off {
+	color:					var(--toggle-off-text-color);	
+}
+
 
 ic-toggle .shuttle .on {
 	text-align:				right;
@@ -61,9 +84,6 @@ ic-toggle.on .shuttle{
 	transform:				translateX(calc(100% - 1.3em));
 }
 
-ic-toggle.on .shuttle .indicator:before {	
-	background-color:		var(--primary-color);;
-}
 
 ic-toggle.off .shuttle{
 	transform:				translateX(0);	
