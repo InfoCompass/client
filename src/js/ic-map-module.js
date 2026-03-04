@@ -662,30 +662,52 @@
 					}
 
 
-					icMainMap.showRange = function([lat, lon], range){
+					icMainMap.showRange = function(latLon, range){
+
+						const hasCoordinates = !!latLon
+
+						latLon 	= latLon 	|| icMainMap.defaults.center
+						range	= range		|| rangeMarker && rangeMarker.range || 10
 
 						icMainMap.ready
 						.then( map => {
 							if(!rangeMarker){
-								rangeMarker = new L.circle([lat, lon], {radius: range*100})
+								rangeMarker = new L.circle(latLon, {radius: range*100})
 
 								rangeMarker
 								.setStyle({
 									color:		'#fff',
 									weight:		20,
 									opacity:	0.7,
-									fill:		false
+									fill:		false,
 								})
 							}
 
+							currentZoom		= icMainMap.mapObject.getZoom()
+
+							const width		= Math.min(10, Math.ceil((currentZoom-5) * range /3))
+							
+
+							rangeMarker.setStyle({weight: width})
+
 							rangeMarker
-							.addTo(icMainMap.mapObject)
-							.setLatLng([lat,lon])	
+							.addTo(icMainMap.mapObject)							
 							.setRadius(range*1000)
+
+							if(hasCoordinates) rangeMarker.setLatLng(latLon)	
+
+							rangeMarker.range = range							
 
 						})
 						
 					}
+
+					icMainMap.ready.then( () => {
+						icMainMap.mapObject.on("zoomend", () => {
+							icMainMap.showRange()
+						})
+
+					})
 
 					icMainMap.hideRange = function(){
 						if(!rangeMarker) return

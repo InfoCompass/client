@@ -26,15 +26,25 @@
 		ng-repeat 	= "filter in filters"
 		ng-model	= "filter.data"
 		ng-class	= "{'activated' : filter.data}"
-
 	> 
 
 		<option			
-			ng-if = "filter.type === 'categories'"
+			ng-if = "filter.type === 'categories' && !filter.data"
+			value = ""
+			hidden
+		>
+			
+			{{'INTERFACE.SELECT_NO_VALUE' | translate }}
+			{{'ITEMS.CATEGORY' | fill: filter.name | translate }}
+			
+		</option>
+
+		<option			
+			ng-if = "filter.data"
 			value = ""
 		>
-			{{'INTERFACE.SELECT_NO_VALUE' | translate}} {{'ITEMS.CATEGORY' | fill: filter.name | translate}}
-		</option>
+			{{'INTERFACE.SELECT_DISSELECT' | translate }}
+		</option>	
 
 
 		<option
@@ -133,13 +143,13 @@
 		{{'INTERFACE.PICK_COORDINATES' | translate}}
 	</button>
 
-	<button
+<!-- 	<button
 		class	 	= "border rounded"
 		ng-click	= "locate()"
 		title		= "{{'INTERFACE.GET_POSITION_METHOD_AUTO' | translate}}"
 	>
 		{{'INTERFACE.GET_POSITION_METHOD_AUTO' | translate}}
-	</button>	
+	</button>	 -->
 
 </div>
 
@@ -148,7 +158,7 @@
 {{'INTERFACE.EXTENDED_SEARCH_RADIUS' | translate}}
 
 <div 
-	ng-init = "ranges = [1, 5, 10, 20, 50]"
+	ng-init = "ranges = [1, 5, 10, 30]"
 	class	= "buttons"
 >
 
