@@ -2896,7 +2896,7 @@ angular.module('icServices', [
 	'icOptions',
 
 	function($rootScope, icSite, icItemStorage, icRange, icTaxonomy, icLanguages, icItemConfig, icOptions){
-		icSite.sortDirectionAlpha = 1
+		// icSite.sortDirectionAlpha = 1
 		icSite.sortDirection = -1
 
 		var icFilterConfig = this
@@ -3009,42 +3009,52 @@ angular.module('icServices', [
 
 								return matches && matches[2]
 							},
-			defaultValue:	function(ic){ return 'alphabetical_'+ic.site.currentLanguage }
+			// defaultValue:	function(ic){ return 'alphabetical_'+ic.site.currentLanguage },
+			defaultValue:	function(ic){ return 'last_change' }
 		})
 
 		.registerParameter({
 			name:			'sortDirection',
 			encode:			function(value, ic){
+
 								if(value != -1 && value != 1) return ''
 
-								return (value == -1 ?  'desc' : 'asc')
+								return	value == 1 
+										?	'asc'
+										:	'desc' 
 							},
 			decode:			function(path, ic){
 								var matches = path.match(/(^|\/)(asc|desc)/)
 
-								return matches && matches[2] && (matches[2] == 'asc' ? 1 : -1)
-							},
-			options:		[1, -1],
-			defaultValue:	-1
-		})
 
-		.registerParameter({
-			name:			'sortDirectionAlpha',
-			encode:			function(value, ic){
-								if(value != -1 && value != 1) return ''
+								if(matches && matches[2] && (matches[2] == 'asc')) 	return  1
+								if(matches && matches[2] && (matches[2] == 'desc'))	return -1
 
-								return (value == -1 ?  'desc' : 'asc')
-							},
-			decode:			function(path, ic){
-								var matches = path.match(/(^|\/)(asc|desc)/);
-								var matchOrder = path.match(/(^|\/)(last_change)/);
-								if(!matchOrder || matchOrder[2] != "last_change" && matches){
-									return matches && matches[2] && (matches[2] == 'asc' ? 1 : -1)
-								}
+								return undefined
 							},
 			options:		[1, -1],
 			defaultValue:	1
 		})
+
+		// .registerParameter({
+		// 	name:			'sortDirectionAlpha',
+		// 	encode:			function(value, ic){
+		// 						if(value != -1 && value != 1) return ''
+
+		// 						return	value == 1 
+		// 								?	'asc'
+		// 								:	'desc' 
+		// 					},
+		// 	decode:			function(path, ic){
+		// 						var matches 	= path.match(/(^|\/)(asc|desc)/);
+		// 						var matchOrder 	= path.match(/(^|\/)(last_change)/);
+		// 						if(!matchOrder || matchOrder[2] != "last_change" && matches){
+		// 							return matches && matches[2] && (matches[2] == 'asc' ? 1 : -1)
+		// 						}
+		// 					},
+		// 	options:		[1, -1],
+		// 	defaultValue:	1
+		// })
 
 
 		icFilterConfig.toggleType = function(type_name, toggle, replace){
@@ -3183,15 +3193,16 @@ angular.module('icServices', [
 			}
 
 			if(icSite.sortOrder == sortCriterium){
-				icSite.sortOrder.match('alphabetical_')
-				?	icFilterConfig.toggleSortDirectionAlpha()
-				:	icFilterConfig.toggleSortDirection()
+				// icSite.sortOrder.match('alphabetical_')
+				// ?	icFilterConfig.toggleSortDirectionAlpha()
+				// :	icFilterConfig.toggleSortDirection()
+				icFilterConfig.toggleSortDirection()
 				return icFilterConfig
 			}
 
 			icSite.sortOrder = sortCriterium
 
-			icSite.sortDirectionAlpha = undefined;
+			// icSite.sortDirectionAlpha = undefined;
 			icSite.sortDirection = undefined;
 
 			return icFilterConfig
@@ -3202,10 +3213,10 @@ angular.module('icServices', [
 			return icFilterConfig
 		}
 
-		icFilterConfig.toggleSortDirectionAlpha = function(dir){
-			icSite.sortDirectionAlpha = dir || (icSite.sortDirectionAlpha * -1);
-			return icFilterConfig
-		}
+		// icFilterConfig.toggleSortDirectionAlpha = function(dir){
+		// 	icSite.sortDirectionAlpha = dir || (icSite.sortDirectionAlpha * -1);
+		// 	return icFilterConfig
+		// }
 
 
 		icFilterConfig.clearAll = function(){
@@ -3389,19 +3400,19 @@ angular.module('icServices', [
 				return 	[
 							icSite.sortOrder,
 							icSite.sortDirection,
-							icSite.sortDirectionAlpha
+							// icSite.sortDirectionAlpha
 						]
 			},
 
 			function(){
 				icItemStorage.ready
 				.then(function(){
-					let order = icSite.sortOrder.split('_')[0];
-					if(order == "alphabetical"){
-						icItemStorage.sortFilteredList(icSite.sortOrder, icSite.sortDirectionAlpha)
-					} else{
+					// let order = icSite.sortOrder.split('_')[0];
+					// if(order == "alphabetical"){
+					// 	icItemStorage.sortFilteredList(icSite.sortOrder, icSite.sortDirectionAlpha)
+					// } else{
 						icItemStorage.sortFilteredList(icSite.sortOrder, icSite.sortDirection)
-					}
+					// }
 
 				})
 			}

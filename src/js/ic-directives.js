@@ -2974,15 +2974,9 @@ angular.module('icDirectives', [
 				scope.sort
 
 				scope.$watchCollection(
-					() =>	[ icSite.sortOrder, icSite.sortDirection, icSite.sortDirectionAlpha],
+					() =>	[ icSite.sortOrder, icSite.sortDirection ],
 					() =>	{
-								const isAlpha 	=	icSite.sortOrder.match(/^alphabetical_/)
-								const direction	=	isAlpha
-													?	icSite.sortDirectionAlpha	
-													:	icSite.sortDirection
-
-								scope.sort 		= 	`${icSite.sortOrder}:${direction}`
-
+								scope.sort 		= 	`${icSite.sortOrder}:${icSite.sortDirection}`
 							}
 				)
 
@@ -2991,14 +2985,13 @@ angular.module('icDirectives', [
 					() => 	{
 								if(!scope.sort) return 
 
-								const [order, direction] 	= 	scope.sort.split(':')
-								const isAlpha				=	order.match(/^alphabetical_/)
+								let [order, direction] 	= 	scope.sort.split(':')
+
+								direction = parseInt(direction)
 
 								icFilterConfig.toggleSortOrder(order, true)
-
-								isAlpha
-								?	icFilterConfig.toggleSortDirectionAlpha(direction)	
-								:	icFilterConfig.toggleSortDirection(direction)	
+								
+								if(direction) icFilterConfig.toggleSortDirection(direction)
 
 							}
 				)

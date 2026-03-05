@@ -61,7 +61,7 @@ ic-item-tile .details,
 }
 
 ic-item-tile .details .title,
-[ic-item-tile].details .title {
+[ic-item-tile] .details .title {
 	font-weight:			600;
 	margin-bottom:			0.5rem;
 }

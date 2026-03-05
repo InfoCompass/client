@@ -12,7 +12,7 @@ onmessage = function(e){
 
 	switch(type){
 		case 'alphabetical':	data.sort(function(a,b){
-									return a.property.localeCompare(b.property, param || 'en')
+									return a.property.trim().localeCompare( b.property.trim(), param || 'en')
 								})
 		break
 	}

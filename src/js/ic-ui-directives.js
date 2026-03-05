@@ -384,12 +384,11 @@ angular.module('icUiDirectives', [
 				while( (container = container.parentElement) && !container.hasAttribute('ic-scroll-repeat-limit-container')){}
 
 
-
-
 				if(!container){
 					console.warn('icScrollRepeatLimit: missing container.', element[0])
 					return null
 				}
+				
 				container = angular.element(container)
 
 
