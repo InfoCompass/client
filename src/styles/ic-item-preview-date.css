@@ -131,13 +131,15 @@ ic-item-preview[ic-date] .stats .time {
 	grid-template-columns:	repeat(3, min-content);
 }
 
-ic-item-preview[ic-date] .stats .location {
+ic-item-preview[ic-date] .stats ic-item-location {
 	display:				flex;
+	font-size:				0.8rem;	
 	flex:					1 1 auto;
 	flex-wrap:				wrap;
+	margin-top:				0;
 }
 
-ic-item-preview[ic-date] .stats .location > * {
+ic-item-preview[ic-date] .stats .ic-item-location > * {
 	display:				inline-block;
 	flex:					0 1	auto;
 }

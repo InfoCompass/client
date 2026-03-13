@@ -4680,7 +4680,7 @@ angular.module('icServices', [
 		class RecurringRule {
 
 
-			static availableIterations = ['fixed', 'daily', 'mon-fri', 'weekly', 'bi-weekly', 'three-weekly', 'four-weekly', 'first_of_month', 'second_of_month', 'third_of_month', 'fourth_of_month']
+			static availableIterations = ['fixed', 'daily', 'mon-fri', 'weekly', 'bi-weekly', 'three-weekly', 'four-weekly', 'first_of_month', 'second_of_month', 'third_of_month', 'fourth_of_month', 'last_of_month']
 
 			_iteration	= undefined
 			_weekday	= undefined
@@ -4842,6 +4842,7 @@ angular.module('icServices', [
 											'second_of_month':	'FREQ=MONTHLY',
 											'third_of_month':	'FREQ=MONTHLY',
 											'fourth_of_month':	'FREQ=MONTHLY',
+											'last_of_month':	'FREQ=MONTHLY',
 
 										}[this.iteration]
 
@@ -4856,6 +4857,7 @@ angular.module('icServices', [
 											'second_of_month':	'INTERVAL=1',
 											'third_of_month':	'INTERVAL=1',
 											'fourth_of_month':	'INTERVAL=1',
+											'last_of_moth':		'INTERVAL=1',
 
 										}[this.iteration]
 
@@ -4864,6 +4866,7 @@ angular.module('icServices', [
 											'second_of_month':	'BYSETPOS=2',
 											'third_of_month':	'BYSETPOS=3',
 											'fourth_of_month':	'BYSETPOS=4',											
+											'last_of_month':	'BYSETPOS=-1',											
 										}[this.iteration]
 
 				const day			=	{
@@ -4887,6 +4890,7 @@ angular.module('icServices', [
 											'second_of_month':	`BYDAY=${day}`,
 											'third_of_month':	`BYDAY=${day}`,
 											'fourth_of_month':	`BYDAY=${day}`,
+											'last_of_month':	`BYDAY=${day}`,
 
 										}[this.iteration]		
 

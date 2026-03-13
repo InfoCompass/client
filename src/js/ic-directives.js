@@ -786,9 +786,7 @@ angular.module('icDirectives', [
 
 					const flatRuleString = scope.icItem[icConfig.calendar.recurringRulesKey]
 
-					ruleset =	flatRuleString
-								?	icRecurring.createRecurringRuleset(flatRuleString)
-								:	icRecurring.guessFromTextDe(scope.icItem.hours.de) // REMOVE ME when prod
+					ruleset =	icRecurring.createRecurringRuleset(flatRuleString)								
 
 					if(!ruleset) return 
 

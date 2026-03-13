@@ -500,7 +500,7 @@ angular.module('icUiDirectives', [
 				scheduleUpdate()
 
 				scope.$on('$destroy', function(){
-					container[0].removeEventListener('scroll', onScroll)
+					container[0].removeEventListener('scroll', scheduleUpdate)
 				})
 				
 			}

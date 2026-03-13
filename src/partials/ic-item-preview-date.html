@@ -107,11 +107,12 @@
 
 					</time>
 				</div>
-				<div class = "location">
-					<div class = "icon icon-section-location"></div>
-					<span> {{ (icItem | project : 'location') }} </span>
-					<span> {{ (icItem | project : 'address') }} </span>
-				</div>
+				<ic-item-location 
+					class		= "icon icon-type-location"
+					ic-item		= "icItem"
+					ic-short 	= "true"
+				>
+				</ic-item-location>
 			</div>
 
 	</div>
