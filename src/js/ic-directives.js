@@ -349,6 +349,10 @@ angular.module('icDirectives', [
 
 				scope.guessCoordinatesFromZip = async function(zip){
 
+					console.error("TODO NOMIATIM!!")
+
+					return false /*TODODO*/
+
 					try {
 						zipGuess		= await icGeo.zipCenter(zip)
 						
