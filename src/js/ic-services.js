@@ -425,21 +425,22 @@ angular.module('icServices', [
 		})
 
 		//icInit.done is used by the loading screen, i.e. it gets removed when icInit.done == true
-		$q.when(Promise.all(Object.values(blockingPromises)))
-		// .then( () => icUtils.waitWhileBusy(20))
-		.then( () => {
-			plImages.start()
-			icRemotePages.start()
-			icTiles.start()
-			return icConsent.ready
-		})
-		.then( () => {
-			icInit.done = true
-			console.info(`Done after: ${performance.measure("startup").duration}ms`)			
-		})
-		.then( () => Promise.all(Object.values(deferredPromises)))
-		.then( () => icInit.preloadDone = true)
-		.then( () => console.info(`Preload done after: ${performance.measure("startup").duration}ms`) )
+
+		icInit.$ready = 	$q.when(Promise.all(Object.values(blockingPromises)))
+							// .then( () => icUtils.waitWhileBusy(20))
+							.then( () => {
+								plImages.start()
+								icRemotePages.start()
+								icTiles.start()
+								return icConsent.ready
+							})
+							.then( () => {
+								icInit.done = true
+								console.info(`Done after: ${performance.measure("startup").duration}ms`)			
+							})
+							.then( () => Promise.all(Object.values(deferredPromises)))
+							.then( () => icInit.preloadDone = true)
+							.then( () => console.info(`Preload done after: ${performance.measure("startup").duration}ms`) )
 
 
 		return icInit
@@ -4397,8 +4398,9 @@ angular.module('icServices', [
 	'ic',
 	'icConfig',
 	'icConsent',
+	'icInit',
 
-	function($q, ic, icConfig, icConsent){
+	function($q, ic, icConfig, icConsent, icInit){
 
 		class IcGeo {
 
@@ -4416,22 +4418,47 @@ angular.module('icServices', [
 				return data
 			}
 
+			zipData	=	icInit.$ready
+						.then( () => this. setupZip())
+
+			async setupZip(){
+				const response 		= 	await fetch("zip.csv")
+				const csv			= 	await response.text()
+
+				const dataEntries	= 	csv
+										.trim()										
+										.split("\n")
+										.filter( x => !!x.trim())
+										.slice(1)
+										.map( line => line.split(',') )
+										.map( ([zip, lat, lon]) => [zip, {zip, lat: parseFloat(lat), lon: parseFloat(lon) }] )
+
+				return new Map(dataEntries)
+			}
+
 			async zipCenter(postalcode){
 
 				if(typeof postalcode != 'string')	throw "postalcode must be string"
 				if(!postalcode.match(/^\d{5}$/))	throw "postalcode must consist of exactly 5 digits"	
 
-				const base		= icConfig.publicApi
-				const path		= '/geo-guess'
-				const queries	= new URLSearchParams({postalcode})
-				const url		= `${base}${path}?${queries}`
-				const response 	= await fetch(url)
+				const zipData 	= await this.zipData
+				const result	= zipData.get(postalcode)
 
-				if(!response.ok) throw new Error(`HTTP error! Status: ${response.status}`)
+				if(!result) throw new Error(`No zip data for ${postalcode} availabe.`)
 
-				const data		= response.json()
+				return result
 
-				return data
+				// const base		= icConfig.publicApi
+				// const path		= '/geo-guess'
+				// const queries	= new URLSearchParams({postalcode})
+				// const url		= `${base}${path}?${queries}`
+				// const response 	= await fetch(url)
+
+				// if(!response.ok) throw new Error(`HTTP error! Status: ${response.status}`)
+
+				// const data		= response.json()
+
+				// return data
 			}
 
 		}

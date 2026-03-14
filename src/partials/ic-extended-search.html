@@ -27,6 +27,12 @@
 		ng-model	= "filter.data"
 		ng-class	= "{'activated' : filter.data}"
 	> 
+		<option			
+			ng-if = "filter.data"
+			value = ""
+		>
+			{{'INTERFACE.SELECT_DISSELECT' | translate }}
+		</option>	
 
 		<option			
 			ng-if = "filter.type === 'categories' && !filter.data"
@@ -35,16 +41,10 @@
 		>
 			
 			{{'INTERFACE.SELECT_NO_VALUE' | translate }}
-			{{'ITEMS.CATEGORY' | fill: filter.name | translate }}
+			{{'ITEMS.CATEGORY' | translate }}
 			
 		</option>
 
-		<option			
-			ng-if = "filter.data"
-			value = ""
-		>
-			{{'INTERFACE.SELECT_DISSELECT' | translate }}
-		</option>	
 
 
 		<option
@@ -58,10 +58,12 @@
 
 
 		<option
-			ng-if = "filter.type === 'tagGroup'"
+			ng-if = "filter.type === 'tagGroup' && !filter.data"
 			value = ""
+			hidden
 		>
-			{{'INTERFACE.SELECT_NO_VALUE' | translate}} {{'ITEMS.%s' | fill: filter.name | translate}}
+			{{'INTERFACE.SELECT_NO_VALUE' | translate}}
+			{{'ITEMS.%s' | fill: filter.name | translate}}
 		</option>
 
 
@@ -76,13 +78,13 @@
 
 
 
-
-
 		<option
-			ng-if = "filter.type === 'itemProperty'"
+			ng-if = "filter.type === 'itemProperty' && !filter.data"
 			value = ""
+			hidden
 		>
-			{{'INTERFACE.SELECT_NO_VALUE' | translate}} {{'ITEMS.%s' | fill: filter.name | translate}}
+			{{'INTERFACE.SELECT_NO_VALUE' | translate}}
+			{{'ITEMS.%s' | fill: filter.name | translate}}
 		</option>
 
 
@@ -130,7 +132,6 @@
 	<input 
 		class				= "border-2"
 		ng-model			= "position.zip"
-		ng-model-options	= "{ debounce:500 }"
 		placeholder			= "{{'INTERFACE.PLACEHOLDER_ZIP' | translate}}" 
 	/>
 	

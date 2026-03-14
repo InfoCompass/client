@@ -42,7 +42,8 @@
   "scripts": {
     "build": "node build.js",
     "prebuild": "browserify -p esmify index_vendor.js > vendor.js",
-    "crawl_tiles": "node crawl_tiles.js"
+    "crawl_tiles": "node crawl_tiles.js",
+    "postinstall": "[ ! -d postal ] && git clone https://github.com/WZBSocialScienceCenter/plz_geocoord postal || git -C postal pull" 
   },
   "repository": {
     "type": "git",

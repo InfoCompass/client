@@ -3,6 +3,7 @@ todo
 /node_modules
 .angular
 /dev
+/postal
 /dist
 /build
 /map
