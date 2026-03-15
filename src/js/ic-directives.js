@@ -259,11 +259,10 @@ angular.module('icDirectives', [
 			link(scope){
 				scope.ic = ic
 
-				zipGuess 		= 	undefined
-
 				scope.position	= 	{
 										coordinates: 	undefined,
 										zip:			undefined,
+										text:			undefined
 									}
 			
 				scope.filters 	= scope.icFilters				
@@ -327,6 +326,29 @@ angular.module('icDirectives', [
 					icRange.clearPosition()
 				}
 
+				scope.setZip = (zip) => {
+					if(scope.isNoZip(zip))		return
+					scope.guessCoordinatesFromZip(zip)
+				}
+
+				scope.guessCoordinatesFromZip = async function(zip){
+
+					const zipGuess		= await icGeo.zipCenter(zip)
+					
+					scope.position.zip	= zip
+
+					const latitude		= parseFloat(zipGuess.lat)
+					const longitude		= parseFloat(zipGuess.lon)
+					const position		= [latitude, longitude]
+
+					icRange.setCurrentPosition(...position)
+					icMainMap.mapObject.flyTo(position)
+
+
+					$rootScope.$digest()
+				}
+
+
 				scope.pickCoordinates 	=  async () => {
 
 					const latLng		= 	Array.isArray(icRange.lastKnownPosition)
@@ -341,31 +363,13 @@ angular.module('icDirectives', [
 
 					const position 		= 	await icMainMap.pickCoordinates(pickerOptions)
 					
+					scope.position.zip	=	undefined
+
 					icRange.setCurrentPosition(position.latitude, position.longitude)
 					icMainMap.mapObject.flyTo([position.latitude, position.longitude])
 
 					$rootScope.$digest()
 				}				
-
-				scope.guessCoordinatesFromZip = async function(zip){
-
-					try {
-						zipGuess		= await icGeo.zipCenter(zip)
-						
-						const latitude	= parseFloat(zipGuess.lat)
-						const longitude	= parseFloat(zipGuess.lon)
-						const position	= [latitude, longitude]
-
-						icRange.setCurrentPosition(...position)
-						icMainMap.mapObject.flyTo(position)
-
-					} catch(e) {
-						zipGuess	= undefined						
-						console.error(e)
-					}
-
-					$rootScope.$digest()
-				}
 
 				scope.locate = async function(){
 					icOverlays.open('spinner')
@@ -379,30 +383,29 @@ angular.module('icDirectives', [
 					icOverlays.toggle('spinner', false)
 				}
 
-				scope.$watch(
-					() 	=> scope.position.zip,
-					zip => {
-						if(typeof zip != 'string')	return
-						if(scope.isNoZip(zip))		return
-						scope.guessCoordinatesFromZip(zip)	
-					}
-				)
-
 				$rootScope.$watch( () => icRange.lastKnownPosition, () => {
 
-					if(!icRange.lastKnownPosition){ 
-						scope.position.coordinates = undefined
-					} else if(
-							zipGuess 
-						&&	zipGuess.lat == icRange.lastKnownPosition[0]
-						&&	zipGuess.lon == icRange.lastKnownPosition[1]
-					){	
-						scope.position.coordinates = `${zipGuess.display_name||zipGuess.zip}` 				
-					} else {
-						scope.position.coordinates = `${icRange.lastKnownPosition[0]}, ${icRange.lastKnownPosition[1]}` 
-						scope.position.zip = ''
-						zipGuess = undefined
+					if(icRange.lastKnownPosition){
+						scope.position.coordinates = [...icRange.lastKnownPosition]
+						if(
+								scope.position.zip
+							&&	scope.position.coordinates[0] == icRange.lastKnownPosition[0]
+							&&	scope.position.coordinates[1] == icRange.lastKnownPosition[1]
+						){	
+							scope.position.text	= scope.position.zip
+						} else{
+							scope.position.zip			= ''
+							scope.position.text			= `${icRange.lastKnownPosition[0].toFixed(2)}, ${icRange.lastKnownPosition[1].toFixed(2)}`
+						}
 					}
+
+					if(!icRange.lastKnownPosition){ 
+						scope.position.coordinates 	= undefined
+						scope.position.zip			= undefined
+						scope.position.text			= undefined
+					}
+
+					
 
 				}, true)
 			}

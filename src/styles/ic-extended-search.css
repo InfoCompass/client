@@ -15,6 +15,27 @@ ic-extended-search a > * {
 	margin:				0 !important;
 }
 
+ic-extended-search .position-input {
+	display:			flex;
+	flex-direction:		column;
+	align-items:		stretch;
+	margin:				1rem 0;
+	margin-left:		auto;
+}
+
+ic-extended-search .position-input > * {
+	display:			flex;
+	flex-wrap:			wrap;
+	gap:				1rem;
+	align-items:		center;
+	justify-content:	space-between;
+}
+
+ic-extended-search .position-input form input {
+	width:				auto;
+}
+
+
 ic-extended-search .results {
 	display:			flex;
 	justify-content:	center;

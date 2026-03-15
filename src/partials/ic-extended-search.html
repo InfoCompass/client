@@ -106,43 +106,59 @@
 
 <div>
 	{{'INTERFACE.CURRENT_POSITION'| translate }}:
-	<span		
-		ng-if = "!position.coordinates" 
-	>
-		{{'INTERFACE.CURRENT_POSITION_UNKNOWN'| translate }}
-	</span>
-	<span
-		ng-if = "position.coordinates" 
-		class = "left icon icon-interface-position_marker"
-	>
-		{{position.coordinates}}
-	</span>
+
+	&nbsp;
 
 	<button
-		ng-if		= "position.coordinates" 
-		class		= "rounded border-2 icon icon-interface-close left"
+		class		= "border"
 		ng-click	= "clearPosition()"
+		title		= "{{ position.coordinates ? ('INTERFACE.CURRENT_POSITION_CLEAR' | translate) + ' ' + position.coordinates.join(',') : '' }}"
+		ng-disabled = "!position.coordinates"
 	>
-		{{'INTERFACE.CURRENT_POSITION_CLEAR'| translate }}
+		<span class = "icon icon-interface-position_marker left"></span>
+
+		<span ng-if = "!position.coordinates">
+			{{'INTERFACE.CURRENT_POSITION_UNKNOWN'| translate }}
+		</span>
+
+		<span ng-if = "position.coordinates">
+			{{position.text}}
+		</span>
+
+		<span class = "icon icon-interface-close right"></span>
+
 	</button>
 </div>
 
-<div class = "buttons">	
+<div class = "position-input">	
 
-	<input 
-		class				= "border-2"
-		ng-model			= "position.zip"
-		placeholder			= "{{'INTERFACE.PLACEHOLDER_ZIP' | translate}}" 
-	/>
+	<form ng-submit = "setZip(position.zip)">
+		<input 
+			class		= "border"
+			ng-model	= "position.zip"
+			placeholder	= "{{'INTERFACE.PLACEHOLDER_ZIP' | translate}}" 
+		/>
+
+		<button	
+			class	 	= "border"
+			ng-disabled = "isNoZip(position.zip)"
+		>
+			{{'INTERFACE.EXTENDED_SEARCH_SET_ZIP' | translate}}
+		</button>
 	
+	</form>
 
-	<button
-		class	 	= "border rounded"
-		ng-click	= "pickCoordinates()"
-		title		= "{{'INTERFACE.PICK_COORDINATES' | translate}}"
-	>
-		{{'INTERFACE.PICK_COORDINATES' | translate}}
-	</button>
+	<div>
+
+		<span>{{'INTERFACE.OR' | translate}}:</span>
+
+		<button
+			class	 	= "border"
+			ng-click	= "pickCoordinates()"
+		>
+			{{'INTERFACE.EXTENDED_SEARCH_PICK_ON_MAP' | translate}}
+		</button>
+	</div>
 
 <!-- 	<button
 		class	 	= "border rounded"
