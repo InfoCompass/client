@@ -1,6 +1,5 @@
 "use strict";
 
-
 /* marked target="_blank" */
 const renderer 		= new marked.Renderer()
 const linkRenderer 	= renderer.link
@@ -632,18 +631,21 @@ angular.module('icUiDirectives', [
 			link: function(scope, element, attrs){
 
 				var target				= undefined,
-					sources				= icScrollSources.sources,
+					sourceElement		= undefined,
 					to					= undefined,
 					expect_scroll		= false,
 					stop_snapping		= false,
 					threshold			= 0.15,
-					check_requested		= false
+					check_requested		= false,
 					apply_requested		= false
 
 
 				function check(){
+
+
 					if(check_requested) return null
 					check_requested = true
+
 
 					window.requestAnimationFrame(function(){
 						check_requested = false
@@ -656,7 +658,7 @@ angular.module('icUiDirectives', [
 							return null
 						}
 						
-						var sourceElement = icScrollSources.sources[target]
+						updateSourceElement()
 
 						if(!sourceElement) return null //the animation frame can trigger after the element has been removed
 
@@ -673,16 +675,24 @@ angular.module('icUiDirectives', [
 						element.toggleClass('ic-scroll-bottom', aboveBottom)
 						element.toggleClass('ic-scroll-none', 	noScroll)
 
-						if(apply_requested) return null	
 						if(belowTop == scope.icScrollBelowTop && aboveBottom == scope.icScrollAboveBottom)	return null
 
 						scope.icScrollBelowTop 		= belowTop
 						scope.icScrollAboveBottom 	= aboveBottom
 
+						if(apply_requested) return null	
+
 						apply_requested = true
 						scope.$apply( () => apply_requested = false)	
 
 					})
+
+				}
+
+				function updateSourceElement(){
+					const newSourceElement = icScrollSources.sources[target]
+					sourceElement = newSourceElement
+
 
 				}
 
@@ -692,20 +702,17 @@ angular.module('icUiDirectives', [
 					check()
 				}
 
-				var resizeObserver = new ResizeObserver(check)
-
-				resizeObserver.observe(element[0])
 
 				scope.scrollTop = function(){
 					window.requestAnimationFrame( () => {
-						if(target && sources[target]) sources[target].scrollTop = 0
+						if(sourceElement) sourceElement.scrollTop = 0
 
 					})
 				}
 
 				scope.scrollBottom = function(){
 					window.requestAnimationFrame( () => {
-						if(target && sources[target]) sources[target].scrollTop = sources[target].scrollHeight
+						if(sourceElement) sourceElement.scrollTop = sourceElement.scrollHeight
 					})
 				}
 
@@ -721,9 +728,16 @@ angular.module('icUiDirectives', [
 
 						target = t
 
-						typeof target == 'string'
-						?	icScrollSources.addEventListener('remote-scroll', beforeScroll, true)
-						:	icScrollSources.removeEventListener('remote-scroll', beforeScroll)
+						if(typeof target === 'string'){							
+
+							updateSourceElement()
+							
+							icScrollSources.addEventListener('remote-scroll', beforeScroll, true)
+
+						} else {
+							icScrollSources.removeEventListener('remote-scroll', beforeScroll)
+						}
+
 					}
 				)
 

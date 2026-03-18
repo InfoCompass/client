@@ -218,6 +218,16 @@ ic-item-property-edit .time label > *{
 	display:					block;
 }
 
+ic-item-property-edit[ic-recurring-event] .empty-current-value {
+	display:					flex;
+	justify-content:			space-between;
+	align-items:				center;
+}
+
+ic-item-property-edit[ic-recurring-event] .empty-current-value *:last-child {
+	margin-left:				auto;
+}
+
 ic-item-property-edit[ic-recurring-event] .current-value-parent-box {
 	display:					flex;	
 	flex-wrap:					wrap;
@@ -376,7 +386,7 @@ ic-item-property-edit[ic-recurring-event] .recurring-rules + button {
 
 
 ic-item-property-edit[ic-recurring-event] input[type="time"] {
-	font-family:				mono;
+	/*font-family:				mono;*/
 }
 
 ic-item-property-edit[ic-recurring-event] input[type="time"],
@@ -406,13 +416,20 @@ ic-item-property-edit[ic-recurring-event] .buttons {
 ic-item-property-edit[ic-recurring-event] .edit-box,
 ic-item-property-edit[ic-recurring-event] .preview-box {
 	border:						1px solid var(--neutral-color);
-	margin:						0 calc(-1rem - 1px);
+	/*margin:						0 calc(-1rem - 1px);*/
+	margin:						0;
 	padding:					1rem 1rem;
 	margin-bottom:				1rem;
+	margin-top:					1rem;
+}
+
+ic-item-property-edit[ic-recurring-event] .edit-label{
+	margin-bottom:				-1rem;
+	margin-top:					1rem;
 }
 
 ic-item-property-edit[ic-recurring-event] .edit-box {
-	border-style:				dashed;
+	/*border-style:				dashed;*/
 }
 
 
