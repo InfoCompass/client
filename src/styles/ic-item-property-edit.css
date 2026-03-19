@@ -5,6 +5,21 @@ ic-item-property-edit {
 	z-index: 					0;
 }
 
+ic-item-property-edit .required-label {
+	position:					absolute;
+	z-index:					10;
+	top:						0;
+	right:						0;
+}
+
+ic-item-property-edit .required-label:before{
+	content:					'*';
+	display:					block;
+	text-align:					right;
+	line-height:				0.75em;
+	min-width:					0.75em;
+}
+
 ic-item-property-edit h4 {
 	margin:						0;
 }

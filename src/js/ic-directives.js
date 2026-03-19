@@ -2808,13 +2808,12 @@ angular.module('icDirectives', [
 					
 					search_term = (search_term||'').replace(/[\/?#]+/g,' ')
 
-
-					if(scope.icDebounce) return 
-
 					input.focus()
 					input.blur()
 
 					if(scope.icOnSubmit) scope.icOnSubmit()
+
+					if(scope.icDebounce) return 
 
 					if(search_term.replace(/s+/,'')){
 

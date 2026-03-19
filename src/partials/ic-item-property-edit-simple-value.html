@@ -3,7 +3,11 @@
 	ng-submit	= "ic.keyboard.tabNextInput()"
 	ng-class	= "{invalid: errors}"
 >
-		
+	<div  
+		ng-if = "icProperty.mandatory"
+		class = "required-label"
+		title = "{{'INTERFACE.MANDATORY'| translate}}"
+	></div>	
 	<div ng-if 	= "!hideCurrentValue" class = "current-value-parent-box">
 		
 		<span class	= "current-value {{diff()? 'diff': ''}}">
