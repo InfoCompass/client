@@ -15,7 +15,7 @@ ic-item-tile,
 	border-radius:			1.25rem;
 	overflow:				hidden;
 	background:				var(--primary-background-color);
-	aspect-ratio:			1.4;
+	aspect-ratio:			1.25;
 	box-shadow:				1px 1px 2px 0 rgba(0,0,0,0.12);	
 }
 
@@ -77,4 +77,13 @@ ic-item-tile .details .brief,
 	font-size:				0.875rem;
 	margin-bottom:			0.5rem;
 	overflow:				hidden;
+}
+
+ic-item-tile ic-item-location,
+[ic-item-tile] ic-item-location {
+	font-size:				0.875rem;
+}
+
+ic-item-tile .details .spacer {
+	flex:					1 1 0;
 }
