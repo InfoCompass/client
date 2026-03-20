@@ -128,6 +128,7 @@ ic-carousel 	nav button + button,
 	overflow-y:				hidden;
 	transition:				height 350ms ease-in-out;
 	height:					0;
+	box-sizing:				content-box !important;
 }
 
 [ic-settle-scrollbar] {

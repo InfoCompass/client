@@ -1168,15 +1168,15 @@ angular.module('icDirectives', [
 
 				scope.pickCoordinates = function(){
 
-					icMainMap.pickCoordinates(scope.icEdit)
+					const { latitude, longitude } = scope.icEdit
+
+					icMainMap.pickCoordinates({ latitude, longitude })
 					.then(function(result){
 						if(result.latitude && result.longitude){
 							scope.icEdit.latitude 	= result.latitude
 							scope.icEdit.longitude 	= result.longitude 
 						}
 					})
-					.catch(function(){})
-
 
 				}
 
@@ -2084,7 +2084,7 @@ angular.module('icDirectives', [
 									.split(/\s/g).map(part =>  new RegExp(part, 'gi'))
 
 					let filtered_options =  	scope.filter.str.length > 1
-												?	(scope.icOptions || []).filter( option => {						
+												?	(scope.icOptions || []).filter( option => {
 														return 	regex.every( rx => scope.icOptionFilterKey({option}).match(rx) )
 													})	
 												:	[]

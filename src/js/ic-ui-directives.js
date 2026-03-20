@@ -1394,25 +1394,31 @@ angular.module('icUiDirectives', [
 
 
 				function update(){
-					
 
-					const contentHeight 	= 	Array.from(element[0].children)
-												.reduce( (sum, el) => {
-													return sum + el.offsetHeight
-												},0)
-					
-					element[0].style.height = 	scope.icExtend
-												?	contentHeight+'px'
-												:	'0px'
+					element[0].classList.toggle('extended', scope.icExtend)
 
-					element[0].classList.toggle('extended', scope.icExtend)							
+					window.requestAnimationFrame( () => {						
+
+						const computedStyles	=	window.getComputedStyle(element[0], null)
+						const padding			=	parseInt(computedStyles.getPropertyValue('padding-top'))
+													+
+													parseInt(computedStyles.getPropertyValue('padding-bottom'))
+						
+						const contentHeight 	= 	Array.from(element[0].children)
+													.reduce( (sum, el) => {
+														return sum + el.offsetHeight
+													},0)
+						
+						element[0].style.height = 	scope.icExtend
+													?	contentHeight+padding+'px'
+													:	'0px'
+					})
+
 				}
 				
 				const mutationObserver		= 	new MutationObserver(update)
-				const resizeObserver		=	new ResizeObserver(update)
 
 				mutationObserver.observe(element[0], { subtree: true, childList: true })
-				resizeObserver.observe(element[0])
 				scope.$watch( () => scope.icExtend, update)
 
 			}
@@ -1518,6 +1524,18 @@ angular.module('icUiDirectives', [
 		}
 	}	
 ])
+
+.filter('unshift', [
+	function(){
+		return function(arr_1, el){			
+
+			arr_1.unshift(el)
+
+			return 	arr_1
+		}
+	}	
+])
+
 
 .filter('flatten', [
 	function(){
