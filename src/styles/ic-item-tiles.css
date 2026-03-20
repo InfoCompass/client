@@ -73,8 +73,9 @@ ic-item-tile .details .title,
 
 ic-item-tile .details .brief,
 [ic-item-tile] .details .brief {
-	flex:					0 1 auto;
+	flex:					5 5 2.4em;
 	font-size:				0.875rem;
+	line-height:			1.2;
 	margin-bottom:			0.5rem;
 	overflow:				hidden;
 }
