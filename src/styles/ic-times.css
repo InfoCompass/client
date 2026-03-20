@@ -1,0 +1,20 @@
+ic-times {
+	display:				grid;
+	min-width:				7em;
+	grid-template-columns:	repeat(3, min-content);
+	background-repeat:		no-repeat;
+}
+
+ic-times.icon.left {
+	padding-left:			2.4em!important;
+	min-height:				2.4em!important;
+	background-position:	0 0 !important;
+	background-size:		2.4em;
+}
+
+ic-times.icon.right {
+	padding-right:			2.4em!important;
+	min-height:				2.4em!important;
+	background-position:	100% 0 !important;
+	background-size:		2.4em;
+}

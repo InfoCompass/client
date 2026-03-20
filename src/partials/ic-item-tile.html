@@ -24,21 +24,26 @@
 
 	<div 
 		class = "title"
+		title = "{{icItem | icFullTitle}}"
 	>
 		{{icItem | icFullTitle}}
 	</div>
 
 	<div 
 		class = "brief"
+		title = "{{icItem.brief[ic.site.currentLanguage]}}"
 	>
 		{{icItem.brief[ic.site.currentLanguage]}}
 	</div>
 
+	<div class = "flex-grow"></div>
+
+	<ic-item-location
+		class		= "icon icon-interface-location left"
+		ic-item		= "icItem"
+		ic-short	= "true"
+	>	
+	</ic-item-location>
+
 </div>
 
-<ic-item-location
-	class		= "icon icon-type-location left"
-	ic-item		= "icItem"
-	ic-short	= "true"
->	
-</ic-item-location>

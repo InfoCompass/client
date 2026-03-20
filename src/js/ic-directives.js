@@ -825,6 +825,25 @@ angular.module('icDirectives', [
 	}
 ])
 
+.directive('icTimes', [
+	'ic',
+
+	function(ic){
+
+		return {
+			restrict: 		'AE',
+			templateUrl: 	'partials/ic-times.html',
+			scope:			{
+								icTimeRanges: "<",
+							},
+			link(scope){
+				scope.ic = ic
+			}				
+		}
+
+	}
+])
+
 .directive('icItemLocation', [
 
 	'ic',

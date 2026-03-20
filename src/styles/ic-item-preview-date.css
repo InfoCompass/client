@@ -117,19 +117,7 @@ ic-item-preview[ic-date] .stats > * {
 	padding-left:			1.5em;
 }
 
-ic-item-preview[ic-date] .stats > * .icon {
-	position:				absolute;
-	top:					0;
-	left:					0;
-	font-size:				0.8em;
-}
 
-ic-item-preview[ic-date] .stats .time {
-	flex:					0 0 auto;
-	min-width:				7em;
-	display:				grid;
-	grid-template-columns:	repeat(3, min-content);
-}
 
 ic-item-preview[ic-date] .stats ic-item-location {
 	display:				flex;
@@ -139,7 +127,3 @@ ic-item-preview[ic-date] .stats ic-item-location {
 	margin-top:				0;
 }
 
-ic-item-preview[ic-date] .stats .ic-item-location > * {
-	display:				inline-block;
-	flex:					0 1	auto;
-}

@@ -16,7 +16,7 @@ ic-item-tile,
 	overflow:				hidden;
 	background:				var(--primary-background-color);
 	aspect-ratio:			1.4;
-	box-shadow:				1px 1px 2px 0 rgba(0,0,0,0.12);
+	box-shadow:				1px 1px 2px 0 rgba(0,0,0,0.12);	
 }
 
 
@@ -56,50 +56,25 @@ ic-item-tile header button,
 
 ic-item-tile .details,
 [ic-item-tile] .details {
+	display:				flex;
 	flex:					1 0 auto;
-	margin:					0.5rem;	
+	padding:				1rem 0.5rem;	
+	flex-direction:			column;
 }
 
 ic-item-tile .details .title,
 [ic-item-tile] .details .title {
 	font-weight:			600;
 	margin-bottom:			0.5rem;
+	white-space:			nowrap;
+	text-overflow:			ellipsis;
+	overflow:				hidden;
 }
 
 ic-item-tile .details .brief,
 [ic-item-tile] .details .brief {
-	font-size:				0.75rem;
+	flex:					0 1 auto;
+	font-size:				0.875rem;
+	margin-bottom:			0.5rem;
+	overflow:				hidden;
 }
-
-
-ic-item-tile .location,
-[ic-item-tile] .location {
-	flex:					0 0 auto;
-	display:				flex;
-	align-items:			center;
-	justify-content:		flex-start;
-	margin:					0.5rem;	
-}
-
-ic-item-tile ic-item-location,
-[ic-item-tile] ic-item-location {
-	font-size:				0.75rem;
-	padding-left:			2em!important;
-	min-height:				2em!important;
-}
-
-ic-item-tile ic-item-location > *:first-child,
-[ic-item-tile] ic-item-location > *:first-child {
-	width:					100%;
-}
-
-ic-item-tile ic-item-location.no-physical-location,
-[ic-item-tile] ic-item-location.no-physical-location {
-	display:				none;
-}
-
-
-
-
-
-
