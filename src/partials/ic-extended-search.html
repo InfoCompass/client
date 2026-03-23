@@ -19,6 +19,8 @@
 	</a>
 </div>
 
+<hr/>
+
 <h2>{{'INTERFACE.EXTENDED_SEARCH_TAXONOMY' | translate}}</h2>	
 
 <div class ="buttons">
@@ -104,6 +106,8 @@
 	
 </div>
 
+<hr/>
+
 <h2>{{'INTERFACE.EXTENDED_SEARCH_RANGE' | translate}}</h2>	
 
 <div>
@@ -112,6 +116,7 @@
 	&nbsp;
 
 	<button
+		ng-if		= "position.coordinates"
 		class		= "border"
 		ng-click	= "clearPosition()"
 		title		= "{{ position.coordinates ? ('INTERFACE.CURRENT_POSITION_CLEAR' | translate) + ' ' + position.coordinates.join(',') : '' }}"
@@ -130,7 +135,13 @@
 		<span class = "icon icon-interface-close right"></span>
 
 	</button>
+
+	<span ng-if = "!position.coordinates">
+		{{'INTERFACE.CURRENT_POSITION_UNKNOWN'| translate }}
+	</span>
 </div>
+
+<h3>{{'INTERFACE.EXTENDED_SEARCH_POSITION' | translate}}</h3>
 
 <div class = "position-input">	
 
@@ -152,8 +163,6 @@
 
 	<div>
 
-		<span>{{'INTERFACE.OR' | translate}}:</span>
-
 		<button
 			class	 	= "border"
 			ng-click	= "pickCoordinates()"
@@ -172,9 +181,7 @@
 
 </div>
 
-<br/>
-
-{{'INTERFACE.EXTENDED_SEARCH_RADIUS' | translate}}
+<h3>{{'INTERFACE.EXTENDED_SEARCH_RADIUS' | translate}}</h3>
 
 <div 
 	ng-init = "ranges = [1, 5, 10, 30]"
@@ -194,7 +201,7 @@
 
 </div>
 
-
+<hr/>
 <h2>{{'INTERFACE.EXTENDED_SEARCH_DATE' | translate}}</h2>
 
 <div class ="buttons">

@@ -17,28 +17,30 @@ ic-extended-search a > * {
 
 ic-extended-search .position-input {
 	display:			flex;
-	flex-direction:		column;
-	align-items:		stretch;
-	margin:				1rem 0;
-	margin-left:		auto;
+	flex-direction:		row;
+	align-items:		center;
+	justify-content:	flex-start;
+	margin:				1rem 0;	
+	gap:				0.5rem;
+	flex-wrap:			wrap;
 }
 
 ic-extended-search .position-input > * {
+	flex:				0 0 max-content;
 	display:			flex;
-	flex-wrap:			wrap;
-	gap:				1rem;
+	gap:				0.5rem;
+	flex-wrap:			nowrap;
 	align-items:		center;
-	justify-content:	space-between;
 }
 
 ic-extended-search .position-input form input {
-	width:				auto;
+	width:				8rem;
 }
 
 
 ic-extended-search .results {
 	display:			flex;
-	justify-content:	center;
+	justify-content:	flex-start;
 }
 
 

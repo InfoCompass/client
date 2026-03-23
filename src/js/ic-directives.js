@@ -383,6 +383,10 @@ angular.module('icDirectives', [
 					icOverlays.toggle('spinner', false)
 				}
 
+				scope.$watch( () => {
+					scope.position.zip = scope.position.zip && scope.position.zip.replace(/\D/,'').slice(0,5)
+				})
+
 				$rootScope.$watch( () => icRange.lastKnownPosition, () => {
 
 					if(icRange.lastKnownPosition){
