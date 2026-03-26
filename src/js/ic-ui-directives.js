@@ -964,26 +964,37 @@ angular.module('icUiDirectives', [
 			link: function(scope, element, attrs){
 
 
-				scope.$watch(attrs.scrollTop, function(){
+				scrollParent = null
+
+				function updateScrollParent(){
+
+					scrollParent = element[0]
+
+					while(scrollParent && scrollParent.scrollHeight == scrollParent.clientHeight){
+						scrollParent = scrollParent.parentElement							
+					}
+
+					element[0].classList.toggle('no-scroll-available', !scrollParent)
+
+				}
+
+				element.on('click touch', function(){
 
 					var target = attrs.icScrollTo.toLowerCase()
 
+					updateScrollParent()
 
-					element.on('click touch', function(){
+					console.log({scrollParent})
+
+					if(!scrollParent) return null
+
+					if( target == 'top') 	scrollParent.scrollTop = 0
+					if( target == 'bottom') scrollParent.scrollTop = scrollParent.scrollHeight
+				})
 
 
-						var scroll_parent = element[0]
-
-						while(scroll_parent && scroll_parent.scrollHeight == scroll_parent.offsetHeight){
-							scroll_parent = scroll_parent.parentElement							
-						}
-
-						if(!scroll_parent) return null
-
-						if( target == 'top') 	scroll_parent.scrollTop = 0
-						if( target == 'bottom') scroll_parent.scrollTop = scroll_parent.scrollHeight
-					})
-
+				scope.$watch( () => {
+					updateScrollParent()
 				})
 			}
 		}
@@ -1091,9 +1102,14 @@ angular.module('icUiDirectives', [
 
 			link: function(scope, element, attrs, ctrl){
 
+
 				element.on('change keyup paste click input blur', function(){
 					scope.$parent[attrs.icExposeInternalModel] = element[0].value
 					scope.$parent.$apply()
+				})
+
+				scope.$watch( () => { 
+					scope.$parent[attrs.icExposeInternalModel] = element[0].value
 				})
 			}
 		}
@@ -1400,17 +1416,27 @@ angular.module('icUiDirectives', [
 					window.requestAnimationFrame( () => {						
 
 						const computedStyles	=	window.getComputedStyle(element[0], null)
+
 						const padding			=	parseInt(computedStyles.getPropertyValue('padding-top'))
 													+
 													parseInt(computedStyles.getPropertyValue('padding-bottom'))
-						
-						const contentHeight 	= 	Array.from(element[0].children)
+
+						const margin			=	parseInt(computedStyles.getPropertyValue('margin-top'))
+													+
+													parseInt(computedStyles.getPropertyValue('margin-bottom'))
+
+						const height 			= 	Array.from(element[0].children)
 													.reduce( (sum, el) => {
-														return sum + el.offsetHeight
+														const computedStyles 	= 	window.getComputedStyle(el, null)
+														const margin			= 	parseInt(computedStyles.getPropertyValue('margin-top'))
+																					+
+																					parseInt(computedStyles.getPropertyValue('margin-bottom'))
+
+														return sum + el.offsetHeight + margin
 													},0)
 						
 						element[0].style.height = 	scope.icExtend
-													?	contentHeight+padding+'px'
+													?	height+padding+'px'
 													:	'0px'
 					})
 

@@ -181,7 +181,7 @@ ic-item-property-edit.invalid:after {
 	content:					'';
 	display:					block;
 	position:					absolute;
-	right:						calc(-1rem - 1px);
+	right:						calc(-1rem);
 	top:						-0.25rem;
 	bottom:						0;
 	background-color:			var(--error-color);
@@ -231,6 +231,10 @@ ic-item-property-edit .time label + label {
 ic-item-property-edit .date label > *, 
 ic-item-property-edit .time label > *{
 	display:					block;
+}
+
+ic-item-property-edit[ic-recurring-event] {
+	margin-bottom:				2.2rem; /* compensating the missing error line */
 }
 
 ic-item-property-edit[ic-recurring-event] .empty-current-value {
@@ -405,7 +409,9 @@ ic-item-property-edit[ic-recurring-event] input[type="time"] {
 }
 
 ic-item-property-edit[ic-recurring-event] input[type="time"],
-ic-item-property-edit[ic-recurring-event] input[type="date"] {
+ic-item-property-edit[ic-recurring-event] input[type="date"] {	
+	font-variant-numeric: 		tabular-nums;
+  	font-family: 				Roboto, monospace;
 	height:						2rem;
 	padding-top:				0.1rem;
 	padding-bottom:				0.1rem;

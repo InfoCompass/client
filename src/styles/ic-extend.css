@@ -1,0 +1,28 @@
+.ic-extend {
+	display:				flex;
+	justify-content:		space-between;
+	align-items:			center;
+}
+
+.ic-extend.extended:before, 
+.ic-extend.extended:after {
+	transform:				rotate(135deg);
+}
+
+.ic-extend.left:before,	
+.ic-extend.right:after {
+	content:				'';
+	display:				inline-block;
+	flex:					0 0 auto;
+	background-image:		var(--icon-interface-extend);
+	height:					1.5rem;
+	width:					1.5rem;
+	background-repeat:		no-repeat;
+	background-position:	center;
+	transition:				transform 250ms ease-in-out;
+}
+
+.ic-extend > * {
+	flex:					0 0 auto;
+}
+

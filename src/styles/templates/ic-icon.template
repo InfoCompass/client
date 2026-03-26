@@ -1,3 +1,7 @@
+:root {
+	--icon{{-name[0]}}{{-name[1]}}{{-name[2]}}{{-name[3]}}: url("data:image/svg+xml,{{svg}}");
+}
+
 .icon{{-name[0]}}{{-name[1]}}{{.name[2]}}{{.name[3]}} {
-	background-image: 	url("data:image/svg+xml,{{svg}}");
+	background-image: 	var(--icon{{-name[0]}}{{-name[1]}}{{-name[2]}}{{-name[3]}});
 }

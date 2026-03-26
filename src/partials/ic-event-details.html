@@ -7,7 +7,6 @@
 		class 				= "iteration {{rule.iteration}}"
 		ng-class			= "{ leading: !sortedRules[$index-1] || sortedRules[$index-1].iteration != rule.iteration, first: $first}" 
 		title				= "{{'ITEMS.RECUR_INTERVAL' | translate}}"
-
 	>
 		<span
 			ng-if = "rule.iteration && (!sortedRules[$index-1] || sortedRules[$index-1].iteration != rule.iteration)"

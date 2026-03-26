@@ -1,24 +1,26 @@
-<time
-	ng-repeat-start	= "timeRange in icTimeRanges"
-	class 			= "start-time"
-	date-time 		= "{{ ( timeRange[0] | isValidDate) && (timeRange[0]	| date : 'HH:mm') || '' }}"
-	title			= "{{'ITEMS.RECUR_START_TIME' | translate}}"
+<div
+	ng-repeat = "timeRange in icTimeRanges"
 >
-{{ ( timeRange[0] | isValidDate) && ( timeRange[0] | date : 'HH:mm') || '' }}
-</time><!--
---><span class = "link"><!--
- -->{{ 
-		    ( timeRange[0] | isValidDate) 	&& ( timeRange[1] | isValidDate ) && '&ndash;' 
-		|| !( timeRange[0] | isValidDate ) 	&& ( timeRange[1] | isValidDate ) && ('ITEMS.RECUR_UNTIL'|translate)+'&nbsp;' 
-		|| ''
-	}}<!--
---></span><!--
---><time	
-	ng-repeat-end
-	class 			= "end-time"
-	date-time 		= "{{ (timeRange[1] | isValidDate) && (timeRange[1]	| date : 'HH:mm') || '' }}"
-	title			= "{{'ITEMS.RECUR_END_TIME' | translate}}"
->
-	{{ ( timeRange[1] | isValidDate) && (timeRange[1] | date : 'HH:mm') || ''}}
+	<time
+		class 			= "start-time"
+		date-time 		= "{{ ( timeRange[0] | isValidDate) && (timeRange[0]	| date : 'HH:mm') || '' }}"
+		title			= "{{'ITEMS.RECUR_START_TIME' | translate}}"
+	>
+	{{ ( timeRange[0] | isValidDate) && ( timeRange[0] | date : 'HH:mm') || '' }}
+	</time><!--
+	--><span class = "link"><!--
+	 -->{{ 
+			    ( timeRange[0] | isValidDate) 	&& ( timeRange[1] | isValidDate ) && '&ndash;' 
+			|| !( timeRange[0] | isValidDate ) 	&& ( timeRange[1] | isValidDate ) && ('ITEMS.RECUR_UNTIL'|translate)+'&nbsp;' 
+			|| ''
+		}}<!--
+	--></span><!--
+	--><time	
+		class 			= "end-time"
+		date-time 		= "{{ (timeRange[1] | isValidDate) && (timeRange[1]	| date : 'HH:mm') || '' }}"
+		title			= "{{'ITEMS.RECUR_END_TIME' | translate}}"
+	>
+		{{ ( timeRange[1] | isValidDate) && (timeRange[1] | date : 'HH:mm') || ''}}
 
-</time>
+	</time>
+</div>

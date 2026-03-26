@@ -125,6 +125,9 @@ ic-item-preview[ic-date] .stats > * .icon {
 }
 
 ic-item-preview[ic-date] .stats .time {
+
+	font-variant-numeric: 	tabular-nums;
+  	font-family: 			Roboto, monospace;
 	flex:					0 0 auto;
 	min-width:				7em;
 	display:				grid;

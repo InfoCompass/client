@@ -2,7 +2,9 @@ ic-times {
 	display:				grid;
 	min-width:				7em;
 	grid-template-columns:	repeat(3, min-content);
-	background-repeat:		no-repeat;
+	background-repeat:		no-repeat;	
+	font-variant-numeric: 	tabular-nums;
+  	font-family: 			Roboto, monospace;
 }
 
 ic-times.icon.left {

@@ -34,7 +34,8 @@ ic-event-details .details .weekday {
 
 
 ic-event-details .details  .time-range {
-	font-family:				mono;
+	font-variant-numeric: 		tabular-nums;
+  	font-family: 				Roboto, monospace;
 	display:					flex;
 	white-space:				nowrap;
 }
@@ -48,7 +49,8 @@ ic-event-details .details  .time-range > * {
 }
 
 ic-event-details .details  .time-range > time {
-	font-family:				mono;
+	font-variant-numeric: 		tabular-nums;
+  	font-family: 				Roboto, monospace;
 }
 
 ic-event-details a[download] {
