@@ -39,25 +39,31 @@ ic-map-item-marker {
 	left:					0;
 	top:					-2.6666667em;
 	height:					2.6666667em;
-	width:					0;
-	transition:				all 300ms ease-out;
+	width:					0;	
 	outline:				none !important;
+	opacity:				1;
 }
 
-
-
-ic-map.highlight-item ic-map-item-marker:not(.highlight) {
+ic-map.highlight-item ic-map-item-marker:not(.highlight),
+ic-map.highlight-item ic-map-cluster-marker:not(.highlight) {
 	opacity:				0.2;	
+}
+
+ic-map ic-map-item-marker,
+ic-map ic-map-cluster-marker {
+	transition:				all 300ms ease-out;
+	transition-delay:		100ms;
+}
+
+ic-map.highlight-item .highlight{
+	transition-duration:	0;
+	transition-delay:		0;
 }
 
 ic-map.highlight-item ic-map-cluster-marker  ic-map-item-marker {
 	opacity:				1 !important;
 }
 
-ic-map.highlight-item ic-map-cluster-marker:not(.highlight) {
-	opacity:				0.2;
-	transition-duration:	0;
-} 
 
 
 .picker:before{

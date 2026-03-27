@@ -30,6 +30,75 @@
 		'icServices',
 	])
 
+	.directive('icHighlightItem',[
+
+		'$rootScope',
+		'icMainMap',
+
+		function($rootScope,icMainMap){
+			return {
+				restrict:		'A',
+			
+				link: function(scope, element, attrs){
+
+					let target = undefined
+
+					function setHighlight(){
+						if(!target) return
+						
+						icMainMap.highlightItem(target)
+						$rootScope.$apply()
+					}
+
+					function removeHighlight(noApply){
+						if(!target) return 
+						if(!icMainMap.highlightedItem || icMainMap.highlightedItem.id != target.id) return 
+
+						icMainMap.highlightItem(undefined)
+
+						if(noApply) return
+							
+						$rootScope.$apply()
+					}
+
+					element[0].addEventListener('mouseenter', setHighlight)
+					element[0].addEventListener('focus', setHighlight)
+
+					element[0].addEventListener('mouseleave', removeHighlight)
+					element[0].addEventListener('blur', removeHighlight)
+
+
+					scope.$watch( 
+						() => scope.$eval(attrs.icHighlightItem),
+						item => {
+
+							if(!target){
+								target = item
+								return
+							}
+
+							if(target && !item){
+								removeHighlight()
+								target = undefined
+								return 
+							}
+
+							if(target && item && target.id != item.id)	{
+								removeHighlight()
+								target = item
+								return
+							}
+						}
+					)
+					
+					scope.$on('$destroy',  () => {
+						removeHighlight(true)					
+					})
+				}
+			}
+		}
+	])
+
 
 	.service('icMapMarkerDigestQueue',[
 
@@ -182,7 +251,11 @@
 						() => icMainMap.highlightedItem,
 						item => {
 
-							const highlight = !!( (item && scope.icItem) && (item.id == scope.icItem.id) )
+							const itemsAvailable 		= (item && scope.icItem)
+							const itemMatches			= itemsAvailable && (item.id == scope.icItem.id)
+							const itemMatchesReference	= itemsAvailable && (item.id == scope.icItem.locationRef)
+
+							const highlight = (itemMatches || itemMatchesReference)
 							element[0].classList.toggle('highlight',  highlight)
 						}
 					)
@@ -320,7 +393,13 @@
 						}
 
 						scope.$watch( 
-							() => scope.items && scope.items.includes(icMainMap.highlightedItem), 
+							() => {
+								if(!icMainMap.highlightedItem) return false
+								const itemMatch 		= scope.items && scope.items.includes(icMainMap.highlightedItem) 
+								const referenceMatch	= scope.items && scope.items.find( item => item.id == icMainMap.highlightedItem.locationRef)
+
+								return !!(itemMatch || referenceMatch)
+							},
 							highlight => element[0].classList.toggle('highlight', highlight)
 						)
 					})
@@ -635,17 +714,7 @@
 
 					icMainMap.highlightItem = function(item){
 						icMainMap.highlightedItem = item
-
-						// delate de-highlighting to prevent flickering:
-						$timeout(
-							() => icMainMap.mapObject._container.classList.toggle('highlight-item', !!icMainMap.highlightedItem),
-
-							!!item
-							?	0
-							:	200
-						)
-
-
+						icMainMap.mapObject._container.classList.toggle('highlight-item', !!icMainMap.highlightedItem)
 					}
 
 					icMainMap.setMapObject = function(obj){

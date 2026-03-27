@@ -18,3 +18,7 @@ ic-category-tile .image {
 	box-sizing:				border-box;
 	background-size:		cover;
 }
+
+ic-category-tile .details {
+	line-height:			1.5;
+}

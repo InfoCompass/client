@@ -15,12 +15,10 @@
 	ic-scroll-repeat-limit-step-size 	= "5"
 >
 	<a
-		ng-repeat		= "item in ic.itemStorage.filteredList | limitTo : displayLimit"
-		ng-href			= "{{ {activeItem: item} | icLink }}"
-		ng-mouseover	= "ic.mainMap.highlightItem(item)"
-		ng-mouseleave	= "ic.mainMap.highlightItem(undefined)"
-		ng-focus		= "ic.mainMap.highlightItem(item)"
-		ng-blur			= "ic.mainMap.highlightItem(undefined)"
+		ng-repeat			= "item in ic.itemStorage.filteredList | limitTo : displayLimit"
+		ng-href				= "{{ {activeItem: item} | icLink }}"
+		ic-highlight-item 	= "item"
+
 		ic-touch-me
 	>
 		<ic-item-preview
