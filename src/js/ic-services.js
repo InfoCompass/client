@@ -3034,7 +3034,11 @@ angular.module('icServices', [
 								return undefined
 							},
 			options:		[1, -1],
-			defaultValue:	1
+			defaultValue:	(ic) => {
+								if(ic.site.sortOrder == 'last_change') return -1
+
+								return 1	
+							}
 		})
 
 		// .registerParameter({
@@ -3244,7 +3248,7 @@ angular.module('icServices', [
 				return	icItemStorage.registerSortingCriterium(
 							'alphabetical_'+language_code, 
 							function(item_1, item_2){
-								return item_1.title.localeCompare(item_2.title, language_code)
+								return item_2.title.localeCompare(item_1.title, language_code)
 							},
 							{
 								type:		'alphabetical',
