@@ -1,6 +1,6 @@
 <a 
 	ng-if = "!icPlain"
-	class = "icon right icon-interface-down white"
+	class = "ic-button icon right icon-interface-down white"
 	ic-touch-me
 >
 	{{ic.user.displayName}}
@@ -16,6 +16,7 @@
 	>
 		<a 
 			href = '/item/new'
+			class = "ic-button"
 			ic-touch-me
 		>
 			{{ (ic.user.can('edit_items') ? 'INTERFACE.CREATE_NEW_ITEM' : 'INTERFACE.SUGGEST_NEW_ITEM') | translate}}
@@ -48,7 +49,8 @@
 		class = "bg-0 hover"  
 	>
 		<a 
-			href = "/list/u/state_draft"
+			href 	= "/list/u/state_draft"
+			class 	= "ic-button"
 			ic-touch-me
 		>
 			<span>{{'INTERFACE.LIST_DRAFT' | translate}}</span>
@@ -60,7 +62,8 @@
 		class = "bg-0 hover"  
 	>
 		<a 
-			href = "/list/u/state_suggestion"
+			href 	= "/list/u/state_suggestion"
+			class 	= "ic-button"
 		 	ic-touch-me
 		>
 			<span>{{'INTERFACE.LIST_SUGGESTION' | translate}}</span>
@@ -73,7 +76,8 @@
 		class = "bg-0 hover"  
 	>
 		<a
-			href = "/list/u/state_archived"
+			href 	= "/list/u/state_archived"
+			class 	= "ic-button"
 			ic-touch-me
 		>
 			<span>{{'INTERFACE.LIST_ARCHIVED' | translate}}</span>
@@ -86,7 +90,8 @@
 		class = "bg-0 hover"  
 	>
 		<a
-			href = "/list/u/state_has_proposals"
+			href 	= "/list/u/state_has_proposals"
+			class 	= "ic-button"
 			ic-touch-me
 		>
 			<span>{{'UNSORTED_TAGS.STATE_HAS_PROPOSALS' | translate}}</span>
@@ -99,13 +104,14 @@
 		class		= "bg-0 hover"
 	>
 		<a
-			href = "/p/{{page}}"
+			href 	= "/p/{{page}}"
+			class 	= "ic-button"
 			ic-touch-me
 		>
 			<span >
 				{{'INTERFACE.%s' | fill: page | translate}}
 			</span>				
-			<span class = "icon right icon-interface-cogwheel"></span>	
+			<span class = "icon icon-interface-cogwheel"></span>	
 		</a>	
 	</li>
 
