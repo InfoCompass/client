@@ -3575,7 +3575,21 @@ angular.module('icDirectives', [
 ])
 
 
+.directive('icVisualAids', [
+	'ic',
 
+	function(ic){
+		return {
+			restrict:		'AE',
+			templateUrl:	'partials/ic-visual-aids.html',
+			scope:			{},
+
+			link: function(scope, element){				
+				scope.ic = ic
+			}
+		}
+	}
+])
 
 .directive('icLanguageMenu', [
 

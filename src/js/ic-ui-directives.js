@@ -934,8 +934,6 @@ angular.module('icUiDirectives', [
 				$rootScope.$watch( () => {
 					const containsClass = !!element[0].querySelector(`.${attrs.icMarkContainedClass}`)
 
-					console.log(`.${attrs.icMarkContainedClass}`, element[0].querySelector(`.${attrs.icMarkContainedClass}`))
-
 					element[0].classList.toggle(`contains-${attrs.icMarkContainedClass}`, containsClass)
 				})
 				
