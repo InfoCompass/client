@@ -1234,8 +1234,6 @@ angular.module('icDirectives', [
 						icItemEdits.clear(scope.icEdit)
 						icSite.editItem 	= false
 
-						console.log('CANCELME', icSite.activeItem.internal.new)
-
 						if(icSite.activeItem.internal.new){												
 							icItemStorage.removeItem(scope.icItem)
 
@@ -2419,13 +2417,12 @@ angular.module('icDirectives', [
 
 					scope.$watch('value.edit', () => {
 
-						const stringFromRuleset = scope.editRecurringRuleset.toString()
+						const stringFromRuleset = scope.editRecurringRuleset.toString()						
 
 						if(stringFromRuleset == scope.value.edit) return
 
 						scope.editRecurringRuleset = icRecurring.createRecurringRuleset(scope.value.edit)
-
-						if(scope.showRecurErrors) scope.validate()
+						
 					})
 
 					scope.$watch('value.current', () => {
@@ -2435,10 +2432,11 @@ angular.module('icDirectives', [
 						if(stringFromRuleset === scope.value.current) return
 
 						scope.currentRecurringRuleset = icRecurring.createRecurringRuleset(scope.value.current)
-
+						
 					})
 
 					scope.$watch( () => scope.editRecurringRuleset, () => {
+
 
 						// Limit ruleset to one fixed rule when icRecurringEventFixed is set
 						if(scope.icRecurringEventFixed) scope.enforcedFixedRuleset()
@@ -2447,10 +2445,10 @@ angular.module('icDirectives', [
 
 						const current_edit 	= scope.value.edit 
 						const next_edit		= scope.editRecurringRuleset.toString()										
-						
-
+							
 						if(current_edit !== next_edit) scope.value.edit = next_edit
 
+						if(scope.error) scope.validate()
 					}, true)
 
 					scope.$watch( () => scope.icRecurringEventFixed, () => {

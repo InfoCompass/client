@@ -1152,8 +1152,6 @@ angular.module('icServices', [
 			icSite.activeSections 	=	{}
 			icSite.visibleSections 	= 	{}
 
-			console.log(icSite.config)
-
 			for(const section in icSite.config.sectionUpdates){
 				icSite.config.sectionUpdates[section].forEach( update => icSite.updateSection(section, update))
 			}	
