@@ -20,8 +20,9 @@
 		<div>
 
 			<a
-				ng-repeat		= "item in items = itemsByDate.get(date)"
-				ng-href			= "{{ {activeItem: item} | icLink }}"
+				ng-repeat			= "item in items = itemsByDate.get(date)"
+				ng-href				= "{{ {activeItem: item} | icLink }}"
+				ic-highlight-item 	= "item"
 				ic-touch-me
 			>
 				<ic-item-preview

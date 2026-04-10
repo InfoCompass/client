@@ -1,6 +1,5 @@
 "use strict";
 
-
 angular.module('icDirectives', [
 	'pascalprecht.translate',
 	'icServices'
@@ -2182,6 +2181,13 @@ angular.module('icDirectives', [
 										?	scope.value.edit
 										:	alternative_base_value	 	
 
+					if(scope.icRecurringEvent){
+						const emptyCounterpart 	= !counterpart || counterpart == '[]'
+						const emptyBase			= !base_value || base_value == '[]'
+
+						if(emptyCounterpart && emptyBase) return false
+					}
+										
 					switch(scope.icType){
 						case "string": 	return 	typeof(counterpart) == 'string'
 												?	base_value != counterpart

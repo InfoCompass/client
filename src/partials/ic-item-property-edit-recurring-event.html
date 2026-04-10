@@ -20,9 +20,9 @@
 		
 		<button				
 			class		= "round padding-s border border-3"
-			ng-click	= "toggleEditMode(true); $event.preventDefault()"
+			ng-click	= "toggleEditMode(true); editRecurringRuleset.addRule(['weekly']); $event.preventDefault()"
 		>
-			{{'ITEMS.RECURRING_EDIT' | translate }}
+			{{'ITEMS.RECUR_ADD_RULE' | translate }}
 		</button>
 	</div>
 
@@ -92,7 +92,7 @@
 
 			<button
 				ng-if		= "!icRecurringEventFixed && !icItem.internal.new && diff()"
-				class		= "round padding-s border-2"
+				class		= "round padding-s border-2 border"
 				ng-click	= "recurRevert(); $event.preventDefault()"
 			>
 				
@@ -124,7 +124,7 @@
 		<button
 			ng-repeat 	= "proposal in proposals"	
 			class		= "proposal-indicator"
-			ng-class	= "{'bg-3 white': editMatchesProposal(proposal), 'active border-3': !editMatchesProposal(proposal), 'disabled': !isApplicable(proposal)}"
+			ng-class	= "{'bg-3 white': editMatchesProposal(proposal), 'active border-3 border': !editMatchesProposal(proposal), 'disabled': !isApplicable(proposal)}"
 			ng-click	= "isApplicable(proposal) && updateEditWithProposal(proposal)"
 			type		= "button"
 		>
@@ -163,7 +163,7 @@
 				ng-repeat-start 	= "rule in editRecurringRuleset.rules"
 			>
 				<select 					
-					class 				= "iteration icon padding-s bg-1 border-2 right icon-interface-down border-1"
+					class 				= "iteration icon padding-s bg-1 border-2 border right icon-interface-down border-1 rounded"
 					ng-model			= "rule.iteration"
 					title				= "{{'ITEMS.RECUR_INTERVAL' | translate}}"
 				>
@@ -182,7 +182,7 @@
 				<select 
 					ng-if		= "rule.requiresWeekday"
 					ng-model	= "rule.weekday"
-					class 		= "day icon bg-1 padding-s border-2 right icon-interface-down border-1"
+					class 		= "day icon bg-1 padding-s border-2 border right icon-interface-down border-1 rounded"
 					title		= "{{'ITEMS.RECUR_WEEKDAY' | translate}}" 
 				>
 
@@ -353,7 +353,7 @@
 
 			<button 
 				ng-if		= "!icRecurringEventFixed"
-				class		= "border-2 padding-s round margin"
+				class		= "border-2 border padding-s round margin"
 				ng-click 	= "editRecurringRuleset.addRule(['weekly']); $event.preventDefault()"
 			>
 				{{'ITEMS.RECUR_ADD_RULE' | translate}}
@@ -363,7 +363,7 @@
 
 			<button
 				ng-if		= "!icRecurringEventFixed && !icItem.internal.new && diff()"
-				class		= "round padding-s border-2"
+				class		= "round padding-s border-2 border"
 				ng-click	= "recurRevert(); $event.preventDefault()"
 			>
 				
@@ -371,11 +371,21 @@
 			</button>
 
 			<button
-				class		= "round padding-s bg-3"
+				ng-if		= "diff()"
+				class		= "round padding-s bg-3 prio"
 				ng-click	= "recurApply(); $event.preventDefault()"
 				ng-disabled	= "showRecurErrors && !!editRecurringRuleset.getErrors()[0]"
 			>
 				{{'INTERFACE.APPLY' | translate}}
+			</button>
+
+			<button
+				ng-if		= "!diff()"
+				class		= "round padding-s border border-2"
+				ng-click	= "recurApply(); $event.preventDefault()"
+				ng-disabled	= "showRecurErrors && !!editRecurringRuleset.getErrors()[0]"
+			>
+				{{ 'INTERFACE.KEEP' | translate}}
 			</button>
 
 		</div>

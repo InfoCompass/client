@@ -9,7 +9,9 @@ ic-item-preview {
 	min-height:				5rem;
 	padding:				0.5rem 1rem;
 	margin:					0 !important;
-	align-items:			flex-start;
+	align-items:			flex-start;	
+	scroll-snap-align:		start;
+	scroll-margin-top: 		0.5rem;
 }
 
 ic-item-preview:before {
