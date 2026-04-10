@@ -1,0 +1,20 @@
+<center>
+	<button
+		ng-click 	= "ic.layout.toggleFontSize()"
+		class		= "icon icon-interface-font_size left border"
+		ng-class	= "{activated: ic.layout.fontSizeAdjusted}"
+	>
+		{{'INTERFACE.FONT_SIZE' | translate}}
+	</button>
+</center>
+
+
+<div class = "buttons">
+	<button 
+		class		= "bg-3 padding border prio"
+		ng-click 	= "ic.overlays.toggle()"
+		focus-me
+	>
+		{{ 'INTERFACE.CLOSE' | translate }}
+	</button>
+</div>
