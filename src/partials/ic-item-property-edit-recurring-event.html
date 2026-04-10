@@ -20,7 +20,7 @@
 		
 		<button				
 			class		= "round padding-s border border-3"
-			ng-click	= "toggleEditMode(true); editRecurringRuleset.addRule(['weekly']); $event.preventDefault()"
+			ng-click	= "toggleEditMode(true); editRecurringRuleset.addRule([]); $event.preventDefault()"
 		>
 			{{'ITEMS.RECUR_ADD_RULE' | translate }}
 		</button>
@@ -392,7 +392,7 @@
 			<button 
 				ng-if		= "!icRecurringEventFixed"
 				class		= "border-2 border padding-s round margin"
-				ng-click 	= "editRecurringRuleset.addRule(['weekly']); $event.preventDefault()"
+				ng-click 	= "editRecurringRuleset.addRule([]); $event.preventDefault()"
 			>
 				{{'ITEMS.RECUR_ADD_RULE' | translate}}
 			</button>
