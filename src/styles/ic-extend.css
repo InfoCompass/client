@@ -1,11 +1,23 @@
+[ic-extend] {
+	overflow-y:				hidden;
+	transition:				height 350ms ease-in-out;
+	height:					0;
+	box-sizing:				content-box !important;
+}
+
+
+
+
+
+
 .ic-extend {
 	display:				flex;
 	justify-content:		space-between;
 	align-items:			center;
 }
 
-.ic-extend.extended:before, 
-.ic-extend.extended:after {
+.ic-extend.extended.left:before, 
+.ic-extend.extended.right:after {
 	transform:				rotate(135deg);
 }
 

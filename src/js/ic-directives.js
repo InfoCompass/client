@@ -1225,7 +1225,7 @@ angular.module('icDirectives', [
 
 				}
 
-				/* This function also appears in icItemFullHeader, which is not that elegeant =/ */
+				/* This function also appears in icItemFullHeader, which is not that elegant =/ */
 				scope.cancel = function(){
 					var message = "INTERFACE.CONFIRM_CANCEL_EDIT"
 
@@ -1237,6 +1237,8 @@ angular.module('icDirectives', [
 
 						icItemEdits.clear(scope.icEdit)
 						icSite.editItem 	= false
+
+						console.log('CANCELME', icSite.activeItem.internal.new)
 
 						if(icSite.activeItem.internal.new){												
 							icItemStorage.removeItem(scope.icItem)
@@ -1796,6 +1798,18 @@ angular.module('icDirectives', [
 				// scope.icAllowMultipleChoices	= attrs.icAllowMultipleChoices	? $parse(attrs.icAllowMultipleChoices)()	: false
 
 
+				/* 
+					icForceChoice and Property.mandatory are for the time being 
+					the only ways to indicate that a property is in fact mandatory.
+					The custom getError method on the property might still give an error if 
+					the property is empty, butthere is not way to know, when the property is
+					not properly marked.
+				*/
+				scope.$watch( 
+					()			=> !!(scope.icForceChoice || scope.icProperty.mandatory),
+					mandatory 	=> element[0].classList.toggle('mandatory', mandatory)
+				)
+
 				function copyOptions(array){
 
 					if(!array) return undefined
@@ -2149,6 +2163,9 @@ angular.module('icDirectives', [
 
 				scope.validate = function(){
 				
+					//TODO:
+
+					// Works for strings and arrays!
 					scope.error 	= 	scope.icForceChoice && !(scope.value.edit && scope.value.edit.length)
 										?	{ code: "SELECT_AT_LEAST_ONE_OPTION"	}
 										:	scope.icEdit.getErrors(scope.icKey)

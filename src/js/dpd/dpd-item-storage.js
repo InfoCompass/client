@@ -404,8 +404,24 @@
 			// preliminary item
 			item = icItemStorage.storeItem({id: id})				
 
+
+			/*  If a user creates a new item, but cancels the process and then reload the page,
+				this method will create a new item, that lacks the interal flag for new items and
+				and gets stuck in the client until the next reload.
+				In order to mitigate this we artificially add the missig flag in some cases and
+				warn about in the console.
+			*/
+
+			if(id.match(/^new_/)){
+				item.internal.new = true
+				console.warn(`Created priliminary item for unknown id (${id}); marked the item as new.`)
+			}
+
+
+
+
 			if(force_download){
-				icItemStorage.ready // Argh ready is never declare din this file, but in the extension at services
+				icItemStorage.ready // Argh ready is never declared in this file, but in the extension at services
 				.then( () 	=> 	icItemStorage.getItem(id) )				
 				.then( item	=> 	item && item.remoteItem 
 								?	Promise.resolve()
