@@ -163,10 +163,29 @@
 				ng-repeat-start 	= "rule in editRecurringRuleset.rules"
 			>
 				<select 					
-					class 				= "iteration icon padding-s bg-1 border-2 border right icon-interface-down border-1 rounded"
-					ng-model			= "rule.iteration"
-					title				= "{{'ITEMS.RECUR_INTERVAL' | translate}}"
+					class 		= "iteration icon padding-s bg-1 border-2 border right icon-interface-down border-1 rounded"
+					ng-model	= "rule.iteration"
+					title		= "{{'ITEMS.RECUR_ITERATION' | translate}}"					
 				>
+					<option			
+						ng-if = "rule.iteration"
+						value = ""
+					>
+						{{'INTERFACE.SELECT_DISSELECT' | translate }}
+					</option>	
+
+					<option			
+						ng-if = "!rule.iteration"
+						value = ""
+						hidden
+					>
+						
+						{{'INTERFACE.SELECT_NO_VALUE' | translate }}
+						{{'ITEMS.RECUR_PLACEHOLDER_ITERATION' | translate }}
+						
+					</option>
+
+
 					<option 
 						ng-repeat	= "iteration in ic.recurring.availableIterations"
 						value 		= "{{iteration}}"
@@ -185,6 +204,25 @@
 					class 		= "day icon bg-1 padding-s border-2 border right icon-interface-down border-1 rounded"
 					title		= "{{'ITEMS.RECUR_WEEKDAY' | translate}}" 
 				>
+
+					<option			
+						ng-if = "rule.weekday"
+						value = ""
+					>
+						{{'INTERFACE.SELECT_DISSELECT' | translate }}
+					</option>	
+
+					<option			
+						ng-if = "!rule.weekday"
+						value = ""
+						hidden
+					>
+						
+						{{'INTERFACE.SELECT_NO_VALUE' | translate }}
+						{{'ITEMS.RECUR_PLACEHOLDER_DAY_OF_WEEK' | translate }}
+						
+					</option>
+
 
 					<option value = "mon">
 						{{'ITEMS.RECUR_MON' | translate }}

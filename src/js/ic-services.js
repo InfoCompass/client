@@ -4720,8 +4720,14 @@ angular.module('icServices', [
 			exampleDate	= undefined
 
 			set iteration(x) {
-				if(!RecurringRule.availableIterations.includes(x)) throw new Error(`Unavailable iteration: ${x}`, { cause:x })
-				this._iteration = x
+				if(RecurringRule.availableIterations.includes(x)){
+					this._iteration = x
+					return
+				}
+
+				console.warn(`Unavailable iteration: ${x}`)
+				this._iteration = undefined	
+				
 			}
 
 			get iteration() {

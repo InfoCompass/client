@@ -243,9 +243,6 @@ ic-item-property-edit[ic-recurring-event] .empty-current-value {
 	align-items:				center;
 }
 
-ic-item-property-edit[ic-recurring-event] .empty-current-value *:last-child {
-	margin-left:				auto;
-}
 
 ic-item-property-edit[ic-recurring-event] .current-value-parent-box {
 	display:					flex;	
