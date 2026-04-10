@@ -264,7 +264,7 @@
 				ng-model			= "rule.startTime"
 				ng-model-options	= "{timeSecondsFormat:''}"
 				title				= "{{'ITEMS.RECUR_START_TIME' | translate}}" 
-			>
+			/>
 
 			<input 
 				type 				= "time"
@@ -273,7 +273,7 @@
 				ng-model			= "rule.endTime"				
 				ng-model-options	= "{timeSecondsFormat:''}"
 				title				= "{{'ITEMS.RECUR_END_TIME' | translate}}" 
-			>
+			/>
 
 			<div 
 				class				= "action before "
@@ -283,7 +283,8 @@
 				<button 
 					ng-click 	= "editRecurringRuleset.removeRule(rule)"
 					class		= "remove icon icon-interface-close plain"
-					title		= "{{'ITEMS.RECUR_REMOVE_RULE' | translate}}"					
+					title		= "{{'ITEMS.RECUR_REMOVE_RULE' | translate}}"
+					type		= "button"
 				>
 				</button>
 			</div>
@@ -306,6 +307,7 @@
 					title				= "{{'ITEMS.RECUR_EXAMPLE_DATE' | translate}}" 
 				>
 			</div>
+
 
 			<div			
 				ng-repeat-end
@@ -365,7 +367,7 @@
 						ng-model			= "editRecurringRuleset.rules[0].startTime"
 						ng-model-options	= "{timeSecondsFormat:''}"
 						title				= "{{'ITEMS.RECUR_START_TIME' | translate}}" 
-					>
+					/>
 
 					<input 
 						type 				= "time"
@@ -374,7 +376,7 @@
 						ng-model			= "editRecurringRuleset.rules[0].endTime"				
 						ng-model-options	= "{timeSecondsFormat:''}"
 						title				= "{{'ITEMS.RECUR_END_TIME' | translate}}" 
-					>
+					/>
 				</div>
 			</div>
 
@@ -387,12 +389,14 @@
 
 		</div>
 
+
 		<div class = "buttons">
 
 			<button 
 				ng-if		= "!icRecurringEventFixed"
 				class		= "border-2 border padding-s round margin"
 				ng-click 	= "editRecurringRuleset.addRule([]); $event.preventDefault()"
+				type		= "submit"				
 			>
 				{{'ITEMS.RECUR_ADD_RULE' | translate}}
 			</button>
@@ -400,7 +404,7 @@
 			<div class = "spacer"></div>
 
 			<button
-				ng-if		= "!icRecurringEventFixed && !icItem.internal.new && diff()"
+				ng-if		= "!icRecurringEventFixed && diff()"
 				class		= "round padding-s border-2 border"
 				ng-click	= "recurRevert(); $event.preventDefault()"
 			>
@@ -413,6 +417,7 @@
 				class		= "round padding-s bg-3 prio"
 				ng-click	= "recurApply(); $event.preventDefault()"
 				ng-disabled	= "showRecurErrors && !!editRecurringRuleset.getErrors()[0]"
+				type		= "submit"
 			>
 				{{'INTERFACE.APPLY' | translate}}
 			</button>

@@ -2424,6 +2424,7 @@ angular.module('icDirectives', [
 
 					scope.$watch('value.edit', () => {
 
+						if(scope.showRecurErrors) scope.validate()
 
 						const stringFromRuleset = scope.editRecurringRuleset.toString()
 
@@ -2440,7 +2441,6 @@ angular.module('icDirectives', [
 						if(stringFromRuleset === scope.value.current) return
 
 						scope.currentRecurringRuleset = icRecurring.createRecurringRuleset(scope.value.current)
-
 
 					})
 
