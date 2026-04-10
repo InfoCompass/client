@@ -3,13 +3,13 @@
 	ng-submit	= "ic.keyboard.tabNextInput()"
 	ng-class	= "{invalid: errors}"
 >
-	<div 
+<!-- 	<div 
 		ng-if 	= 	"	
 							!recurEditMode						
 						&&	(!currentRecurringRuleset || currentRecurringRuleset.rules.length == 0)
 						&&	(!editRecurringRuleset || editRecurringRuleset.rules.length == 0)
 					"
-		class	= 	"empty-current-value"			
+		class	= 	"empty-current-value"
 	>
 		<div 
 			ng-if		= "!hideCurrentValue"
@@ -24,21 +24,9 @@
 		>
 			{{'ITEMS.RECUR_ADD_RULE' | translate }}
 		</button>
-	</div>
-
+	</div> -->
 	<div 
-		ng-if = 	"
-							!recurEditMode
-						&&	(	
-									currentRecurringRuleset
-								&&	currentRecurringRuleset.rules.length > 0
-								||
-									editRecurringRuleset
-								&&	editRecurringRuleset.rules.length > 0
-							)
-
-
-					"
+		ng-if = 	"!recurEditMode"
 		class = 	"current-value-parent-box preview-box"		
 	>
 
@@ -411,22 +399,12 @@
 			</button>
 
 			<button
-				ng-if		= "diff()"
 				class		= "round padding-s bg-3 prio"
 				ng-click	= "recurApply(); $event.preventDefault()"
 				ng-disabled	= "showRecurErrors && !!editRecurringRuleset.getErrors()[0]"
 				type		= "submit"
 			>
-				{{'INTERFACE.APPLY' | translate}}
-			</button>
-
-			<button
-				ng-if		= "!diff()"
-				class		= "round padding-s border border-2"
-				ng-click	= "recurApply(); $event.preventDefault()"
-				ng-disabled	= "showRecurErrors && !!editRecurringRuleset.getErrors()[0]"
-			>
-				{{ 'INTERFACE.KEEP' | translate}}
+				{{'ITEMS.RECUR_PREVIEW_VALUE' | translate}}
 			</button>
 
 		</div>

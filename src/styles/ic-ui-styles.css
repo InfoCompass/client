@@ -126,7 +126,6 @@ ic-carousel 	nav button + button,
 [ic-settle-scrollbar] {
 	overflow-y:				auto;
 	box-sizing:				border-box;
-	scroll-snap-type:		y mandatory;
 }
 
 [ng-click]:hover {

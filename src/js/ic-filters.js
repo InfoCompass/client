@@ -263,6 +263,34 @@ angular.module('icFilters', [
 })
 
 
+
+
+
+.filter('icLocaleString', [
+
+	'icSite',
+
+	function(icSite){
+
+		console.log('SDFDFGDFGFG')
+
+		function icLocaleStringFilter(date, options){
+
+			options = options || { weekday:'long', day: '2-digit', month: 'long' }
+
+			if(!date) return ''
+			if(!(date instanceof Date) ) return "[INVALID DATE]"
+
+			return date.toLocaleString(icSite.currentLanguage, options)
+		}
+
+		icLocaleStringFilter.$stateful = true
+
+		return icLocaleStringFilter
+	}
+])
+
+
 .filter('icDate', [
 
 	'icSite',

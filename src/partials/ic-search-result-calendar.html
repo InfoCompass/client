@@ -14,9 +14,7 @@
 		class		= "date" 
 		ng-repeat	= "date in dates | limitTo: icDaysAhead"
 	>
-		<h2 >
-			{{headingsByDate.get(date) }}
-		</h2>
+		<h2>{{date | icLocaleString }}</h2>
 		<div>
 
 			<a

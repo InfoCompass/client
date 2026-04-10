@@ -673,10 +673,6 @@ angular.module('icDirectives', [
 
 					}
 
-					scope.headingsByDate		=	new Map(dates.map(date => {
-														return [date, date.toLocaleString(icLanguages.currentLanguage,{ weekday:'long', day: '2-digit', month: 'long' })]
-													}))
-
 					const excludedTags 			=  	typeof scope.icExcludeTags == 'string'
 													?	[scope.icExcludeTags]
 													:	Array.isArray(scope.icExcludeTags)
@@ -2387,7 +2383,7 @@ angular.module('icDirectives', [
 					scope.currentRecurringRuleset 	= icRecurring.createRecurringRuleset()
 
 					scope.showRecurErrors			= false
-					scope.recurEditMode				= false
+					scope.recurEditMode				= true
 
 					scope.recurApply = function(){						
 						scope.showRecurErrors = true
@@ -2399,8 +2395,7 @@ angular.module('icDirectives', [
 
 					}
 
-					scope.recurRevert = function(){
-						scope.showRecurError = false
+					scope.recurRevert = function(){						
 						scope.revert()
 					}
 
@@ -2424,14 +2419,13 @@ angular.module('icDirectives', [
 
 					scope.$watch('value.edit', () => {
 
-						if(scope.showRecurErrors) scope.validate()
-
 						const stringFromRuleset = scope.editRecurringRuleset.toString()
 
 						if(stringFromRuleset == scope.value.edit) return
 
 						scope.editRecurringRuleset = icRecurring.createRecurringRuleset(scope.value.edit)
 
+						if(scope.showRecurErrors) scope.validate()
 					})
 
 					scope.$watch('value.current', () => {
