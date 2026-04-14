@@ -5,6 +5,10 @@
 	margin:					1rem 0;
 }
 
+.XS .ic-item-tiles {
+	grid-template-columns:	1fr;
+}
+
 ic-item-tile,
 [ic-item-tile] {
 	position:				relative;

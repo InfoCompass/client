@@ -189,7 +189,7 @@ ic-main-content 	> *:nth-child(5),
 }
 
 .XS #section-page {
-	max-width:					calc(100%);
+	max-width:					100%;
 }
 
 .print-only {

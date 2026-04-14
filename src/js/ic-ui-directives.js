@@ -819,7 +819,7 @@ angular.module('icUiDirectives', [
 			style_element.sheet.insertRule(`
 				[ic-settle-scrollbar]:hover > *,	
 				[ic-scroll-watch]:hover + [ic-settle-scrollbar][ic-scroll-source] > * {
-					margin-right: -${scrollbar_width}px;
+					margin-right: -${scrollbar_width}px !important;
 				}
 			` , 0)
 
