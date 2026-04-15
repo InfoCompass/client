@@ -1467,9 +1467,14 @@ angular.module('icUiDirectives', [
 				}
 				
 				const mutationObserver		= 	new MutationObserver(update)
+				const resizeObserver		=	new ResizeObserver(update)
 
 				mutationObserver.observe(element[0], { subtree: true, childList: true })
+				resizeObserver.observe(element[0])
+
 				scope.$watch( () => scope.icExtend, update)
+
+
 
 			}
 		}
@@ -1546,7 +1551,13 @@ angular.module('icUiDirectives', [
 	}
 ])
 
-
+.filter('without',[
+	function(){
+		return function(a, ...needles){
+			return a.filter( x => !needles.includes(x) )
+		}
+	}
+])
 
 
 .filter('section', [

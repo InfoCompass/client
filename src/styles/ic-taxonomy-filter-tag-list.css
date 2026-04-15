@@ -1,9 +1,7 @@
 ic-taxonomy-filter-tag-list {
 	display:					block;
-	box-sizing:					border-box;
-	
+	box-sizing:					border-box;	
 }
-
 
 ic-taxonomy-filter-tag-list a, /*alt*/
 ic-taxonomy-filter-tag-list button {
@@ -45,3 +43,25 @@ ic-taxonomy-filter-tag-list button > .icon {
 	margin-right:				-0.5rem;
 }
 
+.S ic-taxonomy-filter-tag-list,
+.XS ic-taxonomy-filter-tag-list {
+	overflow-x:					auto;	
+}
+
+.S ic-taxonomy-filter-tag-list .wrapper,
+.XS ic-taxonomy-filter-tag-list .wrapper {
+	display:					flex;
+	flex-wrap:					nowrap;
+	width:						max-content;
+}
+
+.S ic-taxonomy-filter-tag-list .wrapper > * ,
+.XS ic-taxonomy-filter-tag-list .wrapper > * {
+	flex:						0 0 auto;
+	order:						2;
+} 
+
+.S ic-taxonomy-filter-tag-list .wrapper > .all ,
+.XS ic-taxonomy-filter-tag-list .wrapper > .all {
+	order:						1;
+}

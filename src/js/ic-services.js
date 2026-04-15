@@ -1107,6 +1107,7 @@ angular.module('icServices', [
 	this.registerSectionUpdate = function(name, updateSection){
 		this.config.sectionUpdates[name] = this.config.sectionUpdates[name] || []
 		this.config.sectionUpdates[name].push(updateSection)
+		return this
 	}
 
 	this.updateSection = function(name, updateSection){
@@ -1217,6 +1218,21 @@ angular.module('icServices', [
 				if(angular.equals(value, default_value)) value = null
 
 				return param.encode(value, ic)
+			}
+
+			icSite.getVisibleSections = function(){
+
+				return	Object.entries(icSite.visibleSections)
+						.filter( ([_, isVisible]) => isVisible)
+						.map( ([name,_]) => name)
+			}
+
+
+			icSite.getActiveSections = function(){
+
+				return	Object.entries(icSite.activeSections)
+						.filter( ([_, isVisible]) => isVisible)
+						.map( ([name,_]) => name)
 			}
 
 

@@ -48,3 +48,18 @@ ic-extended-search ic-search {
 	margin:				2rem 0;
 }
 
+
+.XS ic-extended-search .position-input  {
+	flex-direction:		column;
+	align-items:		stretch;
+}
+
+.XS ic-extended-search .position-input > * > * {
+	flex:				1 0 0;
+}
+
+.XS ic-extended-search .position-input button {
+	text-align:			center;
+	justify-content:	center;
+}
+

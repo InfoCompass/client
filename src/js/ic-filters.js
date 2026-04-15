@@ -272,8 +272,6 @@ angular.module('icFilters', [
 
 	function(icSite){
 
-		console.log('SDFDFGDFGFG')
-
 		function icLocaleStringFilter(date, options){
 
 			options = options || { weekday:'long', day: '2-digit', month: 'long' }
