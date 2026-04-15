@@ -709,10 +709,11 @@ angular.module('icServices', [
 .service('icRemotePages',[
 
 	'$q',
+	'$sce',
 	'icLanguages',
 	'icConfig',
 
-	function($q, icLanguages, icConfig){
+	function($q, $sce, icLanguages, icConfig){
 
 		class IcRemotePages {
 
@@ -798,11 +799,12 @@ angular.module('icServices', [
 												?	translations[lang].content
 												:	'...'
 
+
 							const title		= 	translations && translations[lang]
 												?	translations[lang].title
 												:	'...'
 
-							const content	= `<h1>${title}</h1>\n\n${body}`
+							const content	=	`<h1>${title}</h1>\n\n${body}`
 
 							lang = lang.toUpperCase()
 

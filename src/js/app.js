@@ -455,10 +455,20 @@
 
 	.config([
 
+		'$sanitizeProvider',
+
+		function($sanitizeProvider){
+			$sanitizeProvider.addValidAttrs(['id', 'name'])
+		}
+	])
+
+	.config([
+
 		'$compileProvider',
 
 		function($compileProvider){
-			$compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|whatsapp|mailto|tel|tg):/)
+			// $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|whatsapp|mailto|tel|tg):/)			
+			$compileProvider.aHrefSanitizationTrustedUrlList(/^\s*(https?|whatsapp|mailto|tel|tg):/)			
 		}
 	])
 
