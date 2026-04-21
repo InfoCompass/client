@@ -65,6 +65,27 @@ select {
 	padding: 			0.5rem;
 }
 
+button.removable {
+	overflow:			hidden;
+	z-index:			10;
+}
+
+button.removable:before {
+	display:						block;
+	content:						'';
+
+	position:						absolute;
+
+	top:							0;
+	left:							0;
+	right:							0;
+	bottom:							0;
+
+	background-color:				var(--primary-color);
+	opacity:						0.5;
+	z-index:						-1;
+}
+
 
 button.removable.all {
 	background-color:	var(--secondary-background-color);
