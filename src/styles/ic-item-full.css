@@ -30,14 +30,14 @@ ic-item-full .hero-wrapper footer {
 ic-item-full .hero {
 	display:					block;
 	position:					static;
-	padding-bottom:				50%;
 
-	background-size:			cover;
+	background-size:			contain;
 	background-position:		50% 50%;
 	background-repeat:			no-repeat;
 	left:						0;
 	right:						0;
 	width:						100%;
+	height:						10rem;
 }
 
 
