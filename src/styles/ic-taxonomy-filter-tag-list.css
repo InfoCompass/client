@@ -9,7 +9,8 @@ ic-taxonomy-filter-tag-list button {
 	position:					relative;
 	margin:						0.25rem 0.25rem;
 	white-space: 				nowrap;
-	min-width:					0;
+	min-width:					0;	
+	padding:					0 1rem;
 }
 
 ic-taxonomy-filter-tag-list a > *, /*alt*/
