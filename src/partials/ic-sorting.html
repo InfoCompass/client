@@ -33,16 +33,8 @@
 </div>
 
 <div>
-	<button	
-		ng-if = "ic.site.sortOrder != 'last_change'"
-		class		= "padding icon large icon-interface-sortorder active round {{ic.site.sortDirectionAlpha == 1 ? 'asc' : 'desc'}}"
-		ng-click 	= "ic.filterConfig.toggleSortDirectionAlpha()"
-		title		= "{{'INTERFACE.REVERSE_SORTING_ORDER' | translate}}"
-		ic-touch-me
-	>
-	</button>
+
 	<button
-		ng-if = "ic.site.sortOrder == 'last_change'"
 		class		= "padding icon large icon-interface-sortorder active round {{ic.site.sortDirection == 1 ? 'asc' : 'desc'}}" 
 		ng-click 	= "ic.filterConfig.toggleSortDirection()"
 		title		= "{{'INTERFACE.REVERSE_SORTING_ORDER' | translate}}"

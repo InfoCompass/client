@@ -49,6 +49,13 @@ ic-taxonomy-filter section.types > button /* gets overridden in ic-pages =( */{
 	margin: 					0 !important;
 }
 
+ic-taxonomy-filter section h2 {
+  margin: 0;
+    margin-bottom: 0px;
+  margin-bottom: 1px;
+  font-weight: 400;
+  font-size: 1.2em;
+}
 
 ic-taxonomy-filter section li .section-toggle {
 	font-size:					1.5rem;

@@ -5,9 +5,14 @@
 </header>
  -->
 
-<p ng-if="ic.itemStorage.filteredList.length === 0">
-    {{'INTERFACE.SEARCH_NOTE' | translate}}
-</p>
+<div 
+	ng-if ="ic.itemStorage.filteredList.length === 0"
+	class = "bg-0 padding"
+>
+	<p>
+    	{{'INTERFACE.SEARCH_NOTE' | translate}}
+    </p>
+</div>
 
 <div
 	ic-scroll-repeat-limit 				= "ic.itemStorage.filteredList.length"

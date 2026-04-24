@@ -42,9 +42,10 @@ ic-header .tools ic-logo-line {
 
 ic-header .tools > a,
 ic-header .tools > button {
-	display:						inline-block;
+	display:						flex;
 	background-color:				transparent;
 	color:							#fff;
+	align-items:					center;
 }
 
 ic-header .tools a:focus,
