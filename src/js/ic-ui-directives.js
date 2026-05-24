@@ -423,7 +423,7 @@ angular.module('icUiDirectives', [
 					if(!changeWarrented) return false
 
 					if(increaseWarrented)	scope[l] += step_size						
-					if(decreaseWarrented)	scope[l] -= step_size					
+					if(decreaseWarrented)	scope[l] -= Math.max(1, Math.floor(step_size/5))
 
 					scope.$apply()	
 
