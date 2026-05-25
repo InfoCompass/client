@@ -8,7 +8,6 @@
 	align-items: 					stretch;
 }
 
-
 ic-page {
 	display:						flex;
 	flex: 							1 0 auto;
@@ -356,3 +355,5 @@ ic-page ol li::marker {
 	font-family: 				inherit;
 	font-size: 					1.25rem;
 }
+
+

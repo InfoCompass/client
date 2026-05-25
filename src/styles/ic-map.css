@@ -46,7 +46,8 @@ ic-map-item-marker {
 
 ic-map.highlight-item ic-map-item-marker:not(.highlight),
 ic-map.highlight-item ic-map-cluster-marker:not(.highlight) {
-	opacity:				0.2;	
+	opacity:				0.3;	
+	filter:					grayscale(1);
 }
 
 ic-map ic-map-item-marker,
@@ -62,6 +63,7 @@ ic-map.highlight-item .highlight{
 
 ic-map.highlight-item ic-map-cluster-marker  ic-map-item-marker {
 	opacity:				1 !important;
+	filter:					grayscale(0) !important;
 }
 
 
