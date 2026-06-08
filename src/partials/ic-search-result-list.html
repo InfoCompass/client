@@ -17,12 +17,13 @@
 <div
 	ic-scroll-repeat-limit 				= "ic.itemStorage.filteredList.length"
 	ic-scroll-repeat-limit-as 			= "displayLimit"
-	ic-scroll-repeat-limit-step-size 	= "5"
+	ic-scroll-repeat-limit-step-size 	= "5"	
 >
 	<a
 		ng-repeat			= "item in ic.itemStorage.filteredList | limitTo : displayLimit"
 		ng-href				= "{{ {activeItem: item} | icLink }}"
 		ic-highlight-item 	= "item"
+		ng-if				= "!icHideArchived || item.state != 'archived'"
 
 		ic-touch-me
 	>

@@ -425,7 +425,9 @@ angular.module('icDirectives', [
 		return 	{
 			restrict:		'E',
 			templateUrl:	'partials/ic-search-result-list.html',
-			scope:			{},
+			scope:			{
+								icHideArchived: "<?"	
+							},
 
 			link: function(scope){
 				scope.ic 		= ic
