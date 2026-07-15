@@ -386,24 +386,26 @@
 										})
 
 
-						scope.isActive = function(item){
-							return 	item == icSite.activeItem
-									?	0
-									:	1
-						}
 
-						scope.$watch( 
-							() => {
-								if(!icMainMap.highlightedItem) return false
-								const itemMatch 		= scope.items && scope.items.includes(icMainMap.highlightedItem) 
-								const referenceMatch	= scope.items && scope.items.find( item => item.id == icMainMap.highlightedItem.locationRef)
-
-								return !!(itemMatch || referenceMatch)
-							},
-							highlight => element[0].classList.toggle('highlight', highlight)
-						)
 					})
 					
+					scope.isActive = function(item){
+						return 	item == icSite.activeItem
+								?	0
+								:	1
+					}
+					
+					scope.$watch(
+						() => {
+							if(!icMainMap.highlightedItem) return false
+
+							const itemMatch 		= !!(scope.items && scope.items.includes(icMainMap.highlightedItem) )
+							const referenceMatch	= !!(scope.items && scope.items.find( item => item.id == icMainMap.highlightedItem.locationRef) )
+
+							return itemMatch || referenceMatch
+						},
+						highlight => element[0].classList.toggle('highlight', highlight)
+					)
 				}
 
 			}
