@@ -74,6 +74,12 @@ ic-item-full article .description ul > li {
 	list-style:					inside;
 }
 
+ic-item-full article .description ul > li > p {
+	display:					inline-block;
+	padding: 					0;
+	margin:						0;
+}
+
 ic-item-full > section {
 	padding:					1rem 0;
 }
