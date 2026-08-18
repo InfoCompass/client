@@ -703,8 +703,16 @@ angular.module('icDirectives', [
 
 						dates.forEach(date => {
 							//TODO use actual values!!
+
+							let times
 													
-							const 	times 		= ruleset.getMatchingTimes(date)
+							try {
+								times 		= ruleset.getMatchingTimes(date)
+							} catch(e) {
+								console.warn(`Something went wrong evaluating recurring events for '${item.title}'. Skipping`, item)
+								console.error(e)
+								times = []
+							}
 
 							if(!times || times.length == 0)  return
 

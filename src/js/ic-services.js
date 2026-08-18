@@ -127,7 +127,7 @@ angular.module('icServices', [
 				return	promise
 			},
 
-			stringifyDate: function(dateOrString){
+			stringifyDate: function(dateOrString, options = {omitDashes:false}){
 
 				if(!dateOrString) throw new TypeError("Invalid value for dateOrString", { cause: dateOrString })
 
@@ -138,7 +138,9 @@ angular.module('icServices', [
 				const month	= (dateOrString.getMonth()+1+'').padStart(2,'0')
 				const day	= (dateOrString.getDate()+'').padStart(2,'0')
 
-				return `${year}-${month}-${day}`
+				return 	options && options.omitDashes
+						?	`${year}${month}${day}`
+						:	`${year}-${month}-${day}`
 			},
 
 			parseDate: function (dateOrString){
@@ -4838,6 +4840,9 @@ angular.module('icServices', [
 
 				if(!RecurringRule.availableIterations.includes(this.iteration)) return "UNKNOWN_ITERATION"
 
+				if(!this.startTime) 					return "MISSING_START_TIME"
+				if(isNaN(this.startTime.getTime() ) ) 	return "INVALID_START_TIME"
+
 				if(this.requiresExampleDate){
 
 					if(!this.exampleDate) return "MISSING_EXAMPLE_DATE"
@@ -4845,14 +4850,20 @@ angular.module('icServices', [
 					if(
 						! (this.exampleDate instanceof Date) 
 						||
-						isNaN(this.exampleDate.getTime())
+						isNaN(this.exampleDate.getTime())						
 
 					) return "INVALID_EXAMPLE_DATE"
 
+					try{
+						this.match(undefined, { skipErrorCheck: true })
+					} catch(e) {
+						console.warn(`Something went wrong trying to match the example date against today, indicating that the example date input is somehow malformed.`, {exampleDate:this.exampleDate} )
+						console.error(e)
+						return "INVALID_EXAMPLE_DATE"
+					}
+
 				}
 
-				if(!this.startTime) 					return "MISSING_START_TIME"
-				if(isNaN(this.startTime.getTime() ) ) 	return "INVALID_START_TIME"
 
 			}
 
@@ -5040,11 +5051,13 @@ angular.module('icServices', [
 
 
 
-			match(d = new Date()) {
+			match(d = new Date(), options = { skipErrorCheck: false } ) {
 
-				const errors	= this.getErrors()
+				if(!options || !options.skipErrorCheck){
+					const errors	= this.getErrors()
 
-				if(errors) return false
+					if(errors) return false
+				}
 
 				const date		= new Date(d)
 
@@ -5059,12 +5072,9 @@ angular.module('icServices', [
 
 				const start		= this.exampleDate || date
 	
-				const year		=  start.getFullYear()
-				const month		= (start.getMonth()+1+'').padStart(2, '0')
-				const day		= (start.getDate()+'').padStart(2, '0')
+				const startDateString = icUtils.stringifyDate(start, {omitDashes:true})
 
-
-				const dtstart 	= `DTSTART:${year}${month}${day}T000000`
+				const dtstart 	= `DTSTART:${startDateString}T000000`
 
 				const rule		= `${dtstart};\n${rrule}`
 
