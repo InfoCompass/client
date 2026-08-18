@@ -1,6 +1,7 @@
+
 <p
 	class		= "message" 
-	ng-repeat 	= "message in icOverlays.messages.confirmationModal"
+	ng-repeat 	= "message in messages"
 >{{message | translate}}</p>
 
 <form>
@@ -11,7 +12,7 @@
 			ng-click 	= "cancel()"
 			tabindex	= "2"
 		>
-			{{'INTERFACE.CANCEL' | translate}}
+			{{ cancelKey | translate}}
 		</button>
 
 		<button 
@@ -21,7 +22,7 @@
 			tabindex	= "2"
 			ic-focus-me
 		>
-			{{ 'INTERFACE.CONFIRM' | translate}}
+			{{ confirmationKey | translate}}
 		</button>
 	</div>
 </form>

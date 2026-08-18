@@ -1258,7 +1258,7 @@ angular.module('icDirectives', [
 					element[0].querySelector('[ic-key=editingNote] input, [ic-key=editingNote] textarea')?.focus()
 				}
 
-				scope.submit = function(ignore_missing_note){
+				scope.submit = function(ignore_missing_note, options = { customButtonLabels: [] }){
 
 					if(!scope.icEdit) return null				
 
@@ -1278,7 +1278,11 @@ angular.module('icDirectives', [
 
 						if(!edit.editingNote && !ignore_missing_note) 
 
-												return 	icOverlays.open('confirmationModal', 'INTERFACE.MISSING_EDITING_NOTE')	
+												return 	(
+															options && Array.isArray(options.customButtonLabels)
+															? icOverlays.open('customConfirmationModal', ['INTERFACE.MISSING_EDITING_NOTE', ...options.customButtonLabels])	
+															: icOverlays.open('confirmationModal', 'INTERFACE.MISSING_EDITING_NOTE')	
+														)
 														.then( 
 															() => scope.submit(true),
 															() => scope.focusEditingNote() 
@@ -3430,12 +3434,52 @@ angular.module('icDirectives', [
 				}
 
 
+				scope.messages = icOverlays.messages.confirmationModal
 
+				scope.cancelKey = 'INTERFACE.CANCEL'
+				scope.confirmationKey = 'INTERFACE.CONFIRM'
 			}
 		}
 	}
 ])
 
+.directive('icCustomConfirmationModal', [
+
+	'icOverlays',
+
+	function(icOverlays){
+		return {
+			restrict:		'AE',
+			transclude:		true,
+			templateUrl:	'partials/ic-confirmation-modal.html',
+
+			link: function(scope){
+
+				scope.icOverlays = icOverlays
+
+
+				scope.cancel = function(){
+					icOverlays.deferred.customConfirmationModal.reject()
+					icOverlays.toggle('customConfirmationModal')
+				}
+
+				scope.confirm = function(){
+					icOverlays.deferred.customConfirmationModal.resolve()
+					icOverlays.toggle('customConfirmationModal')
+				}
+
+				scope.icCustomButtonLabels = true
+
+				scope.$watch( () => {
+					scope.messages = icOverlays.messages.customConfirmationModal.slice(0,-2)
+					scope.cancelKey = icOverlays.messages.customConfirmationModal.slice(-2)[0]
+					scope.confirmationKey = icOverlays.messages.customConfirmationModal.slice(-2)[1]
+				})
+
+			}
+		}
+	}
+])
 
 .directive('icTransclude', [
 
