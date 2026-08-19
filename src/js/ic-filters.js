@@ -571,4 +571,59 @@ angular.module('icFilters', [
 ])
 
 
+.filter('rotatingSubset', [
+
+	function(){
+
+		const cache = new Map()
+		const emptyArray = []
+
+		function pick(arr, seed, size){
+			if(arr.length === 0) return []
+			if(arr.length === 1) return arr
+			if(size == 0) return []
+
+			const pos = seed % arr.length
+			const item = arr[pos]
+
+			const reducedArray = [...arr]
+			reducedArray.splice(pos,1)
+
+			return [item, ...pick( reducedArray, seed , size-1)]
+		}
+
+		return function(arr, mode, size){
+			if( typeof mode !== 'string' || !mode) throw new Error(`rotatingSubsetFilter expects a string for mode parameter, but got ${mode} instead.`)
+			if( mode !== 'hour') throw new Error(`rotatingSubsetFilter only supports 'hour' mode, got ${mode} instead.`)
+
+			if(typeof size != 'number')	throw new Error(`rotatingSubsetFilter expects a number for size parameter, but got ${size} instead.`)
+
+			if(!arr){
+				emptyArray.length = 0
+				return emptyArray
+			} 
+
+			if(size > arr.length) return arr
+
+			if(!Array.isArray(arr)) throw new Error(`rotatingSubsetFilter can only be used on Arrays, got ${arr} instead.`)
+			if(!arr.every(x => typeof x === 'string')) throw new Error(`rotatingSubsetFilter can only be used on Arrays of string, got ${arr} instead.`)	
+
+			const json			= 	JSON.stringify(arr)				
+			const now 			=	Date.now()
+			const multiplier 	=	{
+										'hour': arr.length / (arr.length - 1)
+									}[mode]
+			const seed 			=	Math.floor(now / (1000*60*60)*multiplier) // multiplier prevents that we get locked into a cycle
+			const cacheId 		=	json+seed
+
+			if( !cache[cacheId] ) cache[cacheId] = pick(arr, seed, size)
+
+			return cache[cacheId]
+
+		}
+	}
+
+])
+
+
 
