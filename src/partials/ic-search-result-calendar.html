@@ -5,11 +5,12 @@
 </header>
  -->
 <div 
-	ic-scroll-repeat-limit 				= "100"
+	ic-scroll-repeat-limit 				= "dates.length"
 	ic-scroll-repeat-limit-as 			= "icDaysAhead"
 	ic-scroll-repeat-limit-step-size 	= "1"
 	ic-scroll-repeat-limit-no-decrease
 >
+
 	<div
 		class		= "date" 
 		ng-repeat	= "date in dates | limitTo: icDaysAhead"
@@ -37,14 +38,17 @@
 				ic-date		= "date"
 			></ic-item-preview> 
 
-			<a 
-				ng-if		= "noScroll && !noMoreItems" 
-				class 		= "bg-0 padding more tac active" 
-				ng-click 	= "icScrollRepeatLimitIncrease()"
-				ic-touch-me
-			>
-				...
-			</a>
 		</div>
+
 	</div>
+
+	<a 
+		ng-if		= "noScroll && !noMoreItems" 
+		class 		= "bg-0 padding more tac active" 
+		ng-click 	= "icScrollRepeatLimitIncrease()"
+		ic-touch-me
+	>
+		...
+	</a>
+	
 </div>

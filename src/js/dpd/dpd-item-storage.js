@@ -466,7 +466,26 @@
 
 										try{	
 											const patchData		=	await mappoClient.getPatchData()
+
 											adapterData			= 	await mappoClient.patchLocalAdapterData(patchData)
+
+											if(Object.keys(patchData).length === 0){
+												console.groupCollapsed('Mappo: No new patch data available.')
+												console.info('Keeping last known versions:')
+												adapterData.forEach(ad => console.info({
+													adapter:ad.adapter.name, 
+													version:ad.version, 
+													lastUpdate: new Date(ad.lastUpdate).toISOString() 
+												}))
+												console.groupEnd()
+
+											}
+
+											Object.keys(patchData).forEach(adapterName => {
+												if('diffRecord' in patchData[adapterName]) console.info(`Mappo: found patch data for ${adapterName}`)
+												if('itemsRecord' in patchData[adapterName]) console.info(`Mappo: found new data for ${adapterName}`)
+											})
+
 										} catch(cause) {
 											if(!navigator || navigator.onLine) throw new Error('Mappo client: unable to pull patch data.', { cause })
 
@@ -476,9 +495,10 @@
 										const items			= 	adapterData
 																.map(ad => Object.values(ad.itemsRecord))
 																.flat()
+
 										const duration		=	performance && performance.measure("mappo").duration || undefined
 
-										console.info(`Mappo client: retrieved ${items.length} items, ${duration}ms`)
+										console.info(`Mappo client: knows ${items.length} items, duration: ${duration}ms`)
 
 										if(items.length == 0) throw "Mappo client unable to retrieve any items."
 

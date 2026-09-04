@@ -480,6 +480,20 @@ angular.module('icDirectives', [
 					if(!sameDay(scope.customDate, d) )	scope.customDate = new Date(d.getTime())
 				}
 
+				scope.nextDay = function(){
+					scope.startDate = scope.endDate ||  scope.startDate || new Date()
+					scope.endDate = undefined
+					scope.startDate.setDate(scope.startDate.getDate() +1 )
+					scope.customDate = scope.startDate
+				}
+
+				scope.previousDay = function(){
+					scope.startDate = scope.startDate || new Date()
+					scope.startDate.setDate(scope.startDate.getDate()-1)
+					scope.endDate = undefined		
+					scope.customDate = scope.startDate			
+				}
+
 				scope.selectToday = function(){
 					scope.selectDay(new Date())					
 				}
@@ -628,18 +642,18 @@ angular.module('icDirectives', [
 								icStartDate: 	"<?",
 								icEndDate:		"<?",
 								icExcludeTags:	"<?",
-								icLimit:		"<?"
 							},
 
 			link: function(scope, element){
+
 
 				scope.ic 			= ic
 
 				scope.date 			= new Date()
 
-				scope.groupedItems 	= 	{}
+				scope.groupedItems 	= {}
 
-				scope.icLimit		= scope.icLimit || 100
+				scope.dates			= []
 
 				scope.updateItemGroups = function(){
 
@@ -651,7 +665,7 @@ angular.module('icDirectives', [
 												:	new Date(startDate)
 
 
-					endDate.setDate(endDate.getDate() + scope.icLimit + (scope.icEndDate ? 0 : 6) )
+					endDate.setDate(endDate.getDate() + (scope.icEndDate ? 0 : 1) )
 
 					const dates 			= 	[ startDate ]
 
@@ -717,7 +731,7 @@ angular.module('icDirectives', [
 							if(!times || times.length == 0)  return
 
 
-							let 	itemsByTime = timesByDate.get(date)
+							let itemsByTime = timesByDate.get(date)
 
 							if(!itemsByTime){
 								itemsByTime = new Map()
@@ -751,7 +765,6 @@ angular.module('icDirectives', [
 				}						
 
 				scope.$watchCollection( () => ic.itemStorage.filteredList, () => scope.updateItemGroups() )
-
 				scope.$watchCollection( () => [scope.icStartDate, scope.icEndDate],	() => scope.updateItemGroups() )
 			}
 		}
