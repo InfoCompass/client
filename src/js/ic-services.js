@@ -3991,7 +3991,7 @@ angular.module('icServices', [
 
 		
 		async function getTileData(){
-			
+
 			const useDpdAsTileSource 	= !icConfig.tilesUrl
 			const useExternalTileSource = !useDpdAsTileSource
 
@@ -4061,6 +4061,13 @@ angular.module('icServices', [
 			*/
 
 		icTiles.setup = async function(){
+
+
+			if( ('tiles' in icConfig) && icConfig.tiles === false) {
+				console.info('icTiles disabled.')
+				return
+			}
+			
 
 			const tile_data = await $q.when(getTileData())
 
