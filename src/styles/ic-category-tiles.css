@@ -5,12 +5,21 @@
 	margin:					1rem 0;
 }
 
+.XS .ic-category-tiles {
+	display:				flex;
+	flex-direction:			column;
+}
+
 ic-category-tile {	
 	display:				flex;
 	flex-direction:			column;
 	align-items:			stretch;
 	justify-content:		flex-start;
 	gap:					1rem;
+}
+
+.XS ic-category-tile {
+	gap:					1.5rem;
 }
 
 ic-category-tile .image {
