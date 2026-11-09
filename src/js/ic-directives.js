@@ -1129,7 +1129,43 @@ angular.module('icDirectives', [
 				}
 
 				scope.fetchAiEntityData = async function(text){
-					const response = await fetch(icConfig.publicApi+'/content-to-entry')
+
+					scope.waitingForAiResponse 	= true
+					scope.aiRemarks 			= undefined
+					scope.aiEntryData			= undefined
+					scope.aiDataImported		= false
+
+					try {
+						const response 		= 	await fetch(icConfig.publicApi+'/content-to-entry',{
+													method: "POST",
+													headers: {
+														"Content-Type"	: "application/json"
+													},
+													body: 	JSON.stringify({ text })
+												})
+						
+						scope.aiEntryData	= 	await response.json()
+						scope.aiRemarks		=	scope.aiEntryData.editingNote || undefined
+
+						scope.waitingForAiResponse	= false
+						scope.aiDataImported		= false
+						scope.$digest()
+
+					} catch(_e){
+						console.error(_e)
+						scope.aiEntryData			= undefined
+						scope.waitingForAiResponse	= false
+						scope.aiDataImported		= false
+						scope.$digest()
+					}
+
+				}
+
+				scope.importAiEntry = function(){
+					if(!scope.aiEntryData) return
+
+					scope.icEdit.importData(scope.aiEntryData)	
+					scope.aiDataImported = true
 				}
 
 				scope.require = function(key){

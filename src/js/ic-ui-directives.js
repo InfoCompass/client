@@ -930,8 +930,6 @@ angular.module('icUiDirectives', [
 
 			link: function(_, element, attrs){
 
-				console.log('SDFSDF', attrs.icMarkContainedClass)
-
 				$rootScope.$watch( () => {
 					const containsClass = !!element[0].querySelector(`.${attrs.icMarkContainedClass}`)
 
