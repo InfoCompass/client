@@ -1128,6 +1128,10 @@ angular.module('icDirectives', [
 					controller.registerValidationFunction( () => scope.validateSuggestionMeta() )
 				}
 
+				scope.fetchAiEntityData = async function(text){
+					const response = await fetch(icConfig.publicApi+'/content-to-entry')
+				}
+
 				scope.require = function(key){
 
 					const is_new		= 	icSite.activeItem && icSite.activeItem.internal && icSite.activeItem.internal.new
