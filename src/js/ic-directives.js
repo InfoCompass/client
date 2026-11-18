@@ -1128,15 +1128,22 @@ angular.module('icDirectives', [
 					controller.registerValidationFunction( () => scope.validateSuggestionMeta() )
 				}
 
-				scope.aiFileId		= undefined
-				scope.uploading		= false
-				scope.aiFileName 	= undefined
+				scope.ai					= {}
+				scope.ai.freeText			= ""
+				scope.ai.fileId				= undefined
+				scope.ai.uploading			= false
+				scope.ai.fileName 			= undefined
+				scope.ai.fileMimeType		= undefined
+				scope.ai.remarks			= undefined
+				scope.ai.entryData			= undefined
+				scope.ai.dataImported		= false
+				scope.ai.waitingForResponse = false
 
 				element[0].addEventListener("change", async (e) => {
 
-					scope.aiFileId			= undefined
-					scope.aiFileMimeType	= undefined
-					scope.uploading			= true
+					scope.ai.fileId			= undefined
+					scope.ai.fileMimeType	= undefined
+					scope.ai.uploading		= true
 					scope.$digest()
 
 					try {
@@ -1146,7 +1153,7 @@ angular.module('icDirectives', [
 
 						const file = e.target.files[0]
 
-						scope.aiFileName = !!file && e.target.value
+						scope.ai.fileName = !!file && e.target.value
 
 						const formData = new FormData()
 
@@ -1159,13 +1166,13 @@ angular.module('icDirectives', [
 
 						const result = await response.json()
 
-						scope.aiFileId 			= result.id
-						scope.aiFileMimeType 	= result.mime_type
+						scope.ai.fileId 		= result.id
+						scope.ai.fileMimeType 	= result.mime_type
 
 					} catch(e){
 						throw e
 					} finally {
-						scope.uploading	= false
+						scope.ai.uploading	= false
 						scope.$digest()
 					}
 				})
@@ -1173,16 +1180,17 @@ angular.module('icDirectives', [
 
 				scope.fetchAiEntityData = async function(){
 
-					const freeText = scope.freeText
-					const aiFileId = scope.aiFileId
-					const mimeType = scope.aiFileMimeType || "application/octet-stream"
+					const freeText = scope.ai.freeText
+					const aiFileId = scope.ai.fileId
+					const mimeType = scope.ai.fileMimeType || "application/octet-stream"
 
-					if(!freeText && !aiFileId) throw new Error("Missing data for entity fetch.")
 
-					scope.waitingForAiResponse 	= 	true
-					scope.aiRemarks 			= 	undefined
-					scope.aiEntryData			= 	undefined
-					scope.aiDataImported		= 	false
+					if(!freeText.trim() && !aiFileId) throw new Error("Missing data for entity fetch.")
+
+					scope.ai.waitingForResponse = 	true
+					scope.ai.remarks 			= 	undefined
+					scope.ai.entryData			= 	undefined
+					scope.ai.dataImported		= 	false
 
 					const text					= 	freeText
 					const doc					= 	{
@@ -1200,36 +1208,36 @@ angular.module('icDirectives', [
 					if(aiFileId)	body.document 	= doc
 
 					try {
-						const response 			= 	await fetch(icConfig.publicApi+'/content-to-entry',{
-														method: "POST",
-														headers: {
-															"Content-Type"	: "application/json"
-														},
-														body: 	JSON.stringify(body)
-													})
+						const response 				= 	await fetch(icConfig.publicApi+'/content-to-entry',{
+															method: "POST",
+															headers: {
+																"Content-Type"	: "application/json"
+															},
+															body: 	JSON.stringify(body)
+														})
 						
-						scope.aiEntryData		= 	await response.json()
-						scope.aiRemarks			=	scope.aiEntryData.editingNote || undefined
+						scope.ai.entryData			= 	await response.json()
+						scope.ai.remarks			=	scope.ai.entryData.editingNote || undefined
 
-						scope.waitingForAiResponse	= false
-						scope.aiDataImported		= false
+						scope.ai.waitingForResponse	= false
+						scope.ai.dataImported		= false
 						scope.$digest()
 
 					} catch(_e){
 						console.error(_e)
-						scope.aiEntryData			= undefined
-						scope.waitingForAiResponse	= false
-						scope.aiDataImported		= false
+						scope.ai.entryData			= undefined
+						scope.ai.waitingForResponse	= false
+						scope.ai.dataImported		= false
 						scope.$digest()
 					}
 
 				}
 
 				scope.importAiEntry = function(){
-					if(!scope.aiEntryData) return
+					if(!scope.ai.entryData) return
 
-					scope.icEdit.importData(scope.aiEntryData)	
-					scope.aiDataImported = true
+					scope.icEdit.importData(scope.ai.entryData)	
+					scope.ai.dataImported = true
 				}
 
 				scope.require = function(key){
