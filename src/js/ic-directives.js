@@ -1128,24 +1128,88 @@ angular.module('icDirectives', [
 					controller.registerValidationFunction( () => scope.validateSuggestionMeta() )
 				}
 
-				scope.fetchAiEntityData = async function(text){
+				scope.aiFileId		= undefined
+				scope.uploading		= false
+				scope.aiFileName 	= undefined
 
-					scope.waitingForAiResponse 	= true
-					scope.aiRemarks 			= undefined
-					scope.aiEntryData			= undefined
-					scope.aiDataImported		= false
+				element[0].addEventListener("change", async (e) => {
+
+					scope.aiFileId			= undefined
+					scope.aiFileMimeType	= undefined
+					scope.uploading			= true
+					scope.$digest()
 
 					try {
-						const response 		= 	await fetch(icConfig.publicApi+'/content-to-entry',{
-													method: "POST",
-													headers: {
-														"Content-Type"	: "application/json"
-													},
-													body: 	JSON.stringify({ text })
-												})
+						if(e.target.id != "aifile") return
+						if(Array.isArray(e.target.files)) return 
+						if(!e.target.files[0]) return
+
+						const file = e.target.files[0]
+
+						scope.aiFileName = !!file && e.target.value
+
+						const formData = new FormData()
+
+						formData.append("aifile", file)
+
+						const response = await fetch(icConfig.publicApi+'/temp-upload',{
+							method: "POST",						
+							body: formData
+						})	
+
+						const result = await response.json()
+
+						scope.aiFileId 			= result.id
+						scope.aiFileMimeType 	= result.mime_type
+
+					} catch(e){
+						throw e
+					} finally {
+						scope.uploading	= false
+						scope.$digest()
+					}
+				})
+
+
+				scope.fetchAiEntityData = async function(){
+
+					const freeText = scope.freeText
+					const aiFileId = scope.aiFileId
+					const mimeType = scope.aiFileMimeType || "application/octet-stream"
+
+					if(!freeText && !aiFileId) throw new Error("Missing data for entity fetch.")
+
+					scope.waitingForAiResponse 	= 	true
+					scope.aiRemarks 			= 	undefined
+					scope.aiEntryData			= 	undefined
+					scope.aiDataImported		= 	false
+
+					const text					= 	freeText
+					const doc					= 	{
+														transfer_method:	"local_file",
+														type:				mimeType && mimeType.startsWith("image/")
+																			?	"image"
+																			:	"document",
+														upload_file_id:		aiFileId,
+														url:				""
+													}
+
+					const body					=	{}								
+
+					if(text) 		body.text 		= text
+					if(aiFileId)	body.document 	= doc
+
+					try {
+						const response 			= 	await fetch(icConfig.publicApi+'/content-to-entry',{
+														method: "POST",
+														headers: {
+															"Content-Type"	: "application/json"
+														},
+														body: 	JSON.stringify(body)
+													})
 						
-						scope.aiEntryData	= 	await response.json()
-						scope.aiRemarks		=	scope.aiEntryData.editingNote || undefined
+						scope.aiEntryData		= 	await response.json()
+						scope.aiRemarks			=	scope.aiEntryData.editingNote || undefined
 
 						scope.waitingForAiResponse	= false
 						scope.aiDataImported		= false
